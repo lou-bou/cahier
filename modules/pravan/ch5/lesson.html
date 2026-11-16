@@ -1,0 +1,1145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRAVAN · Ch 5 · Lesson</title>
+<script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
+<style>
+/* study-hub:base v3 — shared by every remake. build.py swaps in the current copy, so uploads never drift */
+/* tokens: a copy of assets/tokens.css so a page previews on its own; the build links the real file */
+/* Cahier design tokens. Light ("paper") is the default; dark ("night ink") follows.
+   Theme switch: <html data-theme="light|dark">; no attribute = follow the OS. */
+
+:root {
+  /* Brand (theme-independent) */
+  --brand-paper: #F3EBDD;
+  --brand-ink:   #1E2A44;
+  --brand-amber: #D9952B;   /* ribbon: progress, "resume", bookmarks */
+  --brand-green: #3D6B5A;   /* correct / completed */
+
+  /* Type */
+  --font-display: "Fraunces", Georgia, serif;          /* headings, lesson titles */
+  --font-body:    "Source Sans 3", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  --text-xs: 0.8125rem;  /* 13 */
+  --text-sm: 0.9375rem;  /* 15 */
+  --text-md: 1.0625rem;  /* 17 body — reading app, slightly larger */
+  --text-lg: 1.375rem;   /* 22 */
+  --text-xl: 1.875rem;   /* 30 */
+  --text-2xl: 2.5rem;    /* 40 lesson hero */
+  --leading-body: 1.65;
+  --measure: 68ch;       /* max line length for lesson text */
+
+  /* Spacing (4px grid) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 72px;
+
+  /* Shape — quiet, paper-like */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Motion — minimal */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-med: 200ms;
+
+  /* Light / paper (default) */
+  --bg:          #F7F1E6;
+  --surface:     #FFFCF6;
+  --surface-2:   #EFE6D6;
+  --border:      #E2D8C6;
+  --text:        #1E2A44;
+  --text-muted:  #5C6475;
+  --accent:      var(--brand-amber);   /* fills: ribbon, progress bars */
+  --accent-text: #8A5A12;              /* amber text/links on paper (AA) */
+  --link:        #1E4FA0;
+  --correct:     #3D6B5A;
+  --correct-bg:  #E3EEE8;
+  --wrong:       #B4443A;
+  --wrong-bg:    #F6E2DF;
+  --note-bg:     #FBF0D9;              /* "In plain words" / worked example boxes */
+  --focus:       #1E4FA0;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:          #141C2E;
+    --surface:     #1B2540;
+    --surface-2:   #233052;
+    --border:      #2E3A5C;
+    --text:        #F3EBDD;
+    --text-muted:  #A9B0C0;
+    --accent:      #E5A945;
+    --accent-text: #F0BE6A;
+    --link:        #8DB4F5;
+    --correct:     #6FA88F;
+    --correct-bg:  #1F3A33;
+    --wrong:       #E07A6E;
+    --wrong-bg:    #43262A;
+    --note-bg:     #2A2A3A;
+    --focus:       #8DB4F5;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:          #141C2E;
+  --surface:     #1B2540;
+  --surface-2:   #233052;
+  --border:      #2E3A5C;
+  --text:        #F3EBDD;
+  --text-muted:  #A9B0C0;
+  --accent:      #E5A945;
+  --accent-text: #F0BE6A;
+  --link:        #8DB4F5;
+  --correct:     #6FA88F;
+  --correct-bg:  #1F3A33;
+  --wrong:       #E07A6E;
+  --wrong-bg:    #43262A;
+  --note-bg:     #2A2A3A;
+  --focus:       #8DB4F5;
+  color-scheme: dark;
+}
+
+/* Project additions, not in the brand kit. */
+:root {
+  /* Figures in lessons. Amber means "my place" only, so diagrams use these. */
+  --fig: #1E4FA0; --fig-soft: #DCE6F5;
+  --c1: #E8C98C; --c2: #E3AE9B; --c3: #AFCDB8; --c4: #B9C6E0;  /* dark text sits on all of them */
+  --font-math: "Cambria Math", "STIX Two Math", Georgia, serif;
+  --primary: var(--text); --on-primary: var(--bg);             /* main buttons: ink, never amber */
+  /* Names older remakes use in their own CSS, mapped onto this theme. */
+  --ink: var(--text); --muted: var(--text-muted); --faint: var(--text-muted);
+  --line: var(--border); --line-strong: var(--border); --sunken: var(--surface-2); --hover: var(--surface-2);
+  --code-bg: var(--surface-2); --ok: var(--correct); --ok-soft: var(--correct-bg); --hi: var(--wrong); --hi-soft: var(--wrong-bg);
+  --accent-soft: var(--fig-soft);
+  --f-display: var(--font-display); --f-body: var(--font-body); --f-mono: var(--font-mono); --f-math: var(--font-math);
+  --l0: #8FA8D3; --l1: #A9BDDF; --l2: #C2D1E8; --l3: #D9E3F1; --l4: #ECF1F8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --fig: #8DB4F5; --fig-soft: #233052; }
+}
+:root[data-theme="dark"] { --fig: #8DB4F5; --fig-soft: #233052; }
+/* /tokens */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:var(--text-md); line-height:var(--leading-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px var(--space-8); margin:0;
+}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--link);text-decoration:underline;text-underline-offset:2px}
+a,button,label,summary,input,select{touch-action:manipulation}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);padding:1px 5px;border-radius:var(--radius-sm)}
+.en{font-weight:600}
+.fr{color:var(--text-muted);font-style:italic;font-weight:400}
+sub,sup{line-height:0}
+.m{font-family:var(--font-math);font-style:italic}
+.ov{text-decoration:overline}
+.eq{font-family:var(--font-math);font-size:var(--text-md);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-4);margin:var(--space-3) 0;overflow-x:auto;white-space:pre}
+.res{display:inline-block;background:var(--correct-bg);color:var(--text);border-radius:var(--radius-sm);padding:1px 7px;font-weight:600;font-variant-numeric:tabular-nums}
+.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--radius-md);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.toggle svg{width:20px;height:20px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:var(--space-6);align-items:center;padding-bottom:var(--space-6)}
+.hero.solo{grid-template-columns:minmax(0,1fr)}
+.eyebrow{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+h1{font-family:var(--font-display);font-weight:600;font-variation-settings:"opsz" 72;font-size:clamp(1.875rem,4.4vw,var(--text-2xl));line-height:1.12;letter-spacing:-.01em;margin:var(--space-2) 0 var(--space-3);text-wrap:balance}
+.lead{font-size:var(--text-lg);line-height:1.4;color:var(--text-muted);max-width:var(--measure);margin:0 0 var(--space-4)}
+.how{display:grid;gap:var(--space-2);margin:0;padding:0;list-style:none;max-width:var(--measure)}
+.how li{display:flex;gap:var(--space-3);align-items:baseline;font-size:var(--text-sm)}
+.how .tag{flex:0 0 auto;min-width:10em}
+.pills{display:flex;flex-wrap:wrap;gap:var(--space-2);margin:0}
+.pill{background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:2px 10px;font:600 var(--text-xs) var(--font-body);font-variant-numeric:tabular-nums}
+.herofig{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);min-width:0;overflow-x:auto}
+.herofig svg{display:block;width:100%;height:auto;min-width:var(--minw,0)}
+.herofig figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2)}
+
+/* resume chip: the ribbon marks my place */
+.resume-chip{display:inline-flex;align-items:center;gap:var(--space-2);min-height:44px;margin:0 0 var(--space-5);padding:var(--space-2) var(--space-4) var(--space-2) var(--space-3);background:var(--note-bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:600 var(--text-sm)/1.3 var(--font-body);text-align:left;cursor:pointer}
+.resume-chip svg{flex-shrink:0;width:9px;height:22px}
+
+/* contents */
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--space-5);padding-block:var(--space-5) var(--space-2);border-top:1px solid var(--border)}
+.part h3{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted);margin:0 0 var(--space-2)}
+.part ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.part a{display:flex;gap:var(--space-3);text-decoration:none;color:var(--text);padding:var(--space-1) 0;font-size:var(--text-sm)}
+.part a small{display:block;color:var(--text-muted);font-size:var(--text-xs);line-height:1.35}
+.part .n{font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);min-width:1.6em}
+.part .sc{margin-left:auto;font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);white-space:nowrap}
+
+/* sections */
+.sec{margin-top:var(--space-7);padding-top:var(--space-6);border-top:1px solid var(--border);scroll-margin-top:var(--space-3)}
+.sec-h{display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap}
+.num{font:600 var(--text-xl)/1.15 var(--font-display);color:var(--text-muted)}
+.sec h2{font-family:var(--font-display);font-weight:600;font-size:var(--text-xl);line-height:1.15;margin:0;text-wrap:balance;min-width:0}
+.sec h2 .fr{font-family:var(--font-body);font-size:.6em}
+.sec h3{font-family:var(--font-display);font-weight:500;font-size:var(--text-lg);line-height:1.2;margin:var(--space-5) 0 var(--space-2)}
+.sec h3 .fr{font-family:var(--font-body);font-size:.75em}
+.sec>p,.sec>ul,.sec>ol{max-width:var(--measure)}
+.back{margin-left:auto;font-size:var(--text-xs);color:var(--text-muted);text-decoration:none}
+.secscore{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.tag{display:inline-block;font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);margin-top:var(--space-5)}
+.plain{margin-top:var(--space-5);background:var(--note-bg);border-left:3px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:var(--space-3) var(--space-4)}
+.intro .plain{margin-top:0;align-self:start}
+.plain p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+.defs{list-style:none;margin:var(--space-5) 0 0;padding:0;display:grid;gap:var(--space-3);min-width:0}
+.intro .defs{margin-top:0}
+.defs li{display:grid;gap:1px;font-size:var(--text-sm)}
+.defs .mean{color:var(--text-muted)}
+.defs .eg{color:var(--text-muted);font-size:var(--text-sm)}
+.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--text)}
+.callout{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.callout>b:first-child{color:var(--text)}
+.callout ol,.callout ul{margin:6px 0 2px;padding-left:22px}
+.callout li{margin:var(--space-1) 0}
+details.more{margin-top:var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4);background:var(--surface)}
+details.more summary{cursor:pointer;font-weight:600}
+
+/* figures */
+.figs{display:flex;flex-wrap:wrap;gap:var(--space-4);margin-top:var(--space-5)}
+.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3)}
+figure.fig{margin:var(--space-5) 0 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3);overflow-x:auto}
+figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-width:var(--maxw,560px);margin-inline:auto}
+figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2);line-height:1.45}
+
+/* worked example */
+.calc{margin-top:var(--space-5);background:var(--note-bg);border-radius:var(--radius-md);padding:var(--space-4)}
+.calc>.tag{color:var(--text)}
+.calc>p{margin:10px 0 0}
+.calc ol{margin:10px 0 0;padding-left:22px}
+.calc li{margin:var(--space-2) 0}
+.calc li>b:first-child{color:var(--text)}
+.calc figure.fig,.calc .figs figure{background:var(--surface)}
+.calc code{background:var(--surface)}
+ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
+ul.ln li::before{content:"\203A\00a0";color:var(--text-muted);font-weight:600}
+
+/* tables */
+.scroll{overflow-x:auto;margin-top:var(--space-3);max-width:100%}
+table.t{border-collapse:collapse;font:400 var(--text-sm)/1.45 var(--font-body);font-variant-numeric:tabular-nums;min-width:260px}
+table.t th{font-weight:600;text-align:left;color:var(--text-muted)}
+table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--border);vertical-align:top}
+table.t.mono{font-family:var(--font-mono);font-size:var(--text-xs)}
+table.t.mono th,table.t.mono td{white-space:nowrap}
+table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--border)}
+table.t.grid th{background:var(--surface-2);color:var(--text)}
+table.t .c,table.t.center th,table.t.center td{text-align:center}
+table.t.center .l{text-align:left}
+table.t td.ok{color:var(--correct);font-weight:600}
+table.t td.bad,table.t td.x{color:var(--wrong);font-weight:600}
+table.t tr.best td{background:var(--correct-bg);font-weight:600}
+
+/* notes and footer */
+.note{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.note.errata{background:var(--surface-2);border-color:transparent;color:var(--text-muted)}
+.note.errata>.tag{color:var(--text-muted)}
+.note ul,.note ol{margin:var(--space-2) 0 0;padding-left:1.2em;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+.foot{margin-top:var(--space-7);padding-top:var(--space-4);border-top:1px solid var(--border);font-size:var(--text-xs);color:var(--text-muted)}
+
+/* practice */
+.prog{display:flex;align-items:center;gap:var(--space-3);max-width:460px;margin-top:var(--space-4);font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.prog .track{flex:1;height:6px;border-radius:var(--radius-sm);background:var(--surface-2);overflow:hidden}
+.prog .fill{display:block;height:100%;width:0;background:var(--accent);transition:width var(--dur-med) var(--ease-out)}
+.legend{display:flex;gap:var(--space-2) var(--space-4);flex-wrap:wrap;margin-top:var(--space-4);font-size:var(--text-sm);color:var(--text-muted)}
+.setmeta{margin:6px 0 0;color:var(--text-muted);font-size:var(--text-sm)}
+.prob{margin-top:var(--space-4);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);scroll-margin-top:var(--space-3);transition:border-color var(--dur-med) var(--ease-out)}
+.prob.ok{border-color:var(--correct)}
+.prob.bad{border-color:var(--wrong)}
+.ph{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.pid{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.ph .pt{font:600 var(--text-md)/1.35 var(--font-body);margin:0;min-width:0;flex:1 1 16em}
+.lvl{font:600 var(--text-xs)/1 var(--font-body);padding:4px 8px;border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text-muted)}
+.lw,.ls,.lc{background:var(--surface-2);color:var(--text-muted)}
+.lc{color:var(--text)}
+.done{margin-left:auto;display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted);cursor:pointer}
+.done input{width:18px;height:18px;accent-color:var(--correct);cursor:pointer}
+.pq{margin-top:10px;max-width:var(--measure)}
+.pq>p,.prob>p{margin:10px 0 0}
+.parts{margin:var(--space-2) 0 0;padding-left:1.4em;display:grid;gap:var(--space-1)}
+.pfs{display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-3)}
+.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-3) var(--space-2)}
+.prob details{margin-top:var(--space-3)}
+.prob summary{cursor:pointer;display:inline-flex;align-items:center;gap:var(--space-2);font:600 var(--text-sm) var(--font-body);color:var(--text);padding:var(--space-1) var(--space-3) var(--space-1) var(--space-2);border-radius:var(--radius-sm);list-style:none}
+.prob summary::-webkit-details-marker{display:none}
+.prob summary::before{content:"\203A";font-size:1.2em;line-height:1;color:var(--text-muted);transition:transform var(--dur-fast) var(--ease-out)}
+.prob details[open]>summary::before{transform:rotate(90deg)}
+.sol{margin-top:var(--space-2);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4) var(--space-3);font-size:var(--text-sm)}
+.sol p{margin:10px 0 0;max-width:var(--measure)}
+.sol li>b:first-child{color:var(--text)}
+.sol .pfs figure,.sol .eq{background:var(--surface)}
+.sol code{background:var(--surface)}
+.aid{margin-top:var(--space-3);background:var(--surface-2);border-radius:var(--radius-sm);padding:10px var(--space-3);font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;overflow-x:auto}
+.aid>b:first-child{color:var(--text)}
+.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;font-variant-numeric:tabular-nums;text-align:center;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob textarea{width:100%;font:inherit;padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob select{font:inherit;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob input.ok,.prob select.ok{border-color:var(--correct);background:var(--correct-bg)}
+.prob input.bad,.prob select.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+table.t.inp td{padding:3px 6px 3px 0}
+.scalars{display:flex;flex-wrap:wrap;gap:var(--space-3) var(--space-4);margin:var(--space-3) 0 0}
+label.sc{display:flex;align-items:center;gap:var(--space-2)}
+label.sc>span{font-weight:600;min-width:34px}
+label.sc small{color:var(--text-muted);font-size:var(--text-xs)}
+.mc{display:grid;gap:var(--space-2);margin:var(--space-3) 0 0}
+label.opt{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--surface);transition:background var(--dur-fast) var(--ease-out),border-color var(--dur-med) var(--ease-out)}
+label.opt.ok{border-color:var(--correct);background:var(--correct-bg)}
+label.opt.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+label.opt.reveal{border-color:var(--correct)}
+/* correct and wrong are never colour alone */
+label.opt.ok::after{content:"\2713\00a0 Correct";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+label.opt.bad::after{content:"\2715\00a0Wrong";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.prob.ok>.ph::after{content:"\2713\00a0 Correct";font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+.prob.bad>.ph::after{content:"\2715\00a0Wrong";font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.fb.ok::before{content:"\2713\00a0"}
+.fb.bad::before{content:"\2715\00a0"}
+label.opt input{margin-top:6px;accent-color:var(--primary)}
+.chips-set{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+label.chipbox{position:relative;border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 12px;cursor:pointer;background:var(--surface);font-size:var(--text-sm)}
+label.chipbox:has(input:checked){border-color:var(--text);background:var(--text);color:var(--bg)}
+label.chipbox input{position:absolute;opacity:0;pointer-events:none}
+.chips-set.ok label.chipbox:has(input:checked){border-color:var(--correct);background:var(--correct-bg);color:var(--correct)}
+.chips-set.bad{outline:2px solid var(--wrong);outline-offset:3px;border-radius:var(--radius-sm)}
+.actions{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center;margin-top:var(--space-3)}
+.b{font:600 var(--text-sm) var(--font-body);min-height:36px;padding:6px var(--space-4);border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.b.chk{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.fb{font-size:var(--text-sm);font-weight:600}
+.fb.ok{color:var(--correct)} .fb.bad{color:var(--wrong)}
+.solution,.expl{margin-top:var(--space-3);border-top:1px solid var(--border);padding-top:10px;font-size:var(--text-sm)}
+.solution>p,.expl>p{margin:6px 0}
+.expl{color:var(--text-muted)}
+
+/* live figure: a process played step by step (REMAKE_BRIEF.md, "Live figures") */
+.live-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);align-items:start}
+figure.fig.live svg{max-width:none;max-height:72vh}
+.live-side{display:grid;gap:var(--space-3);min-width:0}
+.live-side .aid,.live-side .actions{margin-top:0}
+.live-val{display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap}
+.live-val b{font:600 var(--text-xl) var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.live input[type=range]{width:100%;margin:0;accent-color:var(--fig)}
+.live-status{min-height:4.4em;padding:var(--space-2) var(--space-3);background:var(--surface-2);border-left:3px solid var(--fig);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:var(--text-sm)}
+.live-status.ok{border-color:var(--correct);background:var(--correct-bg)}
+.live-status.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+.live-status.ok b{color:var(--correct)} .live-status.bad b{color:var(--wrong)}
+.live table.t{width:100%;min-width:0}
+.live tr.past td{color:var(--text-muted)}
+.live figcaption p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+/* the site zooms pages 125% / 150% on wide screens: keep the whole drawing on screen */
+@media (min-width:1200px){figure.fig.live svg{max-height:58vh}}
+@media (min-width:1500px){figure.fig.live svg{max-height:48vh}}
+
+@media (hover:hover){
+  .toggle:hover,.b:hover,label.opt:hover,.prob summary:hover{background:var(--surface-2)}
+  .b.chk:hover{background:var(--primary);opacity:.88}
+  .part a:hover,.back:hover{color:var(--link)}
+  label.opt.ok:hover{background:var(--correct-bg)} label.opt.bad:hover{background:var(--wrong-bg)}
+}
+@media (max-width:820px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .live-grid{grid-template-columns:minmax(0,1fr)}
+  figure.fig.live svg{max-height:60vh}
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .how li{flex-direction:column;gap:2px}
+  body{padding-top:56px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.toggle{display:none}body{background:#fff}}
+/* /study-hub:base */
+</style>
+<style>
+/* page-specific (PRAVAN ch 5). Tokens only; text on --c1..--c4 uses the dark brand ink. Prefix hp- */
+.hp text{font-family:var(--font-body);fill:var(--text);font-size:12px}
+.hp .mono{font-family:var(--font-mono);font-size:11px}
+.hp .tm{fill:var(--text-muted);font-size:11px}
+.hp .sm{font-size:10px}
+.hp .bd{font-weight:700}
+.hp .mid{text-anchor:middle}
+.hp .end{text-anchor:end}
+.hp .dk{fill:var(--brand-ink)}
+.hp .figt{fill:var(--fig)}
+.hp .okt{fill:var(--correct)}
+.hp .badt{fill:var(--wrong)}
+.hp .box{fill:var(--surface-2);stroke:var(--border)}
+.hp .pane{fill:var(--surface);stroke:var(--border)}
+.hp .soft{fill:var(--fig-soft);stroke:var(--fig)}
+.hp .c1{fill:var(--c1)} .hp .c2{fill:var(--c2)} .hp .c3{fill:var(--c3)} .hp .c4{fill:var(--c4)}
+.hp .now{fill:none;stroke:var(--wrong);stroke-width:2.4}
+.hp .ln{stroke:var(--text-muted);stroke-width:1.2;fill:none}
+.hp .ar{stroke:var(--fig);stroke-width:1.8;fill:none}
+.hp .arm{stroke:var(--text-muted);stroke-width:1.5;fill:none}
+.hp .dash{stroke-dasharray:5 4}
+.hp .hd{fill:var(--fig)}
+.hp .hdm{fill:var(--text-muted)}
+.hp .okl{stroke:var(--correct);stroke-width:2;fill:none}
+.hp .dim{opacity:.3}
+.hp-code{margin:10px 0 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-4);font:400 var(--text-xs)/1.65 var(--font-mono);overflow-x:auto;white-space:pre;color:var(--text);max-width:100%}
+.hp-code b{font-weight:700}
+.hp-ex{margin-top:var(--space-4);background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);font-size:var(--text-sm)}
+.hp-ex>b:first-child{display:block;font-size:var(--text-xs);color:var(--text-muted);margin-bottom:2px}
+.hp-ex p{margin:var(--space-1) 0 0}
+.hp-steps{margin:10px 0 0;padding-left:1.4em;display:grid;gap:var(--space-2)}
+.hp-steps li>b:first-child{color:var(--text)}
+.hp-steps li,.hp-ex p,.calc ul.ln li{overflow-wrap:anywhere}
+.hp-h{margin:var(--space-4) 0 0;font-weight:600;font-size:var(--text-sm)}
+.calc .scroll table.t,.calc table.t{background:transparent}
+.hp-explain td:first-child{font-family:var(--font-mono);font-size:var(--text-xs);white-space:nowrap}
+.hp-ok{color:var(--correct);font-weight:600}
+.hp-bad{color:var(--wrong);font-weight:600}
+.hp-demo{margin-top:var(--space-3);display:grid;gap:var(--space-2);max-width:var(--measure)}
+.hp-demo label{display:flex;gap:var(--space-3);align-items:center;font-size:var(--text-sm);flex-wrap:wrap}
+.hp-demo input{font:inherit;padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text)}
+.hp-demo output{font:400 var(--text-xs) var(--font-mono);color:var(--text-muted)}
+</style>
+</head>
+<body>
+<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/></svg></button>
+<div class="wrap">
+
+<header class="hero" id="top">
+  <div>
+    <div class="eyebrow">PRAVAN · Chapter 5 · Lesson</div>
+    <h1>Dynamic sites: HTTP and HTML forms</h1>
+    <p class="lead">Why some code has to run on a server, how a browser and a server talk to each other (HTTP), how a form sends what you typed, and how to run a web server on your own PC. <span class="fr">(Site dynamique : programmation côté serveur, HTTP, formulaires)</span></p>
+    <ul class="how">
+      <li><span class="tag">In plain words</span><span>Each section starts with the idea in everyday language.</span></li>
+      <li><span class="tag">Keywords</span><span><b class="en">request</b> <span class="fr">(requête)</span>: English first, the course's French after.</span></li>
+      <li><span class="tag">Worked example</span><span>The course's examples, redone. Every request, answer and number was produced by running real code (a Chromium browser and small Python servers).</span></li>
+    </ul>
+  </div>
+  <figure class="herofig"><svg class="hp" viewBox="0 0 340 200" role="img" aria-label="A browser sends an HTTP request to a web server and gets an HTTP response back"><defs><marker id="h-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><rect x="10" y="60" width="100" height="80" rx="8" class="c4"/><text x="60" y="96.5" class="mid dk ">Browser</text><text x="60" y="111.5" class="mid dk tm">the client</text><rect x="230" y="60" width="100" height="80" rx="8" class="c3"/><text x="280" y="96.5" class="mid dk ">Web server</text><text x="280" y="111.5" class="mid dk tm">runs your code</text><line x1="112" y1="82" x2="226" y2="82" class="ar" marker-end="url(#h-ah)"/><text x="170" y="72" class="mid mono">GET /index.html</text><text x="170" y="98" class="mid tm">HTTP request</text><line x1="228" y1="122" x2="114" y2="122" class="ar" marker-end="url(#h-ah)"/><text x="170" y="140" class="mid mono">HTTP/1.1 200 OK</text><text x="170" y="156" class="mid tm">HTTP response + page</text><text x="170" y="30" class="mid tm">the same two messages, every time</text><text x="170" y="190" class="mid tm">a form is just a way to fill the request</text></svg><figcaption>The whole chapter in one picture: the browser asks, the server answers.</figcaption></figure>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <div class="part"><h3>A · Why a server</h3><ul>
+    <li><a href="#s1"><span class="n">1</span><span>Static and interactive sites<small>the people app from TP3</small></span></a></li>
+    <li><a href="#s2"><span class="n">2</span><span>Two risks of browser-only code<small>security and performance</small></span></a></li>
+    <li><a href="#s3"><span class="n">3</span><span>Dynamic pages<small>the server builds the HTML</small></span></a></li>
+  </ul></div>
+  <div class="part"><h3>B · How browser and server talk</h3><ul>
+    <li><a href="#s4"><span class="n">4</span><span>Programs, IP addresses and ports<small>client and server</small></span></a></li>
+    <li><a href="#s5"><span class="n">5</span><span>The HTTP request<small>header, body, methods</small></span></a></li>
+    <li><a href="#s6"><span class="n">6</span><span>The HTTP response<small>status codes</small></span></a></li>
+  </ul></div>
+  <div class="part"><h3>C · Sending data with forms</h3><ul>
+    <li><a href="#s7"><span class="n">7</span><span>Form fields<small>text, choices, files</small></span></a></li>
+    <li><a href="#s8"><span class="n">8</span><span>The form element<small>action, method, name</small></span></a></li>
+  </ul></div>
+  <div class="part"><h3>D · Bonus: Apache on your PC</h3><ul>
+    <li><a href="#s9"><span class="n">9</span><span>Install, start, deploy<small>localhost and htdocs</small></span></a></li>
+    <li><a href="#s10"><span class="n">10</span><span>A virtual host<small>a real-looking domain name</small></span></a></li>
+    <li><a href="#notes"><span class="n">&middot;</span><span>Notes on the original course</span></a></li>
+  </ul></div>
+</nav>
+
+<section class="sec" id="s1">
+  <div class="sec-h"><span class="num">1</span><h2>Static and interactive sites <span class="fr">(site statique, site interactif)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>A <b>static site</b> is a set of fixed files (HTML for the content, CSS for the look) stored on a server. The server hands out the same files to everyone. JavaScript can make such a site <b>interactive</b>: once the files have arrived, a script in the browser reacts to your clicks and changes the page. All of that happens on your own computer, and nothing goes back to the server.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">static site</b> <span class="fr">(site statique)</span></span><span class="mean">a site whose pages are fixed files: everyone gets exactly the same page.</span></li><li><span class="term"><b class="en">client side</b> <span class="fr">(côté client)</span></span><span class="mean">on the user's machine, inside the browser. The browser is called the <b>client</b> because it is the one asking for things.</span></li><li><span class="term"><b class="en">server side</b> <span class="fr">(côté serveur)</span></span><span class="mean">on the machine that stores and sends the site.</span></li><li><span class="term"><b class="en">interactivity</b> <span class="fr">(interactivité)</span></span><span class="mean">the page reacts to the user (a click shows, hides or changes something) without asking the server.</span><span class="eg">a click on Ajouter adds a row</span></li><li><span class="term"><b class="en">DOM</b> <span class="fr">(DOM)</span></span><span class="mean">Document Object Model: the browser's live, in-memory copy of the page. JavaScript changes the page by changing the DOM. The file on the server stays the same.</span></li><li><span class="term"><b class="en">developer tools</b> <span class="fr">(outils de développement)</span></span><span class="mean">the browser panel (F12) that shows the page's code, the files downloaded (Network tab) and the console.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="hp" viewBox="0 0 560 210" role="img" aria-label="The server sends three files once; after that, clicks are handled by script.js inside the browser"><defs><marker id="f1-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><defs><marker id="f1-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdm"/></marker></defs><rect x="10" y="40" width="150" height="130" rx="8" class="c3"/><text x="85" y="62" class="mid dk bd">Web server</text><rect x="30" y="76" width="110" height="22" rx="8" class="pane"/><text x="85" y="91" class="mid mono">index.html</text><rect x="30" y="104" width="110" height="22" rx="8" class="pane"/><text x="85" y="119" class="mid mono">style.css</text><rect x="30" y="132" width="110" height="22" rx="8" class="pane"/><text x="85" y="147" class="mid mono">script.js</text><line x1="162" y1="70" x2="318" y2="70" class="ar" marker-end="url(#f1-ah)"/><text x="240" y="62" class="mid tm">1. request: give me the page</text><line x1="318" y1="112" x2="162" y2="112" class="ar" marker-end="url(#f1-ah)"/><text x="240" y="104" class="mid tm">2. response: the 3 files</text><rect x="320" y="30" width="230" height="160" rx="8" class="c4"/><text x="435" y="52" class="mid dk bd">Browser (client side)</text><rect x="335" y="66" width="200" height="34" rx="8" class="pane"/><text x="435" y="87" class="mid ">page shown: HTML + CSS</text><rect x="335" y="140" width="200" height="34" rx="8" class="pane"/><text x="435" y="161" class="mid ">script.js reacts to clicks</text><path d="M 395 102 C 375 115, 375 128, 395 138" class="arm" marker-end="url(#f1-am)"/><text x="380" y="124" class="end tm">click</text><path d="M 475 138 C 495 128, 495 115, 475 102" class="arm" marker-end="url(#f1-am)"/><text x="492" y="124" class="tm">page</text><text x="492" y="136" class="tm">changes</text><text x="240" y="196" class="mid tm">3. after this, the server is not asked again</text></svg><figcaption>A static, interactive site. The server only sends files. Everything after that (adding a row, deleting one) runs in the browser, on the copy of the page held in memory.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="hp-ex"><b>The example: the people app (from TP3)</b>
+<p>One web page with: a table of people, each row with a number, a last name <i>(Nom)</i>, a first name <i>(Prénom)</i>, a points value and a tick box; a summary line under the table (number of rows, total points); a small form with three boxes (Nom, Prénom, Points); and three buttons: <b>Ajouter</b> (add the typed person), <b>Supprimer</b> (delete the ticked rows), <b>Console Tableau</b> (print the table in the browser console).</p>
+<p>It starts with 3 people: nom1 prenom1 5 points, nom2 prenom2 10 points, nom3 prenom3 15 points.</p></div>
+<ol class="hp-steps">
+  <li><b>What the browser got.</b> In the developer tools (<i>outils de développement</i>, the panel that opens with F12), the <b>Network</b> tab lists every file the browser downloaded: the HTML file, the CSS file and the JavaScript file <code>script.js</code>. Clicking <code>script.js</code> and opening its <b>Preview</b> tab shows its full code. Anyone can do this, on any site.</li>
+  <li><b>What a click does.</b> Clicking <b>Ajouter</b> runs a function in <code>script.js</code> that adds a new <code>&lt;tr&gt;</code> (table row) to the <b>DOM</b> and recomputes the summary. With the 3 starting people the summary reads <b>3 rows, total 30 points</b> (5 + 10 + 15).</li>
+  <li><b>What a refresh does.</b> Pressing F5 asks the server for the page again. The server still has the original file with 3 people, so any added person is gone. Nothing was ever sent to the server.</li>
+</ol>
+<p>For TP3 that was fine. The next section asks what happens when we want more than that.</p>
+  </div>
+</section>
+
+<section class="sec" id="s2">
+  <div class="sec-h"><span class="num">2</span><h2>Two risks of browser-only code <span class="fr">(les deux risques)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Everything the browser runs, the visitor can read: the server had to send it to them. So code that holds secrets (a database password) must never be in <code>script.js</code>. And everything the browser runs uses the visitor's machine, which may be weak. So heavy calculations do not belong there either. The fix for both: keep that code on the server.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">business code</b> <span class="fr">(code métier)</span></span><span class="mean">the code that does the real work of the application: talking to the database, calculations, rules. Here, the code that is sensitive or heavy.</span><span class="eg">connect to BD_Persons and insert a row</span></li><li><span class="term"><b class="en">database</b> <span class="fr">(base de données (BD))</span></span><span class="mean">a program that stores data in tables and keeps it after the page is closed. Usually protected by a password.</span><span class="eg">BD_Persons, table Persons</span></li><li><span class="term"><b class="en">security risk</b> <span class="fr">(risque lié à la sécurité)</span></span><span class="mean">secrets in browser code are readable by anyone, and can be used to damage the data.</span></li><li><span class="term"><b class="en">performance risk</b> <span class="fr">(risque lié à la performance)</span></span><span class="mean">heavy code in the browser can be slow or freeze on a small device.</span></li><li><span class="term"><b class="en">CPU, RAM</b> <span class="fr">(processeur, mémoire vive)</span></span><span class="mean">the processor that does the calculations and the working memory that holds data while a program runs.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="hp" viewBox="0 0 560 230" role="img" aria-label="Two scenarios: database password visible in script.js, and a heavy forecast running on a small phone"><rect x="10" y="10" width="265" height="210" rx="8" class="pane"/><text x="142" y="32" class="mid bd">Scenario 1: a database</text><rect x="25" y="44" width="235" height="62" rx="8" class="c4"/><text x="142" y="62" class="mid dk tm">script.js (sent to every visitor)</text><text x="40" y="80" class="mono dk">db.connect("BD_Persons",</text><text x="48" y="96" class="mono dk">"admin", "S3cret!")</text><rect x="112" y="84" width="72" height="17" rx="4" class="now"/><text x="142" y="128" class="mid mono">F12 → Network → script.js</text><text x="142" y="146" class="mid tm">shows this code to anyone</text><rect x="25" y="160" width="235" height="46" rx="8" class="c2"/><text x="142.5" y="179.5" class="mid dk ">Risk 1: security</text><text x="142.5" y="194.5" class="mid dk tm">password and database layout leak</text><rect x="285" y="10" width="265" height="210" rx="8" class="pane"/><text x="417" y="32" class="mid bd">Scenario 2: a heavy forecast</text><rect x="300" y="44" width="235" height="62" rx="8" class="c4"/><text x="417.5" y="71.5" class="mid dk ">Prévision button</text><text x="417.5" y="86.5" class="mid dk tm">millions of operations</text><rect x="330" y="116" width="40" height="34" rx="5" class="box"/><text x="350" y="137" class="mid sm">CPU</text><rect x="380" y="116" width="40" height="34" rx="5" class="box"/><text x="400" y="137" class="mid sm">RAM</text><text x="430" y="130" class="tm">a phone's</text><text x="430" y="144" class="tm">small resources</text><rect x="300" y="160" width="235" height="46" rx="8" class="c2"/><text x="417.5" y="179.5" class="mid dk ">Risk 2: performance</text><text x="417.5" y="194.5" class="mid dk tm">slow or frozen on weak devices</text></svg><figcaption>Both scenarios start from the people app. On the left, the code that connects to the database ships to every visitor (the red box: the password). On the right, a heavy calculation runs on whatever device the visitor has.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="hp-ex"><b>The example: the people app (from TP3)</b>
+<p>One web page with: a table of people, each row with a number, a last name <i>(Nom)</i>, a first name <i>(Prénom)</i>, a points value and a tick box; a summary line under the table (number of rows, total points); a small form with three boxes (Nom, Prénom, Points); and three buttons: <b>Ajouter</b> (add the typed person), <b>Supprimer</b> (delete the ticked rows), <b>Console Tableau</b> (print the table in the browser console).</p>
+<p>It starts with 3 people: nom1 prenom1 5 points, nom2 prenom2 10 points, nom3 prenom3 15 points.</p></div>
+<p class="hp-h">Scenario 1: add a button <b>Enregistrer</b> (Save)</p>
+<p>Clicking it should store the people in a database called <code>BD_Persons</code>, protected by a password, then reload them from it. Suppose we write that in <code>script.js</code>. This is an invented sketch, only to show the problem:</p>
+<pre class="hp-code">// script.js  (downloaded by every visitor)
+const db = connect("BD_Persons", "admin", "S3cret!");   // password in plain text
+db.insert("Persons", { nom: "nom4", prenom: "prenom4", points: 20 });</pre><div class="scroll"><table class="t hp-explain"><thead><tr><th>Line</th><th>What it does</th></tr></thead><tbody><tr><td>line 2</td><td>opens the database: name, user, password. All three are now visible to anyone who opens the file with F12.</td></tr><tr><td>line 3</td><td>writes a person into table <code>Persons</code>. A visitor who copies this line can write (or delete) anything they want.</td></tr></tbody></table></div>
+<p class="hp-h">Scenario 2: add a button <b>Prévision</b> (Forecast)</p>
+<p>Clicking it should run a long calculation that predicts each person's chance of passing an exam from their points. In <code>script.js</code>, it would run on the visitor's own processor (<b>CPU</b>) and memory (<b>RAM</b>), which may be a cheap phone.</p>
+<p class="hp-h">The answer</p>
+<p>Both risks disappear if this <b>business code</b> runs on the server instead: the visitor never receives it, and it uses the server's CPU and RAM. Section 3 shows how.</p>
+  </div>
+</section>
+
+<section class="sec" id="s3">
+  <div class="sec-h"><span class="num">3</span><h2>Dynamic pages <span class="fr">(pages dynamiques)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>On a <b>dynamic site</b>, the page is not a file sitting on the server. A program on the server writes it at the moment you ask for it, using information it only knows then: what is in the database, the time, your name, what you typed in a form. The browser still receives ordinary HTML, CSS and JavaScript. It cannot tell, and cannot see, the program that wrote it.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">dynamic site</b> <span class="fr">(site dynamique)</span></span><span class="mean">a site whose pages are built by a program on the server for each visit, so their content can change.</span><span class="eg">the list of people read from BD_Persons</span></li><li><span class="term"><b class="en">dynamically generated page</b> <span class="fr">(page générée dynamiquement)</span></span><span class="mean">an HTML page written by server code at request time.</span></li><li><span class="term"><b class="en">server-side language</b> <span class="fr">(langage côté serveur)</span></span><span class="mean">the language of the program that builds the pages. The course names PHP, Java, .NET and Python; the next part uses Python with <b>Flask</b> (a small library for writing web servers).</span></li><li><span class="term"><b class="en">server-side interactivity</b> <span class="fr">(interactivité côté serveur)</span></span><span class="mean">the page reacts to the user because the server sent back a different page.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="hp" viewBox="0 0 560 230" role="img" aria-label="Save is clicked, data goes to the server, the server writes and reads the database, builds the HTML and sends it back"><defs><marker id="f3-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><rect x="10" y="150" width="140" height="60" rx="8" class="c4"/><text x="80" y="176.5" class="mid dk ">Browser</text><text x="80" y="191.5" class="mid dk tm">button Enregistrer</text><rect x="210" y="20" width="140" height="70" rx="8" class="c3"/><text x="280" y="44" class="mid dk ">Web server</text><text x="280" y="59" class="mid dk tm">runs the business code</text><text x="280" y="74" class="mid dk tm">(hidden from visitors)</text><rect x="410" y="20" width="140" height="70" rx="8" class="c1"/><text x="480" y="51.5" class="mid dk ">BD_Persons</text><text x="480" y="66.5" class="mid dk tm">table Persons</text><line x1="70" y1="148" x2="230" y2="92" class="ar" marker-end="url(#f3-ah)"/><text x="108" y="112" class="end tm">1-2. click, data sent</text><line x1="352" y1="46" x2="406" y2="46" class="ar" marker-end="url(#f3-ah)"/><text x="380" y="38" class="mid tm">3. write</text><line x1="406" y1="70" x2="352" y2="70" class="ar" marker-end="url(#f3-ah)"/><text x="380" y="84" class="mid tm">4. read</text><line x1="290" y1="92" x2="152" y2="182" class="ar" marker-end="url(#f3-ah)"/><text x="250" y="160" class="tm">5. HTML page built</text><text x="250" y="175" class="tm">from the data, sent back</text><rect x="410" y="120" width="140" height="90" rx="8" class="pane"/><text x="480" y="146.5" class="mid ">What F12 shows</text><text x="480" y="161.5" class="mid tm">only the finished page,</text><text x="480" y="176.5" class="mid tm">never the code that</text><text x="480" y="191.5" class="mid tm">built it</text></svg><figcaption>Save in a dynamic site. Steps 3 and 4 run on the server, out of the visitor's reach. Only the page built in step 5 travels to the browser.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="hp-ex"><b>The example: Save in the people app</b>
+<p>The people app (a table of people with Nom, Prénom, Points, and an <b>Enregistrer</b> button) now stores its data in a database <code>BD_Persons</code>. Its table <code>Persons</code> holds 7 people: Nom-1 to Nom-7, Prénom-1 to Prénom-7, with points 15, 14, 9, 10, 12, 13, 15.</p></div>
+<ol class="hp-steps">
+  <li><b>Click.</b> The user clicks <b>Enregistrer</b>.</li>
+  <li><b>Send.</b> The browser sends the typed data to the server (sections 5 and 8 show exactly how).</li>
+  <li><b>Write.</b> The server runs the business code: it connects to <code>BD_Persons</code> with its password and inserts the data.</li>
+  <li><b>Read and build.</b> The server reads table <code>Persons</code> back and writes an HTML page with one <code>&lt;tr&gt;</code> per person.</li>
+  <li><b>Answer.</b> It sends that page. In F12 the visitor sees only the finished table. Risk 1 (security) is solved. For <b>Prévision</b>, the heavy calculation runs on the server's CPU and RAM. Risk 2 (performance) is solved.</li>
+</ol>
+<p class="hp-h">Step 4 as pseudo-code</p><pre class="hp-code">rows ← read every row of table Persons
+html ← "&lt;table&gt;" + header row
+k ← 1
+for each person p in rows:
+    html ← html + "&lt;tr&gt;&lt;td&gt;" + k + "&lt;/td&gt;&lt;td&gt;" + p.nom + "&lt;/td&gt;&lt;td&gt;" + p.prenom + "&lt;/td&gt;&lt;td&gt;" + p.points + "&lt;/td&gt;&lt;/tr&gt;"
+    k ← k + 1
+html ← html + "&lt;/table&gt;"
+send html to the browser</pre><div class="scroll"><table class="t hp-explain"><thead><tr><th>Line</th><th>What it does</th></tr></thead><tbody><tr><td>line 1</td><td>asks the database for all rows of <code>Persons</code>. Here that gives 7 rows.</td></tr><tr><td>line 2</td><td>starts the text of the page: the opening <code>&lt;table&gt;</code> tag and the header row (N°, Nom, Prénom, Points, Select).</td></tr><tr><td>line 3</td><td><code>k</code> is the row number shown in the first column.</td></tr><tr><td>lines 4-6</td><td>repeats once per person: glues the person's values between HTML tags to make one table row, then adds 1 to <code>k</code>. With 7 people, it runs 7 times and makes 7 rows.</td></tr><tr><td>line 7</td><td>closes the table.</td></tr><tr><td>line 8</td><td>the text is sent as the body of the answer. The browser displays it like any HTML file.</td></tr></tbody></table></div>
+<p>Run on the course's table, this makes <b>7 rows</b> with <b>88 points</b> in total (15 + 14 + 9 + 10 + 12 + 13 + 15). Add an eighth person to the database and the next visit gets 8 rows, with no change to any file: that is what <b>dynamic</b> means.</p>
+
+  <figure class="fig live" id="lf1">
+    <div class="live-grid">
+      <svg class="hp" id="lf1-svg" viewBox="0 0 520 262" role="img" aria-label="The server reads table Persons one row at a time and writes one table row of HTML for each"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf1-val">0 / 0</b></div>
+        <div class="actions"><button class="b chk" id="lf1-play" type="button">Play</button><button class="b" id="lf1-step" type="button">Step</button><button class="b" id="lf1-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf1-range">Drag to any step</label>
+        <input id="lf1-range" type="range" min="0" max="0" step="1" value="0">
+        <div class="live-status" id="lf1-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>#</th><th>Nom</th><th>Points</th><th>Running total</th></tr></thead><tbody id="lf1-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p><b>Watch</b> the red frame move down the database while the HTML on the right grows by one <code>&lt;tr&gt;</code> each time. It works because the loop does not know how many rows there will be: it just repeats until the table runs out, so the page always matches the database at the moment of the visit.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf1-"+id);};
+    var SVG=$("svg"),ROWS=$("rows"),SPEED=1300;
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function R(x,y,w,h,c,r){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(r==null?6:r)+'" class="'+c+'"/>';}
+    function T(x,y,s,c){return '<text x="'+x+'" y="'+y+'" class="'+(c||"")+'">'+s+'</text>';}
+    function L(x1,y1,x2,y2,c,m){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" class="'+c+'"'+(m?' marker-end="url(#'+m+')"':'')+'/>';}
+    function E(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+    // the course's table Persons (slide 38)
+    var DB=[["Nom-1","Prénom-1",15],["Nom-2","Prénom-2",14],["Nom-3","Prénom-3",9],["Nom-4","Prénom-4",10],["Nom-5","Prénom-5",12],["Nom-6","Prénom-6",13],["Nom-7","Prénom-7",15]];
+    var STEPS=[],total=0,html=["<table>","  <tr><th>N°</th><th>Nom</th>…</tr>"];
+    STEPS.push({row:-1,lines:html.slice(),total:0,sent:false,text:"The server reads table <b>Persons</b>: it gets "+DB.length+" rows. It starts the page with <code>&lt;table&gt;</code> and the header row."});
+    DB.forEach(function(r,k){
+      total+=r[2];
+      html.push("  <tr><td>"+(k+1)+"</td><td>"+r[0]+"</td>…<td>"+r[2]+"</td></tr>");
+      STEPS.push({row:k,lines:html.slice(),total:total,sent:false,text:"Row "+(k+1)+" of the database: <b>"+r[0]+", "+r[1]+", "+r[2]+" points</b>. The loop writes one more <code>&lt;tr&gt;</code>. Rows so far: "+(k+1)+", total points: "+total+"."});
+    });
+    html.push("</table>");
+    STEPS.push({row:DB.length,lines:html.slice(),total:total,sent:true,end:true,text:"No rows left. The server closes <code>&lt;/table&gt;</code> and sends the page: <b>"+DB.length+" rows, "+total+" points</b>. The browser receives plain HTML, not the loop."});
+    function paint(s){
+      var o='<defs><marker id="lf1-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="lf1-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdm"/></marker></defs>';
+      o+=T(95,18,"BD_Persons · table Persons","mid bd");
+      DB.forEach(function(r,k){var y=28+k*24,c=k<s.row||s.sent?"c3":(k===s.row?"soft":"box");
+        o+=R(10,y,170,20,c,3)+T(18,y+14,r[0],c==="c3"?"dk":"")+T(80,y+14,r[1],c==="c3"?"dk":"")+T(172,y+14,r[2],"end"+(c==="c3"?" dk":""));
+        if(k===s.row)o+=R(8,y-2,174,24,"now",4);});
+      o+=L(186,110,224,110,"ar",s.row>=0?"lf1-ah":"");
+      o+=R(228,8,282,214,"pane",6)+T(369,24,"HTML being written by the server","mid tm");
+      s.lines.forEach(function(l,k){o+=T(234,42+k*17,E(l.trim()),"mono sm"+(k===s.lines.length-1&&!s.sent?" figt":""));});
+      o+=R(228,232,282,26,s.sent?"c4":"box",6)+T(369,249,s.sent?"→ sent to the browser":"browser waiting…","mid"+(s.sent?" dk bd":" tm"));
+      SVG.innerHTML=o;
+      var t="";DB.forEach(function(r,k){if(k<=s.row||s.sent){var run=0;for(var j=0;j<=k;j++)run+=DB[j][2];t+="<tr"+(k<s.row||s.sent?' class="past"':"")+"><td>"+(k+1)+"</td><td>"+r[0]+"</td><td>"+r[2]+"</td><td>"+run+"</td></tr>";}});
+      ROWS.innerHTML=t||'<tr><td colspan="4">no rows yet</td></tr>';
+    }
+
+    function draw(){
+      var s=STEPS[i];
+      paint(s,i);
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);  // replay from the start
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},SPEED);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+
+  </div>
+</section>
+
+<section class="sec" id="s4">
+  <div class="sec-h"><span class="num">4</span><h2>Programs, IP addresses and ports <span class="fr">(adresse IP, port, client, serveur)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>A browser and a web server are just two programs on two computers. For one program to reach another across a network, it needs two numbers: the <b>IP address</b>, which finds the computer, and the <b>port</b>, which finds the program on that computer. Think of a block of flats: the street address gets you to the building, the flat number gets you to the right door.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">IP address</b> <span class="fr">(adresse IP)</span></span><span class="mean">the number that identifies a computer on a network.</span><span class="eg">93.140.10.40</span></li><li><span class="term"><b class="en">port</b> <span class="fr">(port)</span></span><span class="mean">a number (0 to 65535) that a waiting program reserves on its computer, so that incoming requests can be handed to it. One port, one program.</span><span class="eg">1025; 80 for a web server</span></li><li><span class="term"><b class="en">to listen</b> <span class="fr">(être à l'écoute)</span></span><span class="mean">to wait on a port for requests to arrive. Being started is not enough: the program must be listening.</span></li><li><span class="term"><b class="en">server (logical)</b> <span class="fr">(serveur logique)</span></span><span class="mean">the <b>program</b> that waits for requests and answers them.</span><span class="eg">P1, Apache</span></li><li><span class="term"><b class="en">server (physical)</b> <span class="fr">(serveur physique)</span></span><span class="mean">the <b>machine</b> that runs that program.</span><span class="eg">Machine 1</span></li><li><span class="term"><b class="en">client</b> <span class="fr">(client)</span></span><span class="mean">the program that sends requests.</span><span class="eg">P2, the browser</span></li><li><span class="term"><b class="en">socket</b> <span class="fr">(socket TCP/IP)</span></span><span class="mean">the connection point a program opens on a port, used to send and receive data over the network.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="hp" viewBox="0 0 560 240" role="img" aria-label="Machine 2 runs P2; Machine 1 runs P1, P12, P13, P14, each with its own port; P2 reaches P1 at 93.140.10.40:1025"><defs><marker id="f4-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><rect x="10" y="60" width="150" height="120" rx="8" class="c4"/><text x="85" y="82" class="mid dk bd">Machine 2</text><text x="85" y="98" class="mid dk mono">ip = 173.160.10.3</text><rect x="35" y="116" width="100" height="40" rx="8" class="pane"/><text x="85" y="132.5" class="mid ">P2</text><text x="85" y="147.5" class="mid sm">the client</text><rect x="330" y="10" width="220" height="220" rx="8" class="c3"/><text x="440" y="32" class="mid dk bd">Machine 1</text><text x="440" y="48" class="mid dk mono">ip = 93.140.10.40</text><rect x="350" y="62" width="110" height="30" rx="8" class="pane"/><text x="405" y="81" class="mid ">P12</text><text x="470" y="82" class="mono dk">port 2000</text><rect x="350" y="102" width="110" height="30" rx="8" class="pane"/><text x="405" y="121" class="mid ">P13</text><text x="470" y="122" class="mono dk">port 3000</text><rect x="350" y="142" width="110" height="30" rx="8" class="pane"/><text x="405" y="161" class="mid ">P14</text><text x="470" y="162" class="mono dk">port 4000</text><rect x="350" y="182" width="110" height="30" rx="8" class="soft"/><text x="405" y="201" class="mid ">P1</text><text x="470" y="202" class="mono dk">port 1025</text><line x1="137" y1="136" x2="346" y2="196" class="ar" marker-end="url(#f4-ah)"/><text x="250" y="138" class="mid mono bd">93.140.10.40:1025</text><text x="220" y="196" class="mid tm">IP picks the machine,</text><text x="220" y="210" class="mid tm">port picks the program</text><text x="440" y="222" class="mid dk sm">P1 = the server (logical)</text></svg><figcaption>Two machines. The IP address 93.140.10.40 reaches Machine 1; the port 1025 picks P1 among the programs running there.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="hp-ex"><b>The example: P2 wants documents stored on another machine</b>
+<p>Machine 1 (IP address <code>93.140.10.40</code>) stores documents. Several programs run on it: P1, P12, P13, P14. Machine 2 (IP address <code>173.160.10.3</code>) runs a program P2 that wants those documents. We start a program P1 on Machine 1 whose job is to hand them out. P1 listens on port <code>1025</code>. (The course writes the other ports as "port2", "port3", "port14"; here they get made-up numbers 2000, 3000, 4000.)</p></div>
+<ol class="hp-steps">
+  <li><b>What P1 must do.</b> Stay running all the time (it cannot know when P2 will ask), <b>listen</b> on its port, and answer each request.</li>
+  <li><b>Is the IP address enough?</b> No. <code>93.140.10.40</code> gets the request to Machine 1, but Machine 1 runs four programs and would not know which one it is for.</li>
+  <li><b>Add the port.</b> P2 uses <code>93.140.10.40:1025</code>: the part before the colon picks the machine, the part after picks the program.</li>
+  <li><b>Checked for real.</b> A small program listening on port 1025 of this computer was sent <code>doc1.pdf</code> and answered <code>P1 here, you asked for: doc1.pdf</code>. The same request to port 1026, where nothing listens, failed with <code>ConnectionRefusedError</code>: a wrong port reaches nobody.</li>
+  <li><b>Names.</b> P1, which waits and answers, is the <b>server</b>. P2, which asks, is the <b>client</b>. In web development the server is the <b>web server</b>, usually on port 80 (or 8080), and the client is the <b>browser</b>.</li>
+</ol>
+  <figure class="fig live" id="lf2">
+    <div class="live-grid">
+      <svg class="hp" id="lf2-svg" viewBox="0 0 520 270" role="img" aria-label="P2 uses the address 93.140.10.40:1025: first the IP selects Machine 1, then the port selects P1"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf2-val">0 / 0</b></div>
+        <div class="actions"><button class="b chk" id="lf2-play" type="button">Play</button><button class="b" id="lf2-step" type="button">Step</button><button class="b" id="lf2-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf2-range">Drag to any step</label>
+        <input id="lf2-range" type="range" min="0" max="0" step="1" value="0">
+        <div class="live-status" id="lf2-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>Check</th><th>Candidate</th><th>Result</th></tr></thead><tbody id="lf2-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p><b>Watch</b> the address being used in two stages: the IP address is compared with each machine, then the port with each program on Machine 1. It works because no two machines share an IP address and no two listening programs on one machine share a port, so the pair points to exactly one program.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf2-"+id);};
+    var SVG=$("svg"),ROWS=$("rows"),SPEED=1300;
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function R(x,y,w,h,c,r){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(r==null?6:r)+'" class="'+c+'"/>';}
+    function T(x,y,s,c){return '<text x="'+x+'" y="'+y+'" class="'+(c||"")+'">'+s+'</text>';}
+    function L(x1,y1,x2,y2,c,m){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" class="'+c+'"'+(m?' marker-end="url(#'+m+')"':'')+'/>';}
+    function E(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+    var MACHINES=[{name:"Machine 2",ip:"173.160.10.3",progs:[["P2",null]]},{name:"Machine 1",ip:"93.140.10.40",progs:[["P12",2000],["P13",3000],["P14",4000],["P1",1025]]}];
+    var ADDR="93.140.10.40:1025",ASK="doc1.pdf";
+    var ip=ADDR.split(":")[0],port=+ADDR.split(":")[1],STEPS=[];
+    STEPS.push({m:-1,p:-1,phase:0,text:"P2 (on Machine 2) wants a document from P1. All it has is the address <b>"+ADDR+"</b>."});
+    STEPS.push({m:-1,p:-1,phase:1,text:"The address splits at the colon: IP address <b>"+ip+"</b> (which machine) and port <b>"+port+"</b> (which program on it)."});
+    var mi=-1;MACHINES.forEach(function(m,k){if(mi<0){var hit=m.ip===ip;STEPS.push({m:k,p:-1,phase:2,hit:hit,text:m.name+" has IP "+m.ip+(hit?" = "+ip+": <b>this is the machine.</b>":" ≠ "+ip+": not this one.")});if(hit)mi=k;}});
+    var pi=-1;MACHINES[mi].progs.forEach(function(pr,k){if(pi<0){var hit=pr[1]===port;STEPS.push({m:mi,p:k,phase:3,hit:hit,text:"On "+MACHINES[mi].name+", "+pr[0]+" listens on port "+pr[1]+(hit?" = "+port+": <b>this is the program.</b>":" ≠ "+port+": not this one.")});if(hit)pi=k;}});
+    STEPS.push({m:mi,p:pi,phase:4,text:"Connection established between P2 and "+MACHINES[mi].progs[pi][0]+". Now they can talk."});
+    STEPS.push({m:mi,p:pi,phase:5,text:"P2 asks: <b>give me "+ASK+"</b>. P2 is the <b>client</b>: it asks."});
+    STEPS.push({m:mi,p:pi,phase:6,end:true,text:MACHINES[mi].progs[pi][0]+" answers with "+ASK+". P1 is the <b>server</b>: it waits, listens and answers. Address used: <b>"+ADDR+"</b>."});
+    function paint(s){
+      var o='<defs><marker id="lf2-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="lf2-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdm"/></marker></defs>';
+      o+=R(10,70,140,110,"c4")+T(80,90,"Machine 2","mid dk bd")+T(80,106,"173.160.10.3","mid dk mono")+R(30,124,100,36,"pane")+T(80,147,"P2","mid bd");
+      o+=T(80,200,s.phase>=1?"IP "+ip:"",'mid mono')+T(80,216,s.phase>=1?"port "+port:"","mid mono");
+      var m1=MACHINES[1],x=330;
+      o+=R(x,10,180,250,"c3")+T(x+90,30,"Machine 1","mid dk bd")+T(x+90,46,m1.ip,"mid dk mono");
+      if(s.m===1&&s.phase===2)o+=R(x-3,7,186,256,"now",8);
+      m1.progs.forEach(function(pr,k){var y=60+k*46,on=s.m===1&&k===s.p,done=s.phase>=4&&k===s.p;
+        o+=R(x+15,y,150,34,done?"soft":"pane")+T(x+40,y+21,pr[0],"bd")+T(x+150,y+21,"port "+pr[1],"end mono");
+        if(on&&s.phase===3)o+=R(x+12,y-3,156,40,"now",7);});
+      if(s.m===0&&s.phase===2)o+=R(7,67,146,116,"now",8);
+      var tx=s.phase>=4?344:(s.phase>=2?325:150);
+      if(s.phase>=1&&s.phase<4)o+=L(152,142,s.phase>=2?tx:250,s.phase>=2?(s.m===1?(s.phase===3?77+s.p*46:120):142):142,"ar dash","lf2-ah");
+      if(s.phase>=4){var y=77+s.p*46;o+=L(132,142,x+13,y,s.phase===6?"arm dash":"ar",s.phase===5?"lf2-ah":"");if(s.phase===6)o+=L(x+13,y+10,134,152,"ar","lf2-ah");}
+      o+=T(240,s.phase>=4?(s.phase===6?210:150):30,s.phase===5?"“give me "+ASK+"”":(s.phase===6?"← "+ASK:(s.phase<4?ADDR:"connected")),"mid mono bd");
+      SVG.innerHTML=o;
+      var t="";STEPS.forEach(function(st,k){if(k>0&&k<=i&&(st.phase===2||st.phase===3)){var lab=st.phase===2?MACHINES[st.m].name+" ("+MACHINES[st.m].ip+")":MACHINES[st.m].progs[st.p][0]+" (port "+MACHINES[st.m].progs[st.p][1]+")";t+="<tr"+(k<i?' class="past"':"")+"><td>"+(st.phase===2?"IP":"port")+"</td><td>"+lab+"</td><td>"+(st.hit?"match":"no")+"</td></tr>";}});
+      ROWS.innerHTML=t||'<tr><td colspan="3">nothing checked yet</td></tr>';
+    }
+
+    function draw(){
+      var s=STEPS[i];
+      paint(s,i);
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);  // replay from the start
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},SPEED);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+
+  </div>
+</section>
+
+<section class="sec" id="s5">
+  <div class="sec-h"><span class="num">5</span><h2>The HTTP request <span class="fr">(la requête HTTP)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>HTTP is the agreed set of rules for the conversation between a browser and a web server. Because both sides follow the same rules, the server knows what a request will look like and the browser knows what an answer will look like. A request is plain text: a few lines of <b>header</b> that say what is wanted and where, then an optional <b>body</b> that carries data. Like a letter: the envelope says who it is for, the sheet inside says what you have to say.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">protocol</b> <span class="fr">(protocole)</span></span><span class="mean">a convention: the agreed format and order of messages between two programs.</span></li><li><span class="term"><b class="en">HTTP</b> <span class="fr">(HTTP)</span></span><span class="mean">HyperText Transfer Protocol, the protocol of the web. Each exchange is one request and one response.</span></li><li><span class="term"><b class="en">request</b> <span class="fr">(requête)</span></span><span class="mean">the message the client sends to the server.</span></li><li><span class="term"><b class="en">header</b> <span class="fr">(en-tête)</span></span><span class="mean">the first lines of a message: the method and path, then lines of the form <code>Name: value</code>.</span><span class="eg">Host: monSite1.com</span></li><li><span class="term"><b class="en">body</b> <span class="fr">(corps)</span></span><span class="mean">the part after the empty line: the data itself, if any.</span><span class="eg">Nom=BOB&Prenom=JOE&Points=15</span></li><li><span class="term"><b class="en">method (verb)</b> <span class="fr">(méthode (verbe) HTTP)</span></span><span class="mean">the first word of a request: what the client wants done.</span><span class="eg">GET, POST, PUT, DELETE</span></li><li><span class="term"><b class="en">resource</b> <span class="fr">(ressource)</span></span><span class="mean">anything the server can hand out: a file, a page, a record in a database.</span><span class="eg">/index.html</span></li><li><span class="term"><b class="en">domain name</b> <span class="fr">(nom de domaine)</span></span><span class="mean">the human-friendly name of a site, turned into an IP address before connecting.</span><span class="eg">monSite1.com</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="hp" viewBox="0 0 560 220" role="img" aria-label="An HTTP request is like a letter: the header is the outside of the envelope, the body is the letter inside"><rect x="10" y="20" width="250" height="180" rx="8" class="c4"/><text x="135" y="42" class="mid dk bd">Header (en-tête)</text><text x="135" y="58" class="mid dk tm">= the outside of the envelope</text><rect x="25" y="72" width="220" height="116" rx="8" class="pane"/><text x="35" y="94" class="mono">GET /index.html HTTP/1.1</text><text x="35" y="114" class="mono">Host: monSite1.com</text><text x="35" y="134" class="mono">Accept: text/html</text><text x="35" y="162" class="tm">what? where? what I can read</text><rect x="300" y="20" width="250" height="180" rx="8" class="c1"/><text x="425" y="42" class="mid dk bd">Body (corps)</text><text x="425" y="58" class="mid dk tm">= the letter inside</text><rect x="315" y="72" width="220" height="116" rx="8" class="pane"/><text x="325" y="104" class="mono">GET: empty</text><text x="325" y="134" class="mono">Nom=BOB&Prenom=JOE&Points=15</text><text x="325" y="162" class="tm">POST: the data you send</text></svg><figcaption>A request is a letter. The header, like the envelope, says what is wanted and from where. The body, like the letter, carries data, and is empty for a GET.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="hp-ex"><b>The example: two requests to monSite1.com</b>
+<p>First the browser asks for the page <code>index.html</code> of the site <code>monSite1.com</code>. Then it sends a new person (Nom BOB, Prénom JOE, Points 15) to the same server.</p></div>
+<p class="hp-h">Request 1: read a page (GET)</p><pre class="hp-code">GET /index.html HTTP/1.1
+Host: monSite1.com
+Accept: text/html
+</pre><div class="scroll"><table class="t hp-explain"><thead><tr><th>Line</th><th>What it does</th></tr></thead><tbody><tr><td>GET</td><td>the <b>method</b>: what to do. GET means <i>give me</i> this resource.</td></tr><tr><td>/index.html</td><td>the <b>path</b>: which resource on the server.</td></tr><tr><td>HTTP/1.1</td><td>the version of HTTP used, so the server knows which rules apply.</td></tr><tr><td>Host: monSite1.com</td><td>the site's <b>domain name</b>. One server can host several sites; this line says which one.</td></tr><tr><td>Accept: text/html</td><td>the kinds of content the client can read. <code>text/html</code> is an HTML page.</td></tr><tr><td>(empty line)</td><td>marks the end of the header. A GET has no body: everything needed is already in the path.</td></tr></tbody></table></div>
+<p class="hp-h">Request 2: send data (POST)</p><pre class="hp-code">POST /index.html HTTP/1.1
+Host: monSite1.com
+Accept: text/html
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 28
+
+Nom=BOB&Prenom=JOE&Points=15</pre><div class="scroll"><table class="t hp-explain"><thead><tr><th>Line</th><th>What it does</th></tr></thead><tbody><tr><td>POST</td><td>the method: <i>here is something to add</i>.</td></tr><tr><td>Content-Type</td><td>the format of the body. <code>application/x-www-form-urlencoded</code> is the format forms use: <code>name=value</code> pairs joined by <code>&amp;</code>.</td></tr><tr><td>Content-Length: 28</td><td>how many bytes the body has, so the server knows where it ends. <code>Nom=BOB&Prenom=JOE&Points=15</code> has 28 characters.</td></tr><tr><td>(empty line)</td><td>end of the header, start of the body.</td></tr><tr><td>Nom=BOB&Prenom=JOE&Points=15</td><td>the body: the three values. The course draws them on three lines (Nom = BOB, …); on the wire they are one line joined by <code>&amp;</code>.</td></tr></tbody></table></div>
+<p class="hp-h">The four methods in the course</p><div class="scroll"><table class="t"><thead><tr><th>Method</th><th>Meaning</th><th>Has a body?</th><th>People app example</th></tr></thead><tbody><tr><td><code>GET</code></td><td>read a resource <span class="fr">(consulter)</span></td><td>no</td><td>show the list of people</td></tr><tr><td><code>POST</code></td><td>add a resource <span class="fr">(ajouter)</span></td><td>yes</td><td>add BOB JOE 15</td></tr><tr><td><code>PUT</code></td><td>change a resource <span class="fr">(modifier)</span></td><td>yes</td><td>change BOB's points</td></tr><tr><td><code>DELETE</code></td><td>delete a resource <span class="fr">(supprimer)</span></td><td>usually no (the path says what)</td><td>delete BOB</td></tr></tbody></table></div>
+  </div>
+</section>
+
+<section class="sec" id="s6">
+  <div class="sec-h"><span class="num">6</span><h2>The HTTP response <span class="fr">(la réponse HTTP)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>The server answers with a message built exactly like the request: a header, an empty line, a body. The first line holds the most important thing, a three-digit <b>status code</b> that says how it went. 200 means "here it is", 404 means "nothing here". The body holds what was asked for: an HTML page, a picture, or data such as a JSON list.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">response</b> <span class="fr">(réponse)</span></span><span class="mean">the message the server sends back for one request.</span></li><li><span class="term"><b class="en">status code</b> <span class="fr">(code de statut)</span></span><span class="mean">a three-digit number on the first line of the response. The first digit gives the family: 2 success, 3 go elsewhere, 4 the client's mistake, 5 the server's failure.</span><span class="eg">200, 404</span></li><li><span class="term"><b class="en">Content-Type</b> <span class="fr">(type de contenu)</span></span><span class="mean">a header line naming the format of the body, so the client knows how to read it.</span><span class="eg">text/html, application/json</span></li><li><span class="term"><b class="en">JSON</b> <span class="fr">(JSON)</span></span><span class="mean">a text format for data borrowed from JavaScript: <code>[ ]</code> for lists, <code>{ }</code> for objects, names in double quotes.</span><span class="eg">{"nom": "nom-1", "points": 5}</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="hp" viewBox="0 0 560 220" role="img" aria-label="An HTTP response: status line, header lines, empty line, body; status codes grouped by first digit"><rect x="10" y="10" width="300" height="200" rx="8" class="c3"/><text x="160" y="32" class="mid dk bd">Response = header + body</text><rect x="25" y="44" width="270" height="90" rx="8" class="pane"/><text x="35" y="64" class="mono bd">HTTP/1.1 200 OK</text><text x="35" y="82" class="mono sm">Date: Wed, 17 Nov 2021 09:30:05 GMT</text><text x="35" y="100" class="mono sm">Server: Apache/1.3.24</text><text x="35" y="118" class="mono sm">Content-Type: application/json</text><rect x="25" y="142" width="270" height="56" rx="8" class="pane"/><text x="35" y="164" class="mono sm">[{"nom": "nom-1", …, "points": 5},</text><text x="35" y="184" class="mono sm"> … 3 people …]</text><rect x="330" y="10" width="220" height="200" rx="8" class="pane"/><text x="440" y="32" class="mid bd">Status code families</text><rect x="345" y="46" width="190" height="34" rx="8" class="c3"/><text x="440" y="67" class="mid dk mono">2xx  success</text><rect x="345" y="88" width="190" height="34" rx="8" class="box"/><text x="440" y="109" class="mid mono">3xx  go elsewhere</text><rect x="345" y="130" width="190" height="34" rx="8" class="c2"/><text x="440" y="151" class="mid dk mono">4xx  client's mistake</text><rect x="345" y="172" width="190" height="30" rx="8" class="box"/><text x="440" y="191" class="mid mono">5xx  server's failure</text></svg><figcaption>Left: the course's response, corrected (see the notes at the end). Right: how to read any status code from its first digit.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="hp-ex"><b>The example: the server's answers to monSite1.com</b>
+<p>The course's response sends back the list of people as JSON, with 3 people: nom-1 prenom-1 5 points, nom-2 prenom-2 10 points, nom-3 prenom-3 15 points.</p></div><pre class="hp-code">HTTP/1.1 200 OK
+Date: Wed, 17 Nov 2021 09:30:05 GMT
+Server: Apache/1.3.24
+Content-Type: application/json
+
+[
+  {"nom": "nom-1", "prenom": "prenom-1", "points": 5},
+  {"nom": "nom-2", "prenom": "prenom-2", "points": 10},
+  {"nom": "nom-3", "prenom": "prenom-3", "points": 15}
+]</pre><div class="scroll"><table class="t hp-explain"><thead><tr><th>Line</th><th>What it does</th></tr></thead><tbody><tr><td>HTTP/1.1</td><td>the HTTP version.</td></tr><tr><td>200 OK</td><td>the <b>status code</b> and its short label: here, success.</td></tr><tr><td>Date: …</td><td>when the response was made (always in GMT time).</td></tr><tr><td>Server: Apache/1.3.24</td><td>which web server software answered, and its version.</td></tr><tr><td>Content-Type: application/json</td><td>the body is <b>JSON</b> (JavaScript Object Notation): data written as lists <code>[ ]</code> and objects <code>{ }</code>, the way JavaScript writes them, with every name in double quotes.</td></tr><tr><td>[ … ]</td><td>the body: a list of 3 objects, one per person.</td></tr></tbody></table></div>
+<p class="hp-h">The status codes in the course</p><div class="scroll"><table class="t"><thead><tr><th>Code</th><th>Label</th><th>Meaning</th></tr></thead><tbody><tr><td><code>200</code></td><td>OK</td><td>found and sent</td></tr><tr><td><code>201</code></td><td>Created</td><td>a new resource was created (typical answer to a POST)</td></tr><tr><td><code>400</code></td><td>Bad Request</td><td>the request is badly written: the server cannot understand it</td></tr><tr><td><code>404</code></td><td>Not Found</td><td>nothing exists at that path</td></tr></tbody></table></div>
+<p>The browser, or any HTTP client, reads the code first and acts on it: draw the page, or show an error.</p>
+<p class="hp-h">Checked for real</p>
+<ul class="ln">
+  <li><code>GET /index.html</code> with <code>Host: monSite1.com</code> to a small Python web server holding <code>index.html</code>: answer <b>200 OK</b>, <code>Content-Type: text/html</code>.</li>
+  <li><code>GET /missing.html</code> to the same server: answer <b>404</b> (not found).</li>
+  <li><code>POST</code> with body <code>Nom=BOB&Prenom=JOE&Points=15</code> to a server that adds the person to the course's 3 people: answer <b>201 Created</b> with a JSON list of <b>4</b> people, the last one <code>{"nom": "BOB", "prenom": "JOE", "points": 15}</code>.</li>
+</ul>
+  <figure class="fig live" id="lf3">
+    <div class="live-grid">
+      <svg class="hp" id="lf3-svg" viewBox="0 0 520 270" role="img" aria-label="A GET request for monSite1.com/index.html is written line by line, sent, answered with 200 OK and drawn"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf3-val">0 / 0</b></div>
+        <div class="actions"><button class="b chk" id="lf3-play" type="button">Play</button><button class="b" id="lf3-step" type="button">Step</button><button class="b" id="lf3-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf3-range">Drag to any step</label>
+        <input id="lf3-range" type="range" min="0" max="0" step="1" value="0">
+        <div class="live-status" id="lf3-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>Message</th><th>Line</th></tr></thead><tbody id="lf3-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p><b>Watch</b> the request being written one line at a time, cross to the server, and come back as a response with the same shape (first line, header lines, empty line, body). The status code is decided by one test: is the file in the server's folder? It is, so the exchange ends on <b>200 OK</b>; a path that matches no file would end on 404.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf3-"+id);};
+    var SVG=$("svg"),ROWS=$("rows"),SPEED=1300;
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function R(x,y,w,h,c,r){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(r==null?6:r)+'" class="'+c+'"/>';}
+    function T(x,y,s,c){return '<text x="'+x+'" y="'+y+'" class="'+(c||"")+'">'+s+'</text>';}
+    function L(x1,y1,x2,y2,c,m){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" class="'+c+'"'+(m?' marker-end="url(#'+m+')"':'')+'/>';}
+    function E(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+    // the course's request (slide 69) and a server folder
+    var TYPED="monSite1.com/index.html",FILES=["style.css","script.js","index.html"],ACCEPT="text/html";
+    var cut=TYPED.indexOf("/"),host=TYPED.slice(0,cut),path=TYPED.slice(cut);
+    var req=[],res=[],STEPS=[],found=FILES.indexOf(path.slice(1));
+    function st(o){o.req=req.slice();o.res=res.slice();STEPS.push(o);}
+    st({ph:0,f:-1,text:"The user types <b>"+TYPED+"</b> in the address bar."});
+    st({ph:0,f:-1,text:"The browser splits it: domain name <b>"+host+"</b>, path <b>"+path+"</b>. Just reading a page, so the method is <b>GET</b>."});
+    req.push("GET "+path+" HTTP/1.1");st({ph:0,f:-1,text:"Request line: method, path, HTTP version."});
+    req.push("Host: "+host);st({ph:0,f:-1,text:"Header line <code>Host</code>: which site on the server."});
+    req.push("Accept: "+ACCEPT);st({ph:0,f:-1,text:"Header line <code>Accept</code>: the browser can read HTML."});
+    st({ph:1,f:-1,text:"Empty line, no body (a GET carries nothing). The request travels to the server."});
+    for(var k=0;k<FILES.length;k++){var hit=k===found;st({ph:2,f:k,hit:hit,text:"The server looks in its folder for <b>"+path.slice(1)+"</b>: <code>"+FILES[k]+"</code> "+(hit?"<b>matches</b>.":"does not match.")});if(hit)break;}
+    var code=found>=0?"200 OK":"404 Not Found";
+    res.push("HTTP/1.1 "+code);st({ph:3,f:found,text:"Status line: the file exists, so the code is <b>"+code+"</b>."});
+    res.push("Content-Type: text/html");st({ph:3,f:found,text:"Header line <code>Content-Type</code>: the body is an HTML page."});
+    res.push("");res.push("<h1>It works!</h1> …");st({ph:3,f:found,text:"Empty line, then the body: the content of index.html."});
+    st({ph:4,f:found,text:"The response travels back to the browser."});
+    st({ph:5,f:found,end:true,text:"The browser reads <b>"+code+"</b> and draws the page. One request, one response: <b>GET "+path+" → "+code+"</b>."});
+    function paint(s){
+      var o='<defs><marker id="lf3-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="lf3-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdm"/></marker></defs>';
+      o+=R(10,10,150,46,"c4")+T(85,38,"Browser","mid dk bd")+R(360,10,150,46,"c3")+T(435,38,"Web server","mid dk bd");
+      o+=L(164,26,354,26,s.ph===1?"ar":"arm dash",s.ph===1?"lf3-ah":"lf3-am")+T(259,20,"request","mid tm");
+      o+=L(356,44,166,44,s.ph===4?"ar":"arm dash",s.ph===4?"lf3-ah":"lf3-am")+T(259,58,"response","mid tm");
+      o+=R(10,74,245,104,"pane")+T(18,90,"request","tm");
+      s.req.forEach(function(l,k){o+=T(18,110+k*18,E(l),"mono"+(k===s.req.length-1&&s.ph===0?" figt bd":""));});
+      o+=R(265,74,245,74,"pane")+T(273,90,"server folder","tm");
+      FILES.forEach(function(f,k){var x=273+k*78;o+=R(x,98,72,24,k===s.f&&s.ph>=2&&(s.hit||s.ph>2)?"c3":"box",4)+T(x+36,114,f,"mid sm"+(k===s.f&&(s.hit||s.ph>2)?" dk":""));if(k===s.f&&s.ph===2)o+=R(x-2,96,76,28,"now",5);});
+      o+=R(265,158,245,104,"pane")+T(273,174,"response","tm");
+      s.res.forEach(function(l,k){o+=T(273,194+k*18,E(l),"mono"+(k===s.res.length-1&&s.ph===3?" figt bd":""));});
+      o+=R(10,188,245,74,s.ph===5?"c4":"box")+T(132,218,s.ph===5?"It works!":"(page not shown yet)","mid"+(s.ph===5?" dk bd":" tm"))+T(132,240,s.ph===5?"page drawn from the response body":"","mid sm dk");
+      SVG.innerHTML=o;
+      var t="";s.req.forEach(function(l){t+="<tr><td>request</td><td><code>"+E(l)+"</code></td></tr>";});
+      s.res.forEach(function(l){if(l)t+="<tr><td>response</td><td><code>"+E(l)+"</code></td></tr>";});
+      ROWS.innerHTML=t||'<tr><td colspan="2">nothing written yet</td></tr>';
+    }
+
+    function draw(){
+      var s=STEPS[i];
+      paint(s,i);
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);  // replay from the start
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},SPEED);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+
+  </div>
+</section>
+
+<section class="sec" id="s7">
+  <div class="sec-h"><span class="num">7</span><h2>Form fields <span class="fr">(les types de champs)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>A <b>form</b> is the part of a page where the user types or picks values to send to the server. HTML has a different field for each kind of value: free text, a phone number, a date, one choice among several, a file. Picking the right field type helps the user (a date picker, a number with arrows) and lets the browser refuse wrong values before anything is sent.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">form</b> <span class="fr">(formulaire)</span></span><span class="mean">an HTML element that collects what the user enters and sends it to the server.</span></li><li><span class="term"><b class="en">field</b> <span class="fr">(champ)</span></span><span class="mean">one place to enter a value. Most are <code>&lt;input&gt;</code> with a <code>type</code>.</span><span class="eg">&lt;input type="email"&gt;</span></li><li><span class="term"><b class="en">attribute</b> <span class="fr">(attribut)</span></span><span class="mean">an extra setting written inside a tag as <code>name="value"</code>.</span><span class="eg">min="0"</span></li><li><span class="term"><b class="en">name</b> <span class="fr">(attribut name)</span></span><span class="mean">the key under which the field's value is sent. No name, not sent.</span><span class="eg">name="nom" → nom=BOB</span></li><li><span class="term"><b class="en">validation</b> <span class="fr">(validation (maîtriser la saisie))</span></span><span class="mean">the browser checks the value against the field's rules (<code>pattern</code>, <code>min</code>, <code>max</code>, <code>minlength</code>, <code>required</code>) and refuses to send the form if one fails.</span></li><li><span class="term"><b class="en">pattern</b> <span class="fr">(motif)</span></span><span class="mean">a model the text must follow, written as a regular expression: <code>[0-9]</code> is one digit, <code>{3}</code> means three times.</span><span class="eg">[0-9]{2} = two digits</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="hp" viewBox="0 0 560 250" role="img" aria-label="Sketches of form fields: text boxes, radio buttons, check boxes, lists, file picker, a fieldset with legend, and the submit and reset buttons"><rect x="10" y="10" width="540" height="230" rx="8" class="box"/><rect x="24" y="24" width="250" height="112" rx="4" class="ln"/><rect x="34" y="16" width="86" height="16" class="box"/><text x="38" y="28" class="sm">Coordonnées</text><text x="34" y="54" class="sm">Nom:</text><rect x="90" y="41" width="170" height="20" rx="3" class="pane"/><text x="96" y="55" class="mono">BOB</text><text x="34" y="84" class="sm">Tel:</text><rect x="90" y="71" width="170" height="20" rx="3" class="pane"/><text x="96" y="85" class="mono">0771-11-22-33</text><text x="34" y="114" class="sm">Pwd:</text><rect x="90" y="101" width="170" height="20" rx="3" class="pane"/><text x="96" y="116" class="mono">••••••••</text><text x="150" y="152" class="mid tm">fieldset + legend</text><circle cx="300" cy="40" r="6" class="pane"/><circle cx="300" cy="40" r="3" class="hd"/><text x="312" y="44" class="sm">Homme</text><circle cx="300" cy="62" r="6" class="pane"/><text x="312" y="66" class="sm">Femme</text><text x="300" y="84" class="tm">radio: one only</text><rect x="294" y="98" width="12" height="12" rx="2" class="soft"/><text x="312" y="109" class="sm">voiture</text><path d="M296 104 l3 3 l5 -6" class="ar"/><rect x="294" y="116" width="12" height="12" rx="2" class="soft"/><text x="312" y="127" class="sm">moto</text><path d="M296 122 l3 3 l5 -6" class="ar"/><rect x="294" y="134" width="12" height="12" rx="2" class="pane"/><text x="312" y="145" class="sm">vélo</text><text x="300" y="164" class="tm">checkbox: any number</text><rect x="420" y="30" width="116" height="20" rx="3" class="pane"/><text x="428" y="44" class="sm">Volvo</text><path d="M522 37 l5 6 l5 -6" class="ln"/><text x="420" y="66" class="tm">select: one, no typing</text><rect x="420" y="78" width="116" height="62" rx="3" class="pane"/><text x="428" y="92" class="sm">Volvo</text><rect x="421" y="96" width="114" height="14" class="soft"/><text x="428" y="107" class="sm">Saab</text><rect x="421" y="111" width="114" height="14" class="soft"/><text x="428" y="122" class="sm">Mercedes</text><text x="428" y="136" class="sm">Audi</text><text x="420" y="156" class="tm">multiple: several</text><text x="34" y="186" class="sm">Votre CV:</text><rect x="96" y="173" width="90" height="20" rx="3" class="box"/><text x="141" y="187" class="mid sm">Choose file</text><text x="194" y="187" class="tm">no file chosen</text><rect x="300" y="200" width="70" height="26" rx="4" class="soft"/><text x="335" y="217" class="mid bd">Submit</text><rect x="380" y="200" width="70" height="26" rx="4" class="pane"/><text x="415" y="217" class="mid">Reset</text><text x="300" y="192" class="tm">send / clear</text></svg><figcaption>What the course's fields look like on screen: text boxes inside a fieldset with its legend, radio buttons, check boxes, a drop-down list, a multiple list, a file picker, and the two buttons.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="hp-ex"><b>The example: the course's catalogue of fields</b>
+<p>The course shows one example of each kind of field. Below is each one with its code, what it accepts, and what happened when test values were typed into it in a real browser (Chromium, asking the field <code>checkValidity()</code>: "is this value allowed?").</p></div>
+<p class="hp-h">Fields you type into <span class="fr">(la saisie)</span></p><div class="scroll"><table class="t"><thead><tr><th>Type</th><th>Code</th><th>What it does</th><th>Tested</th></tr></thead><tbody><tr><td>text</td><td>&lt;input type="text" name="nom"&gt;</td><td>any text on one line</td><td>&nbsp;</td></tr><tr><td>tel</td><td>&lt;input type="tel" name="phone" placeholder="Saisir un Tel"<br>&nbsp;pattern="[0][0-9]{3}-[0-9]{2}-[0-9]{2}-[0-9]{2}"&gt;</td><td>a phone number; <code>pattern</code> forces 0, three digits, then three pairs of digits, separated by <code>-</code>; <code>placeholder</code> is the grey hint shown while empty</td><td>0771-11-22-33 <span class="hp-ok">accepted</span>; 077-11-22-33 <span class="hp-bad">refused</span>; 0771112233 <span class="hp-bad">refused</span></td></tr><tr><td>email</td><td>&lt;input type="email" name="email"&gt;</td><td>must look like an e-mail address</td><td>lou@example.com <span class="hp-ok">accepted</span>; lou.example.com <span class="hp-bad">refused</span></td></tr><tr><td>date</td><td>&lt;input type="date" name="myDate" value="2018-07-22"<br>&nbsp;min="2018-01-01" max="2018-12-31"&gt;</td><td>a date picker; <code>value</code> is the starting date, <code>min</code>/<code>max</code> the allowed range</td><td>2018-07-22 <span class="hp-ok">accepted</span>; 2019-01-05 <span class="hp-bad">refused</span></td></tr><tr><td>password</td><td>&lt;input type="password" name="pwd" minlength="8"&gt;</td><td>hides what you type with dots; <code>minlength</code> = fewest characters allowed</td><td>secret12 <span class="hp-ok">accepted</span>; abc <span class="hp-bad">refused</span></td></tr><tr><td>number</td><td>&lt;input type="number" name="nbr_participants" min="0" max="150"&gt;</td><td>a number between <code>min</code> and <code>max</code>, with up/down arrows</td><td>42 <span class="hp-ok">accepted</span>; 151 <span class="hp-bad">refused</span>; -1 <span class="hp-bad">refused</span></td></tr><tr><td>textarea</td><td>&lt;textarea name="monParag" rows="4" cols="20"&gt;…&lt;/textarea&gt;</td><td>a large box for long text: <code>rows</code> lines high, <code>cols</code> characters wide</td><td>&nbsp;</td></tr></tbody></table></div>
+<p class="hp-h">Fields you choose from <span class="fr">(au choix)</span></p><div class="scroll"><table class="t"><thead><tr><th>Type</th><th>Code</th><th>What it does</th><th>Tested</th></tr></thead><tbody><tr><td>radio</td><td>&lt;input type="radio" id="genreHomme" name="genre" value="homme"&gt;<br>&lt;input type="radio" id="genreFemme" name="genre" value="femme"&gt;</td><td><b>one</b> choice among several: buttons with the <b>same</b> <code>name</code> form one group</td><td>clicked Homme then Femme: only <code>femme</code> stays selected</td></tr><tr><td>checkbox</td><td>&lt;input type="checkbox" id="vehicle1" name="vehicule1" value="val1" checked&gt;</td><td>any number of choices; <code>checked</code> = ticked at the start</td><td>only ticked boxes are sent (see below)</td></tr><tr><td>datalist</td><td>&lt;input list="navigateurs" name="monNavigateur"&gt;<br>&lt;datalist id="navigateurs"&gt; &lt;option value="Chrome"&gt; … &lt;/datalist&gt;</td><td>one value: suggestions from a list, but the user may also type something else</td><td>&nbsp;</td></tr><tr><td>select</td><td>&lt;select name="cars"&gt; &lt;option value="volvo"&gt;Volvo&lt;/option&gt; … &lt;/select&gt;</td><td>one value from a drop-down list, no typing</td><td>&nbsp;</td></tr><tr><td>select multiple</td><td>&lt;select name="cars[]" multiple&gt; … &lt;/select&gt;</td><td>several values from a list (Ctrl+click)</td><td>Saab and Mercedes chosen: both sent</td></tr><tr><td>file</td><td>&lt;input type="file" id="cv" name="cv" accept=".pdf" required&gt;</td><td>pick a file from your computer; <code>accept</code> filters the file types offered, <code>required</code> means the form cannot be sent without it</td><td>&nbsp;</td></tr></tbody></table></div>
+<p class="hp-h">Grouping and buttons</p><pre class="hp-code">&lt;fieldset&gt;
+  &lt;legend&gt;Coordonnées:&lt;/legend&gt;
+  &lt;label for="fname"&gt;Nom:&lt;/label&gt;
+  &lt;input type="text" id="fname" name="fname"&gt;
+  &lt;label for="lname"&gt;Prénom:&lt;/label&gt;
+  &lt;input type="text" id="lname" name="lname"&gt;
+&lt;/fieldset&gt;
+&lt;input type="submit" value="Submit"&gt;
+&lt;input type="reset" value="Reset"&gt;</pre><div class="scroll"><table class="t hp-explain"><thead><tr><th>Line</th><th>What it does</th></tr></thead><tbody><tr><td>&lt;fieldset&gt;</td><td>draws a frame around related fields.</td></tr><tr><td>&lt;legend&gt;</td><td>the title written on the frame's border: <i>Coordonnées</i>.</td></tr><tr><td>&lt;label for="fname"&gt;</td><td>the text next to a field. <code>for</code> must equal the field's <code>id</code>: clicking the label then puts the cursor in the field.</td></tr><tr><td>type="submit"</td><td>the button that <b>sends</b> the form's data to the server. <code>value</code> is the text written on it.</td></tr><tr><td>type="reset"</td><td>the button that puts every field back to its starting value. Nothing is sent.</td></tr></tbody></table></div>
+<p class="hp-h">What actually gets sent</p>
+<p>With phone 0771-11-22-33, e-mail lou@example.com, date 2018-07-22, password abc, 42 participants, Femme selected, the first two vehicle boxes ticked and Saab + Mercedes chosen, the browser packs the form as:</p><pre class="hp-code">phone=0771-11-22-33&amp;email=lou%40example.com&amp;myDate=2018-07-22&amp;pwd=abc&amp;nbr_participants=42&amp;genre=femme&amp;vehicule1=val1&amp;vehicule2=val2&amp;cars%5B%5D=saab&amp;cars%5B%5D=mercedes</pre>
+<ul class="ln">
+  <li>Each field becomes <code>name=value</code>; pairs are joined by <code>&amp;</code>. The <code>name</code> is the label the server will see; a field without a <code>name</code> is never sent.</li>
+  <li>The unticked box <code>vehicule3</code> is missing: an unticked checkbox sends nothing at all.</li>
+  <li><code>cars[]</code> appears twice, once per chosen option.</li>
+  <li>Some characters are rewritten so they cannot be confused with <code>=</code> and <code>&amp;</code>: <code>@</code> became <code>%40</code>, <code>[</code> and <code>]</code> became <code>%5B</code> and <code>%5D</code>. This is <b>URL encoding</b>.</li>
+</ul>
+  </div>
+</section>
+
+<section class="sec" id="s8">
+  <div class="sec-h"><span class="num">8</span><h2>The form element: action and method <span class="fr">(structure d'un formulaire)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>The <code>&lt;form&gt;</code> tag wraps the fields and says two things: <b>where</b> to send them (<code>action</code>) and <b>how</b> (<code>method</code>, GET or POST). When the user clicks Submit, the browser turns every field into <code>name=value</code>, glues the pairs together with <code>&amp;</code>, and sends an HTTP request: with GET the pairs go in the address, with POST they go in the body.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">action</b> <span class="fr">(attribut action)</span></span><span class="mean">the address of the server program that receives the data.</span><span class="eg">action="page_traitement"</span></li><li><span class="term"><b class="en">method</b> <span class="fr">(attribut method)</span></span><span class="mean">the HTTP method used to send: <code>get</code> or <code>post</code>.</span><span class="eg">method="post"</span></li><li><span class="term"><b class="en">query string</b> <span class="fr">(chaîne de requête)</span></span><span class="mean">the part of an address after <code>?</code>, holding GET data.</span><span class="eg">?nom=BOB&amp;prenom=JOE</span></li><li><span class="term"><b class="en">submit</b> <span class="fr">(soumettre)</span></span><span class="mean">to send the form: the browser builds and sends the request.</span></li><li><span class="term"><b class="en">URL encoding</b> <span class="fr">(encodage URL)</span></span><span class="mean">rewriting special characters as <code>%</code> + two hex digits so they cannot break the <code>name=value&amp;…</code> format.</span><span class="eg">@ → %40</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="hp" viewBox="0 0 560 230" role="img" aria-label="How the form's attributes become the request: method gives the first word, action the path, each name and typed value a name=value pair"><defs><marker id="f8-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><rect x="10" y="10" width="250" height="210" rx="8" class="pane"/><text x="20" y="34" class="mono">&lt;form action="page_traitement"</text><text x="20" y="52" class="mono">      method="post"&gt;</text><text x="28" y="82" class="mono">name="nom"</text><text x="150" y="82" class="mono bd">BOB</text><text x="28" y="106" class="mono">name="prenom"</text><text x="150" y="106" class="mono bd">JOE</text><text x="28" y="130" class="mono">name="points"</text><text x="150" y="130" class="mono bd">15</text><rect x="28" y="148" width="70" height="24" rx="4" class="soft"/><text x="63" y="164" class="mid bd">Submit</text><text x="20" y="206" class="mono">&lt;/form&gt;</text><rect x="300" y="10" width="250" height="210" rx="8" class="c4"/><text x="310" y="34" class="mono dk">POST /page_traitement HTTP/1.1</text><text x="310" y="52" class="mono dk sm">Content-Type: application/</text><text x="310" y="66" class="mono dk sm">  x-www-form-urlencoded</text><text x="310" y="84" class="mono dk sm">Content-Length: 28</text><text x="310" y="130" class="mono dk bd">nom=BOB&prenom=JOE&points=15</text><text x="310" y="150" class="dk sm">(body)</text><text x="310" y="190" class="dk sm">GET would put it in the URL:</text><text x="310" y="206" class="mono dk sm">?nom=BOB&prenom=JOE&points=15</text><line x1="150" y1="46" x2="296" y2="32" class="ar" marker-end="url(#f8-ah)"/><line x1="170" y1="106" x2="296" y2="126" class="ar" marker-end="url(#f8-ah)"/></svg><figcaption>Each attribute ends up somewhere in the request: method → first word, action → path, every name and typed value → one pair in the body (POST) or after the ? (GET).</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="hp-ex"><b>The example: sending a person to the server</b>
+<p>A form with three text fields named <code>nom</code>, <code>prenom</code> and <code>points</code> (the people app's three boxes). The user types BOB, JOE and 15 and clicks Submit. On the server, a program at the address <code>page_traitement</code> will receive the data.</p></div>
+<p class="hp-h">The course's form, step by step</p><pre class="hp-code">&lt;form action="page_traitement" method="post"&gt;
+  &lt;label for="nom"&gt;Nom:&lt;/label&gt;
+  &lt;input type="text" id="nom" name="nom"/&gt;&lt;br&gt;&lt;br&gt;
+  &lt;label for="prenom"&gt;Prénom:&lt;/label&gt;
+  &lt;input type="text" id="prenom" name="prenom"/&gt;&lt;br&gt;&lt;br&gt;
+  &lt;label for="points"&gt;Points:&lt;/label&gt;
+  &lt;input type="number" id="points" name="points"/&gt;&lt;br&gt;&lt;br&gt;
+  &lt;input type="submit" value="Submit"/&gt;
+&lt;/form&gt;</pre><div class="scroll"><table class="t hp-explain"><thead><tr><th>Line</th><th>What it does</th></tr></thead><tbody><tr><td>&lt;form …&gt; … &lt;/form&gt;</td><td>everything between the two tags belongs to the form. It goes inside <code>&lt;body&gt;</code>.</td></tr><tr><td>action="page_traitement"</td><td><b>where</b> to send the data: the address of the server program that will process it.</td></tr><tr><td>method="post"</td><td><b>how</b> to send it: the HTTP method. <code>post</code> puts the data in the request body. To send data to a server, a form uses only <code>get</code> or <code>post</code>.</td></tr><tr><td>&lt;label for="nom"&gt;</td><td>the visible text <i>Nom:</i>, tied to the field whose <code>id</code> is <code>nom</code>.</td></tr><tr><td>id="nom"</td><td>a unique name for the element inside the page (used by the label and by JavaScript).</td></tr><tr><td>name="nom"</td><td>the key sent to the server: the value typed here travels as <code>nom=…</code>.</td></tr><tr><td>&lt;br&gt;</td><td>a line break, only for layout.</td></tr><tr><td>type="submit"</td><td>the button that triggers the sending.</td></tr></tbody></table></div>
+<p class="hp-h">GET or POST: what Chromium really sent</p>
+<p>The same form was submitted for real in Chromium to a test server that recorded the raw request. Only the useful lines are kept; the browser adds about ten more (its name, accepted languages and so on).</p>
+<p><code>method="get"</code>: the data goes into the address, after a <code>?</code>. The address bar showed <code>…/page_traitement?nom=BOB&prenom=JOE&points=15</code>.</p><pre class="hp-code">GET /page_traitement?nom=BOB&amp;prenom=JOE&amp;points=15 HTTP/1.1
+Host: 127.0.0.1:8091
+…
+</pre>
+<p><code>method="post"</code>: the address stays clean and the data is in the body.</p><pre class="hp-code">POST /page_traitement HTTP/1.1
+Host: 127.0.0.1:8091
+Content-Length: 28
+Content-Type: application/x-www-form-urlencoded
+…
+
+nom=BOB&amp;prenom=JOE&amp;points=15</pre>
+<ul class="ln">
+  <li>Use <b>GET</b> for asking (a search: the address can be bookmarked and shared). Use <b>POST</b> for sending things to store, and always for passwords, which would otherwise show in the address bar and history.</li>
+  <li>What the program behind <code>page_traitement</code> looks like is the topic of part 2 (Python with Flask).</li>
+</ul>
+  <figure class="fig live" id="lf4">
+    <div class="live-grid">
+      <svg class="hp" id="lf4-svg" viewBox="0 0 520 270" role="img" aria-label="Clicking Submit: the browser reads the form tag, turns each field into name=value, joins them and builds a POST request"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf4-val">0 / 0</b></div>
+        <div class="actions"><button class="b chk" id="lf4-play" type="button">Play</button><button class="b" id="lf4-step" type="button">Step</button><button class="b" id="lf4-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf4-range">Drag to any step</label>
+        <input id="lf4-range" type="range" min="0" max="0" step="1" value="0">
+        <div class="live-status" id="lf4-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>name</th><th>value</th><th>pair</th></tr></thead><tbody id="lf4-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p><b>Watch</b> the browser walk through the fields in order and turn each into <code>name=value</code>, then wrap the result in a request. It works because every field carries its own <code>name</code>: the server never sees the labels or the layout, only these pairs, and splits them again at <code>&amp;</code> and <code>=</code>.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf4-"+id);};
+    var SVG=$("svg"),ROWS=$("rows"),SPEED=1300;
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function R(x,y,w,h,c,r){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(r==null?6:r)+'" class="'+c+'"/>';}
+    function T(x,y,s,c){return '<text x="'+x+'" y="'+y+'" class="'+(c||"")+'">'+s+'</text>';}
+    function L(x1,y1,x2,y2,c,m){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" class="'+c+'"'+(m?' marker-end="url(#'+m+')"':'')+'/>';}
+    function E(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+    // the form of slide 95 with the people app's three fields, filled with the course's values
+    var FORM={action:"page_traitement",method:"post"},FIELDS=[["nom","BOB"],["prenom","JOE"],["points","15"]];
+    var pairs=[],STEPS=[],req=[];
+    function st(o){o.pairs=pairs.slice();o.req=req.slice();STEPS.push(o);}
+    st({f:-1,ph:0,text:"The user has typed BOB, JOE and 15, and clicks <b>Submit</b>."});
+    st({f:-1,ph:1,text:"The browser reads the <code>&lt;form&gt;</code> tag: send to <b>"+FORM.action+"</b> with method <b>"+FORM.method.toUpperCase()+"</b>."});
+    FIELDS.forEach(function(fv,k){pairs.push(encodeURIComponent(fv[0])+"="+encodeURIComponent(fv[1]));st({f:k,ph:2,text:"Field "+(k+1)+": its <code>name</code> is <b>"+fv[0]+"</b> and it holds <b>"+fv[1]+"</b> → pair <code>"+pairs[k]+"</code>."});});
+    var body=pairs.join("&");
+    st({f:-1,ph:3,text:"The pairs are joined with <code>&amp;</code>: <code>"+body+"</code> ("+body.length+" characters)."});
+    req.push(FORM.method.toUpperCase()+" /"+FORM.action+" HTTP/1.1");st({f:-1,ph:4,text:"Request line: method and path come from the form tag."});
+    req.push("Content-Type: application/x-www-form-urlencoded");req.push("Content-Length: "+body.length);st({f:-1,ph:4,text:"Header lines: the body's format, and its size in bytes ("+body.length+")."});
+    req.push("");req.push(body);st({f:-1,ph:5,end:true,text:"POST puts the data in the <b>body</b>, after the empty line, and the request leaves: <code>"+body+"</code>."});
+    function paint(s){
+      var o='<defs><marker id="lf4-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="lf4-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdm"/></marker></defs>';
+      o+=R(10,10,220,250,"pane")+T(20,32,'&lt;form action="'+FORM.action+'"',"mono sm")+T(20,48,'      method="'+FORM.method+'"&gt;',"mono sm");
+      if(s.ph===1)o+=R(14,18,212,38,"now",5);
+      FIELDS.forEach(function(fv,k){var y=70+k*44;o+=T(20,y+4,fv[0],"tm")+R(20,y+10,140,22,k===s.f?"soft":"box",3)+T(28,y+25,fv[1],"mono");if(k===s.f)o+=R(17,y-8,146,44,"now",5);});
+      o+=R(20,206,70,24,s.ph===0?"soft":"box",4)+T(55,222,"Submit","mid bd");if(s.ph===0)o+=R(17,203,76,30,"now",6);
+      o+=L(234,135,264,135,"ar",s.ph>=2?"lf4-ah":"");
+      o+=R(268,10,242,96,"pane")+T(276,28,"pairs","tm");
+      s.pairs.forEach(function(p,k){o+=T(276,48+k*18,p,"mono"+(k===s.pairs.length-1&&s.ph===2?" figt bd":""));});
+      if(s.ph>=3)o+=T(276,100,s.pairs.join("&"),"mono bd");
+      o+=R(268,116,242,144,s.ph===5?"c4":"pane")+T(276,134,"request",s.ph===5?"dk sm":"tm");
+      s.req.forEach(function(l,k){var tx=l.length>34?l.slice(0,33)+"…":l;o+=T(276,154+k*18,E(tx),"mono sm"+(s.ph===5?" dk":"")+(k===s.req.length-1&&s.ph===5?" bd":""));});
+      SVG.innerHTML=o;
+      var t="";FIELDS.forEach(function(fv,k){if(k<s.pairs.length)t+="<tr"+(k===s.f?"":' class="past"')+"><td>"+fv[0]+"</td><td>"+fv[1]+"</td><td><code>"+s.pairs[k]+"</code></td></tr>";});
+      ROWS.innerHTML=t||'<tr><td colspan="3">no field read yet</td></tr>';
+    }
+
+    function draw(){
+      var s=STEPS[i];
+      paint(s,i);
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);  // replay from the start
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},SPEED);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+
+  </div>
+</section>
+
+<section class="sec" id="s9">
+  <div class="sec-h"><span class="num">9</span><h2>Install, start and deploy with Apache <span class="fr">(installation d'un serveur Apache en local)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>To try a site the way visitors will see it, you need a web server. Apache is a free, widely used one, and it can run on your own PC. Your computer then plays both roles: Apache is the server, your browser is the client, and they reach each other through the special address <code>localhost</code>. Apache serves whatever is in one folder, <code>htdocs</code>; putting your project there is "deploying" it.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">Apache</b> <span class="fr">(Apache)</span></span><span class="mean">a free web server program. On Windows its program file is <code>httpd.exe</code>.</span></li><li><span class="term"><b class="en">local server</b> <span class="fr">(serveur local)</span></span><span class="mean">a server running on the same computer as the browser.</span></li><li><span class="term"><b class="en">localhost</b> <span class="fr">(localhost)</span></span><span class="mean">the name a computer uses for itself. It stands for the IP address 127.0.0.1.</span><span class="eg">localhost:80</span></li><li><span class="term"><b class="en">htdocs</b> <span class="fr">(répertoire htdocs)</span></span><span class="mean">the folder Apache serves files from. The address <code>localhost/x/y.html</code> means the file <code>htdocs\x\y.html</code>.</span></li><li><span class="term"><b class="en">deploy</b> <span class="fr">(déployer)</span></span><span class="mean">to put a site in the place a server serves it from.</span><span class="eg">copy monProjet into htdocs</span></li><li><span class="term"><b class="en">Command Prompt</b> <span class="fr">(invite de commandes)</span></span><span class="mean">the Windows window where you type commands instead of clicking.</span><span class="eg">cmd</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="hp" viewBox="0 0 560 230" role="img" aria-label="One PC plays both machines: the browser asks localhost:80, Apache answers with files from C:\Apache24\htdocs"><defs><marker id="f9-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><rect x="10" y="10" width="540" height="210" rx="8" class="box"/><text x="280" y="30" class="mid bd">Your PC  ·  ip = 127.0.0.1  ·  name = localhost</text><rect x="30" y="60" width="140" height="60" rx="8" class="c4"/><text x="100" y="86.5" class="mid dk ">Browser</text><text x="100" y="101.5" class="mid dk tm">client</text><rect x="390" y="60" width="140" height="60" rx="8" class="c3"/><text x="460" y="86.5" class="mid dk ">Apache (httpd.exe)</text><text x="460" y="101.5" class="mid dk tm">server, port 80</text><line x1="172" y1="80" x2="386" y2="80" class="ar" marker-end="url(#f9-ah)"/><text x="280" y="72" class="mid mono">localhost:80/monProjet</text><line x1="386" y1="104" x2="174" y2="104" class="ar" marker-end="url(#f9-ah)"/><text x="280" y="120" class="mid mono">monProjet/index.html</text><rect x="300" y="140" width="230" height="70" rx="8" class="pane"/><text x="312" y="160" class="mono">C:\Apache24\htdocs\</text><text x="326" y="178" class="mono sm">index.html   (It works!)</text><text x="326" y="196" class="mono sm">monProjet\index.html</text><line x1="460" y1="122" x2="460" y2="138" class="ln"/></svg><figcaption>With a local server, one PC is both machines. The browser asks localhost (127.0.0.1) on port 80; Apache answers with the matching file from htdocs.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="hp-ex"><b>The example: installing Apache on Windows and putting monProjet online on your PC</b>
+<p>You have a small website in a folder <code>monProjet</code> (the pages from TP0, with an <code>index.html</code>). You want to see it through a real web server, Apache, running on your own computer.</p></div>
+<ol class="hp-steps">
+  <li><b>Download.</b> From <code>https://www.apachelounge.com/download/</code>, take the zip file for Windows. A <b>zip</b> is a compressed archive: one file that holds a whole folder.</li>
+  <li><b>Unzip and copy.</b> Unzip it, find the folder <code>Apache24</code> inside, and paste it at the root of drive C, so it becomes <code>C:\Apache24</code>.</li>
+  <li><b>Start it.</b> Open the Command Prompt (<i>invite de commandes</i>: Windows key, type <code>cmd</code>, Enter) and type the two commands below.</li>
+</ol><pre class="hp-code">cd C:\Apache24\bin
+httpd.exe</pre><div class="scroll"><table class="t hp-explain"><thead><tr><th>Part</th><th>What it means</th></tr></thead><tbody><tr><td>cd</td><td><b>c</b>hange <b>d</b>irectory: moves the Command Prompt into a folder, so the next commands run from there.</td></tr><tr><td>C:\Apache24\bin</td><td>the folder to move into: <code>bin</code> (short for <i>binaries</i>, the runnable programs) inside Apache24. The course writes <code>C:\apache\bin</code>, but the folder you copied is named Apache24.</td></tr><tr><td>httpd.exe</td><td>runs the Apache program. <code>httpd</code> = <b>HTTP</b> <b>d</b>aemon, a daemon being a program that runs in the background and waits. It now listens on port 80. Leave the window open: closing it stops the server.</td></tr></tbody></table></div>
+<ol class="hp-steps" start="4">
+  <li><b>Test.</b> In the browser, open <code>localhost:80</code>. The page says <b>It works!</b>. That page is the file <code>C:\Apache24\htdocs\index.html</code>. Change "It works!" to "Hello World" in that file, refresh, and the page changes: the server just sends whatever file is there.</li>
+  <li><b>Deploy.</b> To <b>deploy</b> (<i>déployer</i>, put a site where the server can serve it) copy the folder <code>monProjet</code> into <code>htdocs</code>, giving <code>C:\Apache24\htdocs\monProjet</code>.</li>
+  <li><b>Open it.</b> Go to <code>localhost:80/monProjet</code>. Nothing comes after <code>monProjet/</code>, so Apache looks for an <code>index.html</code> in that folder and sends it.</li>
+</ol>
+<ul class="ln">
+  <li><code>localhost</code> is the name every computer gives itself; it means the address <code>127.0.0.1</code> (checked on this machine). A request to it never leaves your PC, so one computer plays both Machine 1 (server) and Machine 2 (client).</li>
+  <li><code>:80</code> can be left out: a browser uses port 80 when none is written. <code>localhost</code> and <code>localhost:80</code> are the same page.</li>
+  <li>The rule "address → file in htdocs, <code>index.html</code> when the address ends with a folder" was checked with a small Python server that follows it: <code>localhost/</code> gave <code>htdocs/index.html</code> and <code>localhost/monProjet/</code> gave <code>htdocs/monProjet/index.html</code>. (Apache for Windows itself could not be run here.)</li>
+</ul>
+  </div>
+</section>
+
+<section class="sec" id="s10">
+  <div class="sec-h"><span class="num">10</span><h2>A virtual host <span class="fr">(mise en place d'un virtual host)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>One Apache can serve several sites, each under its own domain name, even though they all share the same IP address and port. Each site is described by a <b>virtual host</b>: a name and a folder. When a request arrives, Apache reads its <code>Host</code> line and serves the folder of the matching virtual host. On your PC, you also tell Windows that the name means "this computer", using the hosts file.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">virtual host (vHost)</b> <span class="fr">(hôte virtuel)</span></span><span class="mean">one site, among several, served by the same Apache: a domain name tied to a folder.</span><span class="eg">ferrariproject.dz → htdocs/monProjet</span></li><li><span class="term"><b class="en">configuration file</b> <span class="fr">(fichier de configuration)</span></span><span class="mean">a text file of settings that a program reads when it starts.</span><span class="eg">httpd.conf</span></li><li><span class="term"><b class="en">comment</b> <span class="fr">(commentaire)</span></span><span class="mean">a line the program ignores; in Apache files it starts with <code>#</code>.</span></li><li><span class="term"><b class="en">DNS</b> <span class="fr">(DNS)</span></span><span class="mean">Domain Name System: the service that turns domain names into IP addresses.</span></li><li><span class="term"><b class="en">hosts file</b> <span class="fr">(fichier hosts)</span></span><span class="mean">a small file on your PC that maps names to IP addresses. It is read before DNS, so it can override it, for your PC only.</span><span class="eg">127.0.0.1 FerrariProject.dz</span></li><li><span class="term"><b class="en">restart</b> <span class="fr">(redémarrer)</span></span><span class="mean">stop and start the server so it reads its settings again.</span><span class="eg">Ctrl+C, then httpd.exe</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="hp" viewBox="0 0 560 230" role="img" aria-label="Four links: hosts file maps the name to 127.0.0.1, Apache on port 80 receives the request, the virtual host matching the Host line picks htdocs/monProjet"><defs><marker id="f10-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><rect x="10" y="20" width="120" height="60" rx="8" class="c4"/><text x="70" y="46.5" class="mid dk ">Browser</text><text x="70" y="61.5" class="mid dk mono sm">ferrariproject.dz</text><rect x="160" y="20" width="150" height="60" rx="8" class="c1"/><text x="235" y="46.5" class="mid dk ">hosts file</text><text x="235" y="61.5" class="mid dk tm">name → 127.0.0.1</text><rect x="340" y="20" width="200" height="60" rx="8" class="c3"/><text x="440" y="46.5" class="mid dk ">Apache on port 80</text><text x="440" y="61.5" class="mid dk tm">which virtual host?</text><line x1="132" y1="50" x2="156" y2="50" class="ar" marker-end="url(#f10-ah)"/><line x1="312" y1="50" x2="336" y2="50" class="ar" marker-end="url(#f10-ah)"/><rect x="340" y="110" width="200" height="50" rx="8" class="soft"/><text x="440" y="131.5" class="mid mono">ServerName ferrariproject.dz</text><text x="440" y="146.5" class="mid tm">matches the Host line</text><rect x="340" y="180" width="200" height="40" rx="8" class="c3"/><text x="440" y="204" class="mid dk mono">htdocs/monProjet/index.html</text><line x1="440" y1="82" x2="440" y2="106" class="ar" marker-end="url(#f10-ah)"/><line x1="440" y1="162" x2="440" y2="176" class="ar" marker-end="url(#f10-ah)"/><rect x="10" y="110" width="300" height="110" rx="8" class="pane"/><text x="20" y="132" class="bd">3 files to edit, then restart:</text><text x="20" y="154" class="mono sm">1. conf\extra\httpd-vhosts.conf</text><text x="36" y="168" class="tm">add the &lt;VirtualHost&gt; block</text><text x="20" y="188" class="mono sm">2. conf\httpd.conf  remove # before Include</text><text x="20" y="208" class="mono sm">3. C:\Windows\System32\drivers\etc\hosts</text></svg><figcaption>The chain behind ferrariproject.dz on your PC: the hosts file sends the name to 127.0.0.1, Apache receives it on port 80, the virtual host whose ServerName matches picks the folder.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="hp-ex"><b>The example: serving monProjet as ferrariproject.dz</b>
+<p>Apache is installed in <code>C:\Apache24</code> and the site is in <code>C:\Apache24\htdocs\monProjet</code> (section 9). Instead of typing <code>localhost/monProjet</code>, we want to type the domain name the real site will have, <code>ferrariproject.dz</code>, to work in the same conditions as the final deployment.</p></div>
+<p class="hp-h">1. Describe the site to Apache</p>
+<p>At the bottom of <code>C:\Apache24\conf\extra\httpd-vhosts.conf</code> (a <b>configuration file</b>: a text file of settings Apache reads when it starts), add:</p><pre class="hp-code">&lt;VirtualHost *:80&gt;
+    ServerAdmin webmaster@ferrariProject.dz
+    DocumentRoot "${SRVROOT}/htdocs/monProjet"
+    ServerName ferrariproject.dz
+    ServerAlias ferrariproject.dz
+    &lt;Directory "${SRVROOT}/htdocs/monProjet"&gt;
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    &lt;/Directory&gt;
+&lt;/VirtualHost&gt;</pre><div class="scroll"><table class="t hp-explain"><thead><tr><th>Line</th><th>What it does</th></tr></thead><tbody><tr><td>&lt;VirtualHost *:80&gt;</td><td>starts one virtual host, for requests arriving on any of the PC's addresses (<code>*</code>) on port 80.</td></tr><tr><td>ServerAdmin</td><td>the e-mail address shown on Apache's error pages.</td></tr><tr><td>DocumentRoot</td><td>the folder this site is served from. <code>${SRVROOT}</code> is a variable meaning Apache's own folder, here <code>C:/Apache24</code>.</td></tr><tr><td>ServerName</td><td>the domain name this block answers to. Apache compares it with the request's <code>Host</code> line.</td></tr><tr><td>ServerAlias</td><td>other names for the same site. Here it repeats the ServerName, so it adds nothing; it would be used for e.g. <code>www.ferrariproject.dz</code>.</td></tr><tr><td>&lt;Directory …&gt;</td><td>rules for that folder.</td></tr><tr><td>Options Indexes</td><td>if a folder has no index.html, show the list of its files.</td></tr><tr><td>FollowSymLinks</td><td>allow shortcuts (symbolic links) inside the folder.</td></tr><tr><td>AllowOverride All</td><td>allow settings files (<code>.htaccess</code>) inside the folder to change these rules.</td></tr><tr><td>Require all granted</td><td>everyone may see the folder.</td></tr></tbody></table></div>
+<p class="hp-h">2. Make Apache read that file</p>
+<p>In <code>C:\Apache24\conf\httpd.conf</code>, find the line below and delete the <code>#</code> at its start. A <code>#</code> turns a line into a comment, which Apache ignores.</p><pre class="hp-code"># Include conf/extra/httpd-vhosts.conf      ← before
+Include conf/extra/httpd-vhosts.conf        ← after</pre>
+<p class="hp-h">3. Make the name point to your PC</p>
+<p>Normally a name is turned into an IP address by <b>DNS</b> (Domain Name System, the internet's phone book). Before asking DNS, Windows reads the <b>hosts file</b>, <code>C:\Windows\System32\drivers\etc\hosts</code>. Add at its bottom (open the editor "as administrator", or Windows will not let you save):</p><pre class="hp-code">127.0.0.1 FerrariProject.dz</pre><div class="scroll"><table class="t hp-explain"><thead><tr><th>Part</th><th>What it means</th></tr></thead><tbody><tr><td>127.0.0.1</td><td>the IP address to use: your own PC (localhost).</td></tr><tr><td>FerrariProject.dz</td><td>the name. Capitals do not matter in domain names, so it also covers <code>ferrariproject.dz</code>.</td></tr></tbody></table></div>
+<p class="hp-h">4. Restart and test</p>
+<p>Apache reads its settings only when it starts. In the Command Prompt where it runs, press <b>Ctrl+C</b> to stop it, then type <code>httpd.exe</code> again. Now open <code>ferrariproject.dz</code> in the browser: you get monProjet's <code>index.html</code>. Checked with a small Python server that picks the folder from the Host line the same way: Host <code>FerrariProject.dz</code>, path <code>/</code> gave <code>htdocs/monProjet/index.html</code>.</p>
+<p class="hp-h">In production</p>
+<p>On a real site, <code>htdocs</code> is on a distant physical server, and you copy <code>monProjet</code> into it with an <b>FTP client</b> such as <b>FileZilla</b> (FTP = File Transfer Protocol, a protocol for sending files to a server).</p>
+  <figure class="fig live" id="lf5">
+    <div class="live-grid">
+      <svg class="hp" id="lf5-svg" viewBox="0 0 520 262" role="img" aria-label="Typing ferrariproject.dz: the hosts file gives 127.0.0.1, Apache on port 80 receives the request, the matching virtual host serves htdocs/monProjet/index.html"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf5-val">0 / 0</b></div>
+        <div class="actions"><button class="b chk" id="lf5-play" type="button">Play</button><button class="b" id="lf5-step" type="button">Step</button><button class="b" id="lf5-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf5-range">Drag to any step</label>
+        <input id="lf5-range" type="range" min="0" max="0" step="1" value="0">
+        <div class="live-status" id="lf5-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>Lookup</th><th>Name</th><th>Result</th></tr></thead><tbody id="lf5-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p><b>Watch</b> two look-ups in a row: the hosts file turns the name into an address, then Apache uses the same name (now in the <code>Host</code> line) to choose a site. It works because both look-ups use the name you typed: every site on this Apache shares 127.0.0.1:80, and only the Host line tells them apart.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf5-"+id);};
+    var SVG=$("svg"),ROWS=$("rows"),SPEED=1300;
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function R(x,y,w,h,c,r){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(r==null?6:r)+'" class="'+c+'"/>';}
+    function T(x,y,s,c){return '<text x="'+x+'" y="'+y+'" class="'+(c||"")+'">'+s+'</text>';}
+    function L(x1,y1,x2,y2,c,m){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" class="'+c+'"'+(m?' marker-end="url(#'+m+')"':'')+'/>';}
+    function E(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+    // the course's hosts line and virtual host (slides 114-116); the default site stays in htdocs
+    var TYPED="ferrariproject.dz",HOSTS=[["127.0.0.1","localhost"],["127.0.0.1","FerrariProject.dz"]];
+    var VHOSTS=[["localhost","htdocs"],["ferrariproject.dz","htdocs/monProjet"]],PORT=80,PATH="/";
+    var STEPS=[],ip=null,vh=-1,hi=-1;
+    function st(o){STEPS.push(o);}
+    st({ph:0,text:"The user types <b>"+TYPED+"</b>. No such site exists on the internet: the browser must find an IP address for it somehow."});
+    for(var k=0;k<HOSTS.length;k++){var hit=HOSTS[k][1].toLowerCase()===TYPED.toLowerCase();st({ph:1,h:k,hit:hit,text:"Hosts file, line "+(k+1)+": <code>"+HOSTS[k][0]+" "+HOSTS[k][1]+"</code> → "+(hit?"<b>same name</b> (capitals do not matter in names), so the IP is "+HOSTS[k][0]+".":"different name.")});if(hit){ip=HOSTS[k][0];hi=k;break;}}
+    st({ph:2,h:hi,text:"The browser connects to <b>"+ip+":"+PORT+"</b> (port 80, since none was typed): that is Apache, on this PC."});
+    st({ph:3,h:hi,text:"It sends <code>GET "+PATH+" HTTP/1.1</code> with <code>Host: "+TYPED+"</code>. The Host line is how Apache knows which site is wanted."});
+    for(var j=0;j<VHOSTS.length;j++){var h2=VHOSTS[j][0]===TYPED.toLowerCase();st({ph:4,h:hi,v:j,hit:h2,text:"Virtual host "+(j+1)+": ServerName <code>"+VHOSTS[j][0]+"</code> "+(h2?"<b>matches</b> the Host line.":"does not match.")});if(h2){vh=j;break;}}
+    var file=VHOSTS[vh][1]+PATH+"index.html";
+    st({ph:5,h:hi,v:vh,text:"Its DocumentRoot is <b>"+VHOSTS[vh][1]+"</b>. The path is <code>"+PATH+"</code>, a folder, so Apache picks <code>index.html</code> in it."});
+    st({ph:6,h:hi,v:vh,end:true,text:"Apache answers <b>200 OK</b> with <b>"+file+"</b>: monProjet's home page, under the name ferrariproject.dz."});
+    function paint(s){
+      var o='<defs><marker id="lf5-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="lf5-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdm"/></marker></defs>';
+      o+=R(10,10,150,44,"c4")+T(85,30,"Browser","mid dk bd")+T(85,46,TYPED,"mid dk mono sm");
+      o+=R(10,74,232,96,"pane")+T(18,92,"C:\\Windows\\System32\\drivers\\etc\\hosts","mono sm");
+      HOSTS.forEach(function(h,k){var y=104+k*28;o+=R(18,y,216,22,(s.ph>=1&&k===s.h&&(s.hit||s.ph>1))?"c1":"box",3)+T(26,y+15,h[0]+"  "+h[1],"mono sm"+((s.ph>=1&&k===s.h&&(s.hit||s.ph>1))?" dk":""));if(s.ph===1&&k===s.h)o+=R(15,y-3,222,28,"now",5);});
+      o+=R(290,10,220,44,"c3")+T(400,30,"Apache  ·  port "+PORT,"mid dk bd")+T(400,46,ip&&s.ph>=2?ip+":"+PORT:"","mid dk mono sm");
+      o+=L(162,32,286,32,s.ph>=2?"ar":"arm dash",s.ph>=2?"lf5-ah":"lf5-am");
+      if(s.ph>=3)o+=T(224,68,"Host: "+TYPED,"mid mono sm figt");
+      o+=R(252,74,258,96,"pane")+T(260,92,"virtual hosts (httpd-vhosts.conf)","tm sm");
+      VHOSTS.forEach(function(v,k){var y=104+k*28,on=s.ph>=4&&k===s.v&&(s.hit||s.ph>4);o+=R(260,y,242,22,on?"c3":"box",3)+T(268,y+15,v[0]+" → "+v[1],"mono sm"+(on?" dk":""));if(s.ph===4&&k===s.v)o+=R(257,y-3,248,28,"now",5);});
+      o+=R(10,190,500,60,s.ph===6?"c3":"box")+T(260,214,s.ph>=5?"htdocs/monProjet/  →  index.html":"(no file chosen yet)","mid mono"+(s.ph===6?" dk":""))+T(260,236,s.ph===6?"200 OK, page sent to the browser":"","mid dk sm");
+      SVG.innerHTML=o;
+      var t="";STEPS.forEach(function(x,k){if(k>0&&k<=i&&(x.ph===1||x.ph===4)){t+="<tr"+(k<i?' class="past"':"")+"><td>"+(x.ph===1?"hosts":"vhost")+"</td><td><code>"+(x.ph===1?HOSTS[x.h][1]:VHOSTS[x.v][0])+"</code></td><td>"+(x.hit?"match":"no")+"</td></tr>";}});
+      ROWS.innerHTML=t||'<tr><td colspan="3">nothing looked up yet</td></tr>';
+    }
+
+    function draw(){
+      var s=STEPS[i];
+      paint(s,i);
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);  // replay from the start
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},SPEED);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+
+  </div>
+</section>
+
+<section class="sec" id="notes">
+  <div class="note errata"><span class="tag">Notes on the original course</span>
+    <ul><li>Slide 47: HTTP stands for Hyper<b>Text Transfer</b> Protocol, not "HyperText Transport Protocole".</li><li>Slides 53-56: Machine 1's address is written <code>93.140.10.40</code> on the machine but <code>93.141.10.40:1025</code> in the address P2 uses. They must be the same; this lesson uses 93.140.10.40.</li><li>Slides 38-39: the table <code>Persons</code> holds <code>Nom-1</code>, <code>Prénom-1</code>, but the generated HTML beside it shows <code>Nom1</code>, <code>Prénom1</code>. The generated rows should copy the database exactly.</li><li>Slides 69-73: the request line is written <code>Get /index.html</code>. Methods are written in capitals (<code>GET</code>), and the line ends with the HTTP version: <code>GET /index.html HTTP/1.1</code>.</li><li>Slides 69-72: the GET request carries <code>Content-Type: application/x-www-form-urlencoded</code>, but a GET has no body, so there is nothing to describe. A real browser's GET has no Content-Type line (checked in Chromium).</li><li>Slide 73: the POST body is drawn as three lines <code>Nom = BOB</code> …; on the wire it is one line, <code>Nom=BOB&amp;Prenom=JOE&amp;Points=15</code>, and the header also needs <code>Content-Length: 28</code>.</li><li>Slides 75-78: the response date <code>Thu, 17Nov2021</code> has two errors: 17 November 2021 was a <b>Wednesday</b>, and the format needs spaces: <code>Wed, 17 Nov 2021 09:30:05 GMT</code>.</li><li>Slides 75-78: the JSON body is not valid JSON: names must be in double quotes (<code>"nom"</code>, not <code>nom</code>). A JSON reader rejects it (<i>Expecting property name enclosed in double quotes</i>). The third person also reads <code>prenom-</code> instead of <code>prenom-3</code>.</li><li>Slide 78: status code <code>201</code> is <b>Created</b>, not "Accepted" (that is <code>202</code>). It is most often the answer to a POST, not only a PUT.</li><li>Slide 95: the slide asks which method to put in <code>method</code> among GET/POST/PUT/DELETE. A form can only send <code>get</code> or <code>post</code>; any other value is treated as <code>get</code> (checked in Chromium: <code>method="put"</code> sent a GET).</li><li>Slides 92-95: <code>&lt;label for="nom"&gt;</code> points to an input that has <code>name="nom"</code> but no <code>id</code>. <code>for</code> matches the <code>id</code>, so the label is not tied to its field; add <code>id="nom"</code> (and <code>id="prenom"</code>).</li><li>Slide 105: the command <code>cd C:\apache\bin</code> does not match the folder copied in slide 104, <code>C:\Apache24</code>; it should be <code>cd C:\Apache24\bin</code> (as slides 108 and 114 also use).</li><li>Slide 114: <code>ServerAlias</code> repeats the <code>ServerName</code>, so it does nothing; an alias is for a second name such as <code>www.ferrariproject.dz</code>.</li><li>Slide 119: "Filzilla" is <b>FileZilla</b>, and FTP is File Transfer <b>Protocol</b>.</li></ul>
+  </div>
+</section>
+
+<footer class="foot">Based on PRAVAN chapter 5, <i>Site dynamique: programmation côté serveur, HTTP</i> (Dr. M. Boubenia, 15/11/2025), parts 1 and 2. All requests and responses were produced by running code: forms submitted in Chromium to a recording server, small Python web servers for the 200, 404 and 201 answers, a real exchange on port 1025.</footer>
+</div>
+
+<script>
+/* study-hub:progress — practice pages: counts ticked .done boxes */
+(function(){
+  var boxes=document.querySelectorAll('.done input'), txt=document.getElementById('prog-txt'), bar=document.getElementById('prog-bar');
+  if(!boxes.length||!txt) return;
+  function upd(){var n=0;boxes.forEach(function(b){if(b.checked)n++;});txt.textContent=n+' / '+boxes.length+' done';bar.style.width=(100*n/boxes.length)+'%';}
+  boxes.forEach(function(b){b.addEventListener('change',upd);});
+  upd();
+})();
+</script>
+</body>
+</html>
