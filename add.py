@@ -63,16 +63,21 @@ def kind_of(path):
     raise AddError(f"don't know where to put {os.path.basename(path)} (expected .html or .pdf)")
 
 
-def doc_name(folder, filename):
-    """'Crypto classique.pdf' -> '<next n>-Crypto-classique.pdf'; a name that already starts
-    with a number keeps it, so re-adding 2-methodes.pdf replaces that file."""
+COPY_RE = re.compile(r"(\s*\(\d+\))+$")  # 'TD1 (1)', 'lesson(2)': a browser's duplicate download
+
+
+def doc_name(folder, filename, exclude=None):
+    """'Crypto classique (1).pdf' -> '<next n>-Crypto-classique.pdf'; a name that already starts
+    with a number keeps it, so re-adding 2-methodes.pdf replaces that file. `exclude` is a file
+    in `folder` that doesn't hold its number (the one being renamed)."""
     stem, ext = os.path.splitext(os.path.basename(filename))
+    stem = COPY_RE.sub("", stem)
     stem = unicodedata.normalize("NFKD", stem).encode("ascii", "ignore").decode()
     stem = re.sub(r"[^A-Za-z0-9.\-]+", "-", stem).strip("-.") or "document"
     stem = re.sub(r"-{2,}", "-", stem)
     if not re.match(r"^\d+-", stem):
         taken = [int(m.group(1)) for f in (os.listdir(folder) if os.path.isdir(folder) else [])
-                 if (m := re.match(r"^(\d+)-", f))]
+                 if f != exclude and (m := re.match(r"^(\d+)-", f))]
         stem = f"{max(taken, default=0) + 1}-{stem}"
     return stem + ext.lower()
 
@@ -93,14 +98,38 @@ def place(module, chapter, kind, src, filename=None):
     dst = os.path.join(ch_dir, rel)
     replaced = os.path.exists(dst)
     shutil.copyfile(src, dst)
+    tidy(module, chapter)
+    return rel, replaced
+
+
+def tidy(module, chapter):
+    """After a file leaves or arrives: a chapter with no files left goes, with its title in
+    module.json; otherwise td/ holds a .gitkeep exactly when it is empty. True if it went."""
+    ch_dir = os.path.join(MODULES, module, chapter)
+    if not any(f != ".gitkeep" for _, _, fs in os.walk(ch_dir) for f in fs):
+        shutil.rmtree(ch_dir)
+        drop_title(module, chapter)
+        return True
     td = os.path.join(ch_dir, "td")
+    os.makedirs(td, exist_ok=True)
     keep = os.path.join(td, ".gitkeep")
     if any(f != ".gitkeep" for f in os.listdir(td)):
         if os.path.exists(keep):
             os.remove(keep)
     else:
         open(keep, "a").close()
-    return rel, replaced
+    return False
+
+
+def drop_title(module, chapter):
+    meta_path = os.path.join(MODULES, module, "module.json")
+    if os.path.exists(meta_path):
+        with open(meta_path, encoding="utf-8") as f:
+            meta = json.load(f)
+        if (meta.get("chapters") or {}).pop(chapter, None) is not None:
+            with open(meta_path, "w", encoding="utf-8") as f:
+                json.dump(meta, f, indent=2, ensure_ascii=False)
+                f.write("\n")
 
 
 def check_file(path):
@@ -135,22 +164,66 @@ def remove(module, chapter=None, path=None):
             raise AddError(f"no file {module}/{chapter}/{path}")
         os.remove(target)
         what += f" {path}"
-        left = [f for _, _, fs in os.walk(ch_dir) for f in fs if f != ".gitkeep"]
-        if left:
-            td = os.path.join(ch_dir, "td")
-            if os.path.isdir(td) and not os.listdir(td):
-                open(os.path.join(td, ".gitkeep"), "a").close()
-            return what
+        tidy(module, chapter)  # the chapter goes too if that was its last file
+        return what
     shutil.rmtree(ch_dir)
-    meta_path = os.path.join(mod_dir, "module.json")
-    if os.path.exists(meta_path):
-        with open(meta_path, encoding="utf-8") as f:
-            meta = json.load(f)
-        if (meta.get("chapters") or {}).pop(chapter, None) is not None:
-            with open(meta_path, "w", encoding="utf-8") as f:
-                json.dump(meta, f, indent=2, ensure_ascii=False)
-                f.write("\n")
-    return what if path is not None else f"{what} (whole chapter)"
+    drop_title(module, chapter)
+    return f"{what} (whole chapter)"
+
+
+def check_move(module, chapter, path, to_module=None, to_chapter=None, to_kind=None, name=None):
+    """Validate renaming a course or TD PDF and/or moving it to another section (cours/td) or an
+    existing chapter, without touching anything. `name` follows the upload rules: a leading
+    number sets its place, none puts it last, a '(1)' copy suffix goes. Returns
+    (source dir, source file, target module, target chapter, target kind, target file)."""
+    check_module(module)
+    check_slug(chapter, "chapter")
+    check_file(path)
+    kind, _, file = path.partition("/")
+    if kind not in ("cours", "td"):
+        raise AddError("only PDFs in cours/ or td/ can be renamed or moved")
+    src_dir = os.path.join(MODULES, module, chapter, kind)
+    if not os.path.isfile(os.path.join(src_dir, file)):
+        raise AddError(f"no file {module}/{chapter}/{path}")
+    to_module = check_module(to_module or module)
+    to_chapter = check_slug(to_chapter or chapter, "chapter")
+    to_kind = to_kind or kind
+    if to_kind not in ("cours", "td"):
+        raise AddError("a PDF goes in cours or td")
+    if not os.path.isdir(os.path.join(MODULES, to_module, to_chapter)):
+        raise AddError(f"no chapter {to_module}/{to_chapter}")
+    if name is None:
+        name = file
+    if not isinstance(name, str) or not name.strip() or len(name) > 200 or "/" in name or "\\" in name:
+        raise AddError("give the file a name (at most 200 characters, no '/')")
+    ext = os.path.splitext(file)[1]
+    name = name.strip()
+    if name.lower().endswith(ext.lower()):
+        name = name[:-len(ext)]
+    dst_dir = os.path.join(MODULES, to_module, to_chapter, to_kind)
+    new = doc_name(dst_dir, name + ext, exclude=file if dst_dir == src_dir else None)
+    if dst_dir == src_dir and new == file:
+        raise AddError("nothing to change")
+    if os.path.exists(os.path.join(dst_dir, new)):
+        raise AddError(f"{to_module}/{to_chapter}/{to_kind}/{new} already exists: pick another number")
+    return src_dir, file, to_module, to_chapter, to_kind, new
+
+
+def move(module, chapter, path, to_module=None, to_chapter=None, to_kind=None, name=None):
+    """Rename and/or move a PDF (see check_move). A chapter left with no files goes, as with a
+    delete. Returns (description, target module, chapter, path in the chapter)."""
+    src_dir, file, to_module, to_chapter, to_kind, new = check_move(
+        module, chapter, path, to_module, to_chapter, to_kind, name)
+    dst_dir = os.path.join(MODULES, to_module, to_chapter, to_kind)
+    os.makedirs(dst_dir, exist_ok=True)
+    os.rename(os.path.join(src_dir, file), os.path.join(dst_dir, new))
+    tidy(to_module, to_chapter)
+    if (module, chapter) != (to_module, to_chapter):
+        tidy(module, chapter)
+    where = "" if (module, chapter) == (to_module, to_chapter) else (
+        f"{to_chapter} " if module == to_module else f"{to_module.upper()} {to_chapter} ")
+    return (f"{module.upper()} {chapter} {path} → {where}{to_kind}/{new}",
+            to_module, to_chapter, f"{to_kind}/{new}")
 
 
 def set_meta(module, chapter, title=None, module_title=None, module_code=None, blurb=None):

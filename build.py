@@ -737,7 +737,7 @@ UPLOAD_MAIN = r"""<main class="up">
 <ul class="jobs" id="jobs"></ul>
 <section class="manage">
   <h2>Edit and delete</h2>
-  <p class="hint">Edit a module's code, title and blurb, or a chapter's title. Delete a file, a chapter or a whole module. Every change is a commit, so git history keeps the old version. A deleted practice page takes its saved answers with it (the nightly Drive backup still has them).</p>
+  <p class="hint">Edit a module's code, title and blurb, or a chapter's title. Rename a PDF or move it to another chapter or to Cours/TD. Delete a file, a chapter or a whole module. Every change is a commit, so git history keeps the old version. A deleted practice page takes its saved answers with it (the nightly Drive backup still has them).</p>
   <div id="tree"></div>
 </section>
 </main>
@@ -823,6 +823,7 @@ UPLOAD_MAIN = r"""<main class="up">
         (c.files||[]).forEach(function(f){
           var li=document.createElement('li');
           li.innerHTML='<span class="ft">'+esc(f.kind==='lesson'||f.kind==='practice'?'HTML':f.kind.toUpperCase())+'</span><span>'+esc(f.label)+'</span>'
+            +(f.kind==='cours'||f.kind==='td'?'<button class="mv" type="button" data-m="'+esc(m.slug)+'" data-c="'+esc(c.slug)+'" data-p="'+esc(f.path)+'">Rename</button>':'')
             +'<button class="del" type="button" data-m="'+esc(m.slug)+'" data-c="'+esc(c.slug)+'" data-p="'+esc(f.path)+'">Delete</button>';
           div.querySelector('ul').appendChild(li);
         });
@@ -869,10 +870,10 @@ UPLOAD_MAIN = r"""<main class="up">
     field(f,'title').focus();
   });
   $('tree').addEventListener('click',function(e){
-    var x=e.target.closest('[data-cancel]'); if(x){e.preventDefault();x.closest('form').remove();}
+    var x=e.target.closest('[data-cancel]'); if(x){e.preventDefault();(x.closest('.mv-host')||x.closest('form')).remove();}
   });
   $('tree').addEventListener('submit',function(e){
-    var f=e.target; if(!f.classList.contains('edit-form'))return;
+    var f=e.target; if(!f.classList.contains('edit-form')||f.classList.contains('mv-form'))return;
     e.preventDefault();
     var mc=find(f.dataset.m,f.dataset.c), m=mc[0], c=mc[1], q={action:'edit',module:m.slug}, err=f.querySelector('.err');
     function clean(n){return field(f,n).value.replace(/\s+/g,' ').trim();}
@@ -904,6 +905,69 @@ UPLOAD_MAIN = r"""<main class="up">
           renderTree(); fillModules(mSel.value);});}
         else{status(li,'bad','Rejected: '+(x[1].error||('HTTP '+x[0])));f.querySelector('button[type=submit]').disabled=false;}
       }).catch(function(){status(li,'bad','Request failed (network)');f.querySelector('button[type=submit]').disabled=false;});
+  });
+  // Rename a PDF, or move it to cours/td of any chapter
+  function sortFiles(c){
+    var g={lesson:0,practice:1,cours:2,td:3};
+    c.files.sort(function(a,b){return (g[a.kind]-g[b.kind])||a.label.localeCompare(b.label,undefined,{numeric:true});});
+  }
+  $('tree').addEventListener('click',function(e){
+    var b=e.target.closest('.mv'); if(!b)return;
+    e.preventDefault();
+    var li=b.closest('li'), open=li.nextElementSibling;
+    if(open&&open.classList.contains('mv-host')){open.remove();return;}
+    var p=b.dataset.p, kind=p.split('/')[0], file=p.slice(kind.length+1);
+    var host=document.createElement('li'); host.className='mv-host';
+    var f=document.createElement('form'); f.className='edit-form mv-form'; f.noValidate=true;
+    f.dataset.m=b.dataset.m; f.dataset.c=b.dataset.c; f.dataset.p=p;
+    f.innerHTML='<label class="f">Name<input type="text" name="name" maxlength="200" autocomplete="off" spellcheck="false"></label>'
+      +'<div class="row"><label class="f">Chapter<select name="where"></select></label>'
+      +'<label class="f">Section<select name="kind"><option value="cours">Cours</option><option value="td">TD</option></select></label></div>'
+      +'<p class="hint">Start the name with a number to set its place in the list; without one it goes last. The page you were on moves with it; a copy kept offline has to be kept again.</p>'
+      +'<p class="err" hidden></p><div class="edit-actions"><button class="btn sm" type="submit">Save</button>'
+      +'<button class="pbtn" type="button" data-cancel>Cancel</button></div>';
+    var sel=field(f,'where');
+    DATA.forEach(function(m){
+      if(!m.chapters.length)return;
+      var g=document.createElement('optgroup'); g.label=m.code+' · '+m.title;
+      m.chapters.forEach(function(c){g.appendChild(opt(m.slug+'/'+c.slug,m.code+' · '+c.label+(c.title?' · '+c.title:'')));});
+      sel.appendChild(g);
+    });
+    field(f,'name').value=file.replace(/\.pdf$/i,'');
+    sel.value=b.dataset.m+'/'+b.dataset.c;
+    field(f,'kind').value=kind;
+    // in another folder the old number means nothing: drop it (goes last) unless I typed my own
+    var stem=file.replace(/\.pdf$/i,''), bare=stem.replace(/^\d+-/,'');
+    function retarget(){
+      var n=field(f,'name'), home=sel.value===b.dataset.m+'/'+b.dataset.c&&field(f,'kind').value===kind;
+      if(home&&n.value===bare)n.value=stem; else if(!home&&n.value===stem)n.value=bare;
+    }
+    sel.addEventListener('change',retarget); field(f,'kind').addEventListener('change',retarget);
+    host.appendChild(f); li.after(host); field(f,'name').focus();
+  });
+  $('tree').addEventListener('submit',function(e){
+    var f=e.target; if(!f.classList.contains('mv-form'))return;
+    e.preventDefault();
+    var err=f.querySelector('.err'), btn=f.querySelector('button[type=submit]');
+    function bad(t){err.textContent=t;err.hidden=false;}
+    var p=f.dataset.p, kind=p.split('/')[0], file=p.slice(kind.length+1);
+    var name=field(f,'name').value.replace(/\s+/g,' ').trim(), w=field(f,'where').value.split('/'), k=field(f,'kind').value;
+    if(!name)return bad('Give it a name.');
+    if(/[\/\\]/.test(name))return bad('No / in the name.');
+    if(name===file.replace(/\.pdf$/i,'')&&w[0]===f.dataset.m&&w[1]===f.dataset.c&&k===kind){f.parentNode.remove();return;}
+    var q={action:'move',module:f.dataset.m,chapter:f.dataset.c,path:p,to_module:w[0],to_chapter:w[1],to_kind:k,name:name};
+    btn.disabled=true; err.hidden=true;
+    var li=row('Rename '+find(q.module)[0].code+' '+q.chapter+' '+file);
+    fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(q)})
+      .then(function(r){return r.json().then(function(j){return [r.status,j];});})
+      .then(function(x){
+        if(x[0]===200&&x[1].id){status(li,'','Queued…');poll(li,x[1].id,0,function(r){
+          dropFromData({module:q.module,chapter:q.chapter,path:q.path});
+          var c=find(r.module,r.chapter)[1];
+          if(c){var parts=r.path.split('/');c.files.push({path:r.path,kind:parts[0],label:parts[1]});sortFiles(c);}
+          renderTree(); fillModules(mSel.value);});}
+        else{status(li,'bad','Rejected: '+(x[1].error||('HTTP '+x[0])));bad(x[1].error||('HTTP '+x[0]));btn.disabled=false;}
+      }).catch(function(){status(li,'bad','Request failed (network)');btn.disabled=false;});
   });
   $('tree').addEventListener('click',function(e){
     var b=e.target.closest('.del'); if(!b)return;
@@ -937,6 +1001,10 @@ UPLOAD_MAIN = r"""<main class="up">
       if(r.state==='done'&&r.edited!==undefined){
         var eg={pushed:'saved to GitHub',committed:'committed',unchanged:'nothing changed','push-failed':'committed on the server, push to GitHub failed (retried by the next update)'}[r.git]||r.git;
         status(li,'ok',r.edited?'Saved · '+r.edited+' · '+eg+(r.answers_moved?' · '+r.answers_moved+' saved answer'+(r.answers_moved===1?'':'s')+' moved':''):'No change');
+        if(ondone)ondone(r);
+      }else if(r.state==='done'&&r.moved){
+        var mg={pushed:'saved to GitHub',committed:'committed','push-failed':'committed on the server, push to GitHub failed (retried by the next update)'}[r.git]||r.git;
+        status(li,'ok','Renamed · '+r.moved+' · '+mg);
         if(ondone)ondone(r);
       }else if(r.state==='done'&&r.deleted){
         var g={pushed:'saved to GitHub',committed:'committed','push-failed':'committed on the server, push to GitHub failed (retried by the next update)'}[r.git]||r.git;

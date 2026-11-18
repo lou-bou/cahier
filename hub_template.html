@@ -140,10 +140,12 @@
   .tree-ch li{display:flex;align-items:center;gap:var(--space-2);padding:6px 0;font-size:var(--text-xs);overflow-wrap:anywhere;min-width:0}
   .tree-ch li+li{border-top:1px solid var(--border)}
   .ft{flex-shrink:0;font:400 11px var(--font-mono);color:var(--text-muted)}
-  .edt,.del{flex-shrink:0;min-height:32px;padding:var(--space-1) var(--space-3);border-radius:var(--radius-sm);font:600 var(--text-xs) var(--font-body);cursor:pointer}
-  .edt{margin-left:auto;color:var(--text);background:var(--surface);border:1px solid var(--border)}
+  .edt,.mv,.del{flex-shrink:0;min-height:32px;padding:var(--space-1) var(--space-3);border-radius:var(--radius-sm);font:600 var(--text-xs) var(--font-body);cursor:pointer}
+  .edt,.mv{margin-left:auto;color:var(--text);background:var(--surface);border:1px solid var(--border)}
   .del{margin-left:auto;color:var(--wrong);background:var(--wrong-bg);border:1px solid transparent}
-  .edt+.del{margin-left:0}
+  .edt+.del,.mv+.del{margin-left:0}
+  .tree-ch li.mv-host{display:block;padding:0;border-top:0}
+  .tree-ch li.mv-host .edit-form{font-size:var(--text-sm)}
   .del:disabled{opacity:.4;cursor:default}
   .edit-form{display:grid;gap:10px;margin:0 var(--space-4) var(--space-4);padding:var(--space-4);border-radius:var(--radius-sm);background:var(--surface-2)}
   .tree-ch .edit-form{margin:10px 0 var(--space-1)}
@@ -184,7 +186,7 @@
   }
 
   @media (hover:hover){
-    .chapter>summary:hover,.pbtn:hover,.edt:hover,a.card:hover,a.row:hover,.continue:hover,.hit:hover,.offline-btn:hover,.icon-btn:hover{background:var(--surface-2)}
+    .chapter>summary:hover,.pbtn:hover,.edt:hover,.mv:hover,a.card:hover,a.row:hover,.continue:hover,.hit:hover,.offline-btn:hover,.icon-btn:hover{background:var(--surface-2)}
     .btn:hover:not(:disabled){opacity:.88}
     .del:hover{border-color:var(--wrong)}
     .drop:hover{border-color:var(--text-muted)}
@@ -203,7 +205,7 @@
     .up input[type=text],.up select{font-size:16px}
     .search-box{font-size:16px}
     details.mod>summary,.tree-h,.tree-ch li{flex-wrap:wrap}
-    .edt,.del{min-height:40px;padding-inline:14px}
+    .edt,.mv,.del{min-height:40px;padding-inline:14px}
   }
 </style>
 </head>

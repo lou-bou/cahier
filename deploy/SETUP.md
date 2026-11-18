@@ -10,8 +10,8 @@ user (`lou`); `sudo` only where shown. Section 10 lists the traps I already fell
 |---|---|---|
 | `build.py` | `modules/` → `dist/` (static site) | by `update.sh`, `ingest.py`, or by hand |
 | Caddy | serves `dist/`, proxies `/api/*` | `caddy.service`, `127.0.0.1:8088` |
-| `server.py` | answers API + upload/delete queue | `studysite-api.service`, `127.0.0.1:8001`, sandboxed |
-| `deploy/ingest.py` | publishes uploads/deletes: place, build, commit, push | `studysite-ingest.path` → `.service`, as `lou` |
+| `server.py` | answers API + upload/edit/move/delete queue | `studysite-api.service`, `127.0.0.1:8001`, sandboxed |
+| `deploy/ingest.py` | publishes uploads, edits, moves and deletes: place, build, commit, push | `studysite-ingest.path` → `.service`, as `lou` |
 | `deploy/update.sh` | pulls new commits + builds; pushes stuck server commits | cron, every 5 min |
 | cloudflared | tunnel from Cloudflare to `localhost:8088` | `cloudflared.service` |
 | Backup | `answers.db` → Google Drive, one copy per day of the month (up to 31) | cron, 03:00 |

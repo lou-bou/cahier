@@ -117,6 +117,35 @@ def edit(job):
             "module": new_m, "chapter": new_ch}
 
 
+def move(job):
+    """Rename and/or move a PDF; its saved page ("Resume at page N") follows it."""
+    m, ch, path = job["module"], job["chapter"], job["path"]
+    add.sync()
+    conn = sqlite3.connect(DB, timeout=10) if os.path.exists(DB) else None
+    to_m = job.get("to_module") or m
+    try:
+        what, to_m, to_ch, rel = add.move(m, ch, path, to_m, job.get("to_chapter"),
+                                          job.get("to_kind"), job.get("name"))
+        moved = conn.execute(
+            "UPDATE OR REPLACE answers SET module=?, page=?, key=? WHERE module=? AND page=? AND key=?",
+            (to_m, f"{to_ch}/pdfs", f"p:pdf:{rel}", m, f"{ch}/pdfs", f"p:pdf:{path}")).rowcount if conn else 0
+        add.build()
+        paths = sorted({os.path.join("modules", m), os.path.join("modules", to_m)})
+        state = add.commit_and_push(paths, f"Move: {what}", ident=IDENT)
+    except Exception:
+        if conn:
+            conn.rollback()
+        restore(*{m, to_m})
+        raise
+    finally:
+        if conn and conn.in_transaction:
+            conn.commit()  # reached only after a successful commit (rollback above otherwise)
+        if conn:
+            conn.close()
+    return {"state": "done", "moved": what, "git": state, "answers_moved": moved,
+            "module": to_m, "chapter": to_ch, "path": rel, "url": f"/{to_m}/{to_ch}/{rel}"}
+
+
 def process(job_dir):
     with open(os.path.join(job_dir, "job.json"), encoding="utf-8") as f:
         job = json.load(f)
@@ -125,6 +154,8 @@ def process(job_dir):
         return delete(job)
     if job.get("op") == "edit":
         return edit(job)
+    if job.get("op") == "move":
+        return move(job)
     m, ch, kind = job["module"], job["chapter"], job["kind"]
     add.sync()
     try:
