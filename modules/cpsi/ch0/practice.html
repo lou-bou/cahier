@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CPSI · Ch 0 · Practice</title>
+<script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
+<style>
+/* study-hub:base v3 — shared by every remake. build.py swaps in the current copy, so uploads never drift */
+/* tokens: a copy of assets/tokens.css so a page previews on its own; the build links the real file */
+/* Cahier design tokens. Light ("paper") is the default; dark ("night ink") follows.
+   Theme switch: <html data-theme="light|dark">; no attribute = follow the OS. */
+
+:root {
+  /* Brand (theme-independent) */
+  --brand-paper: #F3EBDD;
+  --brand-ink:   #1E2A44;
+  --brand-amber: #D9952B;   /* ribbon: progress, "resume", bookmarks */
+  --brand-green: #3D6B5A;   /* correct / completed */
+
+  /* Type */
+  --font-display: "Fraunces", Georgia, serif;          /* headings, lesson titles */
+  --font-body:    "Source Sans 3", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  --text-xs: 0.8125rem;  /* 13 */
+  --text-sm: 0.9375rem;  /* 15 */
+  --text-md: 1.0625rem;  /* 17 body — reading app, slightly larger */
+  --text-lg: 1.375rem;   /* 22 */
+  --text-xl: 1.875rem;   /* 30 */
+  --text-2xl: 2.5rem;    /* 40 lesson hero */
+  --leading-body: 1.65;
+  --measure: 68ch;       /* max line length for lesson text */
+
+  /* Spacing (4px grid) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 72px;
+
+  /* Shape — quiet, paper-like */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Motion — minimal */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-med: 200ms;
+
+  /* Light / paper (default) */
+  --bg:          #F7F1E6;
+  --surface:     #FFFCF6;
+  --surface-2:   #EFE6D6;
+  --border:      #E2D8C6;
+  --text:        #1E2A44;
+  --text-muted:  #5C6475;
+  --accent:      var(--brand-amber);   /* fills: ribbon, progress bars */
+  --accent-text: #8A5A12;              /* amber text/links on paper (AA) */
+  --link:        #1E4FA0;
+  --correct:     #3D6B5A;
+  --correct-bg:  #E3EEE8;
+  --wrong:       #B4443A;
+  --wrong-bg:    #F6E2DF;
+  --note-bg:     #FBF0D9;              /* "In plain words" / worked example boxes */
+  --focus:       #1E4FA0;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:          #141C2E;
+    --surface:     #1B2540;
+    --surface-2:   #233052;
+    --border:      #2E3A5C;
+    --text:        #F3EBDD;
+    --text-muted:  #A9B0C0;
+    --accent:      #E5A945;
+    --accent-text: #F0BE6A;
+    --link:        #8DB4F5;
+    --correct:     #6FA88F;
+    --correct-bg:  #1F3A33;
+    --wrong:       #E07A6E;
+    --wrong-bg:    #43262A;
+    --note-bg:     #2A2A3A;
+    --focus:       #8DB4F5;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:          #141C2E;
+  --surface:     #1B2540;
+  --surface-2:   #233052;
+  --border:      #2E3A5C;
+  --text:        #F3EBDD;
+  --text-muted:  #A9B0C0;
+  --accent:      #E5A945;
+  --accent-text: #F0BE6A;
+  --link:        #8DB4F5;
+  --correct:     #6FA88F;
+  --correct-bg:  #1F3A33;
+  --wrong:       #E07A6E;
+  --wrong-bg:    #43262A;
+  --note-bg:     #2A2A3A;
+  --focus:       #8DB4F5;
+  color-scheme: dark;
+}
+
+/* Project additions, not in the brand kit. */
+:root {
+  /* Figures in lessons. Amber means "my place" only, so diagrams use these. */
+  --fig: #1E4FA0; --fig-soft: #DCE6F5;
+  --c1: #E8C98C; --c2: #E3AE9B; --c3: #AFCDB8; --c4: #B9C6E0;  /* dark text sits on all of them */
+  --font-math: "Cambria Math", "STIX Two Math", Georgia, serif;
+  --primary: var(--text); --on-primary: var(--bg);             /* main buttons: ink, never amber */
+  /* Names older remakes use in their own CSS, mapped onto this theme. */
+  --ink: var(--text); --muted: var(--text-muted); --faint: var(--text-muted);
+  --line: var(--border); --line-strong: var(--border); --sunken: var(--surface-2); --hover: var(--surface-2);
+  --code-bg: var(--surface-2); --ok: var(--correct); --ok-soft: var(--correct-bg); --hi: var(--wrong); --hi-soft: var(--wrong-bg);
+  --accent-soft: var(--fig-soft);
+  --f-display: var(--font-display); --f-body: var(--font-body); --f-mono: var(--font-mono); --f-math: var(--font-math);
+  --l0: #8FA8D3; --l1: #A9BDDF; --l2: #C2D1E8; --l3: #D9E3F1; --l4: #ECF1F8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --fig: #8DB4F5; --fig-soft: #233052; }
+}
+:root[data-theme="dark"] { --fig: #8DB4F5; --fig-soft: #233052; }
+/* /tokens */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:var(--text-md); line-height:var(--leading-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px var(--space-8); margin:0;
+}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--link);text-decoration:underline;text-underline-offset:2px}
+a,button,label,summary,input,select{touch-action:manipulation}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);padding:1px 5px;border-radius:var(--radius-sm)}
+.en{font-weight:600}
+.fr{color:var(--text-muted);font-style:italic;font-weight:400}
+sub,sup{line-height:0}
+.m{font-family:var(--font-math);font-style:italic}
+.ov{text-decoration:overline}
+.eq{font-family:var(--font-math);font-size:var(--text-md);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-4);margin:var(--space-3) 0;overflow-x:auto;white-space:pre}
+.res{display:inline-block;background:var(--correct-bg);color:var(--text);border-radius:var(--radius-sm);padding:1px 7px;font-weight:600;font-variant-numeric:tabular-nums}
+.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--radius-md);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.toggle svg{width:20px;height:20px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:var(--space-6);align-items:center;padding-bottom:var(--space-6)}
+.hero.solo{grid-template-columns:minmax(0,1fr)}
+.eyebrow{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+h1{font-family:var(--font-display);font-weight:600;font-variation-settings:"opsz" 72;font-size:clamp(1.875rem,4.4vw,var(--text-2xl));line-height:1.12;letter-spacing:-.01em;margin:var(--space-2) 0 var(--space-3);text-wrap:balance}
+.lead{font-size:var(--text-lg);line-height:1.4;color:var(--text-muted);max-width:var(--measure);margin:0 0 var(--space-4)}
+.how{display:grid;gap:var(--space-2);margin:0;padding:0;list-style:none;max-width:var(--measure)}
+.how li{display:flex;gap:var(--space-3);align-items:baseline;font-size:var(--text-sm)}
+.how .tag{flex:0 0 auto;min-width:10em}
+.pills{display:flex;flex-wrap:wrap;gap:var(--space-2);margin:0}
+.pill{background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:2px 10px;font:600 var(--text-xs) var(--font-body);font-variant-numeric:tabular-nums}
+.herofig{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);min-width:0;overflow-x:auto}
+.herofig svg{display:block;width:100%;height:auto;min-width:var(--minw,0)}
+.herofig figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2)}
+
+/* resume chip: the ribbon marks my place */
+.resume-chip{display:inline-flex;align-items:center;gap:var(--space-2);min-height:44px;margin:0 0 var(--space-5);padding:var(--space-2) var(--space-4) var(--space-2) var(--space-3);background:var(--note-bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:600 var(--text-sm)/1.3 var(--font-body);text-align:left;cursor:pointer}
+.resume-chip svg{flex-shrink:0;width:9px;height:22px}
+
+/* contents */
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--space-5);padding-block:var(--space-5) var(--space-2);border-top:1px solid var(--border)}
+.part h3{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted);margin:0 0 var(--space-2)}
+.part ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.part a{display:flex;gap:var(--space-3);text-decoration:none;color:var(--text);padding:var(--space-1) 0;font-size:var(--text-sm)}
+.part a small{display:block;color:var(--text-muted);font-size:var(--text-xs);line-height:1.35}
+.part .n{font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);min-width:1.6em}
+.part .sc{margin-left:auto;font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);white-space:nowrap}
+
+/* sections */
+.sec{margin-top:var(--space-7);padding-top:var(--space-6);border-top:1px solid var(--border);scroll-margin-top:var(--space-3)}
+.sec-h{display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap}
+.num{font:600 var(--text-xl)/1.15 var(--font-display);color:var(--text-muted)}
+.sec h2{font-family:var(--font-display);font-weight:600;font-size:var(--text-xl);line-height:1.15;margin:0;text-wrap:balance;min-width:0}
+.sec h2 .fr{font-family:var(--font-body);font-size:.6em}
+.sec h3{font-family:var(--font-display);font-weight:500;font-size:var(--text-lg);line-height:1.2;margin:var(--space-5) 0 var(--space-2)}
+.sec h3 .fr{font-family:var(--font-body);font-size:.75em}
+.sec>p,.sec>ul,.sec>ol{max-width:var(--measure)}
+.back{margin-left:auto;font-size:var(--text-xs);color:var(--text-muted);text-decoration:none}
+.secscore{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.tag{display:inline-block;font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);margin-top:var(--space-5)}
+.plain{margin-top:var(--space-5);background:var(--note-bg);border-left:3px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:var(--space-3) var(--space-4)}
+.intro .plain{margin-top:0;align-self:start}
+.plain p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+.defs{list-style:none;margin:var(--space-5) 0 0;padding:0;display:grid;gap:var(--space-3);min-width:0}
+.intro .defs{margin-top:0}
+.defs li{display:grid;gap:1px;font-size:var(--text-sm)}
+.defs .mean{color:var(--text-muted)}
+.defs .eg{color:var(--text-muted);font-size:var(--text-sm)}
+.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--text)}
+.callout{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.callout>b:first-child{color:var(--text)}
+.callout ol,.callout ul{margin:6px 0 2px;padding-left:22px}
+.callout li{margin:var(--space-1) 0}
+details.more{margin-top:var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4);background:var(--surface)}
+details.more summary{cursor:pointer;font-weight:600}
+
+/* figures */
+.figs{display:flex;flex-wrap:wrap;gap:var(--space-4);margin-top:var(--space-5)}
+.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3)}
+figure.fig{margin:var(--space-5) 0 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3);overflow-x:auto}
+figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-width:var(--maxw,560px);margin-inline:auto}
+figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2);line-height:1.45}
+
+/* worked example */
+.calc{margin-top:var(--space-5);background:var(--note-bg);border-radius:var(--radius-md);padding:var(--space-4)}
+.calc>.tag{color:var(--text)}
+.calc>p{margin:10px 0 0}
+.calc ol{margin:10px 0 0;padding-left:22px}
+.calc li{margin:var(--space-2) 0}
+.calc li>b:first-child{color:var(--text)}
+.calc figure.fig,.calc .figs figure{background:var(--surface)}
+.calc code{background:var(--surface)}
+ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
+ul.ln li::before{content:"\203A\00a0";color:var(--text-muted);font-weight:600}
+
+/* tables */
+.scroll{overflow-x:auto;margin-top:var(--space-3);max-width:100%}
+table.t{border-collapse:collapse;font:400 var(--text-sm)/1.45 var(--font-body);font-variant-numeric:tabular-nums;min-width:260px}
+table.t th{font-weight:600;text-align:left;color:var(--text-muted)}
+table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--border);vertical-align:top}
+table.t.mono{font-family:var(--font-mono);font-size:var(--text-xs)}
+table.t.mono th,table.t.mono td{white-space:nowrap}
+table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--border)}
+table.t.grid th{background:var(--surface-2);color:var(--text)}
+table.t .c,table.t.center th,table.t.center td{text-align:center}
+table.t.center .l{text-align:left}
+table.t td.ok{color:var(--correct);font-weight:600}
+table.t td.bad,table.t td.x{color:var(--wrong);font-weight:600}
+table.t tr.best td{background:var(--correct-bg);font-weight:600}
+
+/* notes and footer */
+.note{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.note.errata{background:var(--surface-2);border-color:transparent;color:var(--text-muted)}
+.note.errata>.tag{color:var(--text-muted)}
+.note ul,.note ol{margin:var(--space-2) 0 0;padding-left:1.2em;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+.foot{margin-top:var(--space-7);padding-top:var(--space-4);border-top:1px solid var(--border);font-size:var(--text-xs);color:var(--text-muted)}
+
+/* practice */
+.prog{display:flex;align-items:center;gap:var(--space-3);max-width:460px;margin-top:var(--space-4);font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.prog .track{flex:1;height:6px;border-radius:var(--radius-sm);background:var(--surface-2);overflow:hidden}
+.prog .fill{display:block;height:100%;width:0;background:var(--accent);transition:width var(--dur-med) var(--ease-out)}
+.legend{display:flex;gap:var(--space-2) var(--space-4);flex-wrap:wrap;margin-top:var(--space-4);font-size:var(--text-sm);color:var(--text-muted)}
+.setmeta{margin:6px 0 0;color:var(--text-muted);font-size:var(--text-sm)}
+.prob{margin-top:var(--space-4);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);scroll-margin-top:var(--space-3);transition:border-color var(--dur-med) var(--ease-out)}
+.prob.ok{border-color:var(--correct)}
+.prob.bad{border-color:var(--wrong)}
+.ph{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.pid{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.ph .pt{font:600 var(--text-md)/1.35 var(--font-body);margin:0;min-width:0;flex:1 1 16em}
+.lvl{font:600 var(--text-xs)/1 var(--font-body);padding:4px 8px;border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text-muted)}
+.lw,.ls,.lc{background:var(--surface-2);color:var(--text-muted)}
+.lc{color:var(--text)}
+.done{margin-left:auto;display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted);cursor:pointer}
+.done input{width:18px;height:18px;accent-color:var(--correct);cursor:pointer}
+.pq{margin-top:10px;max-width:var(--measure)}
+.pq>p,.prob>p{margin:10px 0 0}
+.parts{margin:var(--space-2) 0 0;padding-left:1.4em;display:grid;gap:var(--space-1)}
+.pfs{display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-3)}
+.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-3) var(--space-2)}
+.prob details{margin-top:var(--space-3)}
+.prob summary{cursor:pointer;display:inline-flex;align-items:center;gap:var(--space-2);font:600 var(--text-sm) var(--font-body);color:var(--text);padding:var(--space-1) var(--space-3) var(--space-1) var(--space-2);border-radius:var(--radius-sm);list-style:none}
+.prob summary::-webkit-details-marker{display:none}
+.prob summary::before{content:"\203A";font-size:1.2em;line-height:1;color:var(--text-muted);transition:transform var(--dur-fast) var(--ease-out)}
+.prob details[open]>summary::before{transform:rotate(90deg)}
+.sol{margin-top:var(--space-2);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4) var(--space-3);font-size:var(--text-sm)}
+.sol p{margin:10px 0 0;max-width:var(--measure)}
+.sol li>b:first-child{color:var(--text)}
+.sol .pfs figure,.sol .eq{background:var(--surface)}
+.sol code{background:var(--surface)}
+.aid{margin-top:var(--space-3);background:var(--surface-2);border-radius:var(--radius-sm);padding:10px var(--space-3);font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;overflow-x:auto}
+.aid>b:first-child{color:var(--text)}
+.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;font-variant-numeric:tabular-nums;text-align:center;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob textarea{width:100%;font:inherit;padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob select{font:inherit;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob input.ok,.prob select.ok{border-color:var(--correct);background:var(--correct-bg)}
+.prob input.bad,.prob select.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+table.t.inp td{padding:3px 6px 3px 0}
+.scalars{display:flex;flex-wrap:wrap;gap:var(--space-3) var(--space-4);margin:var(--space-3) 0 0}
+label.sc{display:flex;align-items:center;gap:var(--space-2)}
+label.sc>span{font-weight:600;min-width:34px}
+label.sc small{color:var(--text-muted);font-size:var(--text-xs)}
+.mc{display:grid;gap:var(--space-2);margin:var(--space-3) 0 0}
+label.opt{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--surface);transition:background var(--dur-fast) var(--ease-out),border-color var(--dur-med) var(--ease-out)}
+label.opt.ok{border-color:var(--correct);background:var(--correct-bg)}
+label.opt.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+label.opt.reveal{border-color:var(--correct)}
+/* correct and wrong are never colour alone */
+label.opt.ok::after{content:"\2713\00a0 Correct";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+label.opt.bad::after{content:"\2715\00a0Wrong";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.prob.ok>.ph::after{content:"\2713\00a0 Correct";font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+.prob.bad>.ph::after{content:"\2715\00a0Wrong";font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.fb.ok::before{content:"\2713\00a0"}
+.fb.bad::before{content:"\2715\00a0"}
+label.opt input{margin-top:6px;accent-color:var(--primary)}
+.chips-set{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+label.chipbox{position:relative;border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 12px;cursor:pointer;background:var(--surface);font-size:var(--text-sm)}
+label.chipbox:has(input:checked){border-color:var(--text);background:var(--text);color:var(--bg)}
+label.chipbox input{position:absolute;opacity:0;pointer-events:none}
+.chips-set.ok label.chipbox:has(input:checked){border-color:var(--correct);background:var(--correct-bg);color:var(--correct)}
+.chips-set.bad{outline:2px solid var(--wrong);outline-offset:3px;border-radius:var(--radius-sm)}
+.actions{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center;margin-top:var(--space-3)}
+.b{font:600 var(--text-sm) var(--font-body);min-height:36px;padding:6px var(--space-4);border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.b.chk{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.fb{font-size:var(--text-sm);font-weight:600}
+.fb.ok{color:var(--correct)} .fb.bad{color:var(--wrong)}
+.solution,.expl{margin-top:var(--space-3);border-top:1px solid var(--border);padding-top:10px;font-size:var(--text-sm)}
+.solution>p,.expl>p{margin:6px 0}
+.expl{color:var(--text-muted)}
+
+/* live figure: a process played step by step (REMAKE_BRIEF.md, "Live figures") */
+.live-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);align-items:start}
+figure.fig.live svg{max-width:none;max-height:72vh}
+.live-side{display:grid;gap:var(--space-3);min-width:0}
+.live-side .aid,.live-side .actions{margin-top:0}
+.live-val{display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap}
+.live-val b{font:600 var(--text-xl) var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.live input[type=range]{width:100%;margin:0;accent-color:var(--fig)}
+.live-status{min-height:4.4em;padding:var(--space-2) var(--space-3);background:var(--surface-2);border-left:3px solid var(--fig);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:var(--text-sm)}
+.live-status.ok{border-color:var(--correct);background:var(--correct-bg)}
+.live-status.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+.live-status.ok b{color:var(--correct)} .live-status.bad b{color:var(--wrong)}
+.live table.t{width:100%;min-width:0}
+.live tr.past td{color:var(--text-muted)}
+.live figcaption p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+/* the site zooms pages 125% / 150% on wide screens: keep the whole drawing on screen */
+@media (min-width:1200px){figure.fig.live svg{max-height:58vh}}
+@media (min-width:1500px){figure.fig.live svg{max-height:48vh}}
+
+@media (hover:hover){
+  .toggle:hover,.b:hover,label.opt:hover,.prob summary:hover{background:var(--surface-2)}
+  .b.chk:hover{background:var(--primary);opacity:.88}
+  .part a:hover,.back:hover{color:var(--link)}
+  label.opt.ok:hover{background:var(--correct-bg)} label.opt.bad:hover{background:var(--wrong-bg)}
+}
+@media (max-width:820px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .live-grid{grid-template-columns:minmax(0,1fr)}
+  figure.fig.live svg{max-height:60vh}
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .how li{flex-direction:column;gap:2px}
+  body{padding-top:56px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.toggle{display:none}body{background:#fff}}
+/* /study-hub:base */
+</style>
+<style>
+/* page-specific styles (figures), tokens only; classes prefixed c0- */
+.c0-svg text{fill:var(--text);font-family:var(--font-body);font-size:12px}
+.c0-svg .mu{fill:var(--text-muted)}
+.c0-svg .dk{fill:var(--brand-ink)}
+.c0-svg .ax{stroke:var(--text-muted);stroke-width:1;fill:none}
+.c0-svg .ln{stroke:var(--fig);stroke-width:1.6;fill:none}
+.c0-svg .lnm{stroke:var(--text-muted);stroke-width:1.2;fill:none}
+.c0-svg .box{fill:var(--surface);stroke:var(--border);stroke-width:1.2}
+.c0-svg .soft{fill:var(--fig-soft);stroke:var(--fig);stroke-width:1.4}
+.c0-svg .figc{fill:var(--fig)}
+.c0-svg .k1{fill:var(--c1)} .c0-svg .k2{fill:var(--c2)} .c0-svg .k3{fill:var(--c3)} .c0-svg .k4{fill:var(--c4)}
+.c0-svg .setA{fill:var(--fig-soft);stroke:var(--fig);stroke-width:1.4;fill-opacity:.7}
+.c0-svg .setB{fill:none;stroke:var(--text-muted);stroke-width:1.4;stroke-dasharray:5 3}
+.c0-svg .hit{fill:var(--c3);stroke:var(--fig);stroke-width:1.2}
+.c0-svg .mark{stroke:var(--wrong);stroke-width:2;fill:none}
+.c0-svg .b{font-weight:600}
+.c0-svg .sm{font-size:10.5px}
+.c0-svg .lg{font-size:15px;font-weight:600}
+.c0-svg .mth{font-family:var(--font-math);font-style:italic}
+.c0-pick{display:inline-block;padding:0 6px;border-radius:var(--radius-sm);background:var(--fig-soft);font-weight:600}
+</style>
+</head>
+<body>
+<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/></svg></button>
+<div class="wrap">
+
+<header class="hero" id="top">
+  <div>
+    <div class="eyebrow">CPSI · Chapter 0 · Practice</div>
+    <h1>Counting and probability: practice</h1>
+    <p class="lead">Short problems to get used to each method of the lesson. Type a whole number, a fraction like 3/28, or a decimal like 0.107, then press Check. <span class="fr">(Exercices: analyse combinatoire et probabilités)</span></p>
+    <div class="prog" aria-live="polite"><span id="prog-txt">0 / 0 done</span><span class="track"><span class="fill" id="prog-bar"></span></span></div>
+  </div>
+  <figure class="herofig"><svg class="c0-svg" viewBox="0 0 300 150" role="img" aria-label="Three questions to ask before counting: order, all or some, repetition">
+    <rect x="10" y="20" width="85" height="60" rx="8" class="soft"/><text x="52" y="46" text-anchor="middle" class="b">order</text><text x="52" y="64" text-anchor="middle" class="sm">matters?</text>
+    <rect x="107" y="20" width="85" height="60" rx="8" class="soft"/><text x="150" y="46" text-anchor="middle" class="b">all n</text><text x="150" y="64" text-anchor="middle" class="sm">or p of n?</text>
+    <rect x="204" y="20" width="85" height="60" rx="8" class="soft"/><text x="246" y="46" text-anchor="middle" class="b">repeats</text><text x="246" y="64" text-anchor="middle" class="sm">allowed?</text>
+    <text x="150" y="110" text-anchor="middle" class="sm">then: P(A) = favourable / possible,</text>
+    <text x="150" y="128" text-anchor="middle" class="sm">P(A | B) = P(A ∩ B) / P(B)</text>
+  </svg><figcaption>The questions to ask before you compute.</figcaption></figure>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <div class="part"><h3>Sets</h3><ul>
+    <li><a href="#a"><span class="n">A</span><span>Counting<small>8 problems</small></span></a></li>
+    <li><a href="#b"><span class="n">B</span><span>Events and probability rules<small>7 problems</small></span></a></li>
+    <li><a href="#c"><span class="n">C</span><span>Conditioning and independence<small>6 problems</small></span></a></li>
+  </ul></div>
+</nav>
+<section class="sec" id="a"><div class="sec-h"><span class="num">A</span><h2>Counting <span class="fr">(analyse combinatoire)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <article class="prob" id="p-A1">
+    <div class="ph"><span class="pid">A1</span><h3 class="pt">A menu</h3><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-A1"><span>done</span></label></div>
+    <div class="pq"><p>A restaurant offers 3 starters, 4 main dishes and 2 desserts. A meal is one starter, one main and one dessert. How many different meals are possible?</p><div class="scalars"><label class="sc"><span>meals</span><input type="text" id="q-A1-1" data-ans="24.0" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>Three choices one after the other: multiplication rule (PFAC). 3 × 4 × 2 = <b>24</b> meals.</p></div></details>
+  </article>
+  <article class="prob" id="p-A2">
+    <div class="ph"><span class="pid">A2</span><h3 class="pt">Which formula?</h3><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-A2"><span>done</span></label></div>
+    <div class="pq"><p>For each situation, pick the counting formula (n objects available, p chosen).</p><p>1. A team of 3 people chosen from 10 (order does not matter). <select id="q-A2-1" data-ans="2" aria-label="formula"><option value="">choose…</option><option value="0">nᵖ</option><option value="1">n!</option><option value="2">C(n, p)</option><option value="3">A(n, p)</option></select></p><p>2. A 4-digit PIN code, digits may repeat (n = 10 digits, p = 4). <select id="q-A2-2" data-ans="0" aria-label="formula"><option value="">choose…</option><option value="0">nᵖ</option><option value="1">n!</option><option value="2">C(n, p)</option><option value="3">A(n, p)</option></select></p><p>3. A president and a secretary chosen from 10 members. <select id="q-A2-3" data-ans="3" aria-label="formula"><option value="">choose…</option><option value="0">nᵖ</option><option value="1">n!</option><option value="2">C(n, p)</option><option value="3">A(n, p)</option></select></p><p>4. Putting 5 different books in a row on a shelf. <select id="q-A2-4" data-ans="1" aria-label="formula"><option value="">choose…</option><option value="0">nᵖ</option><option value="1">n!</option><option value="2">C(n, p)</option><option value="3">A(n, p)</option></select></p></div><div class="aid"><b>Reminder</b><br>order + all n → n! · order + p of n → A(n, p) · order + repeats → nᵖ · no order → C(n, p)</div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><ol><li>A team of 3 people chosen from 10 (order does not matter). <b>C(n, p)</b>: a team is a group, order does not matter, nobody twice: combination.</li><li>A 4-digit PIN code, digits may repeat (n = 10 digits, p = 4). <b>nᵖ</b>: ordered positions, a digit can come back: arrangement with repetition, 10⁴ = 10 000.</li><li>A president and a secretary chosen from 10 members. <b>A(n, p)</b>: the two jobs are different places, so order matters, nobody twice: arrangement A(10, 2) = 90.</li><li>Putting 5 different books in a row on a shelf. <b>n!</b>: all 5 books are used, only the order counts: permutation 5! = 120.</li></ol></div></details>
+  </article>
+  <article class="prob" id="p-A3">
+    <div class="ph"><span class="pid">A3</span><h3 class="pt">A podium</h3><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-A3"><span>done</span></label></div>
+    <div class="pq"><p>8 runners run a race. In how many ways can the gold, silver and bronze medals be given (no ties)?</p><div class="scalars"><label class="sc"><span>ways</span><input type="text" id="q-A3-1" data-ans="336.0" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>Order matters (gold ≠ silver), nobody gets two medals: arrangement without repetition.</p><p>A(8, 3) = 8 × 7 × 6 = <b>336</b>.</p></div></details>
+  </article>
+  <article class="prob" id="p-A4">
+    <div class="ph"><span class="pid">A4</span><h3 class="pt">Letters of ANANAS</h3><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-A4"><span>done</span></label></div>
+    <div class="pq"><p>How many different words (with or without meaning) can be written with all 6 letters of the word ANANAS?</p><div class="scalars"><label class="sc"><span>words</span><input type="text" id="q-A4-1" data-ans="60.0" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>All 6 letters are used, some are identical: permutation with repetition. Groups: A ×3, N ×2, S ×1.</p><p>6! / (3! × 2! × 1!) = 720 / 12 = <b>60</b>.</p></div></details>
+  </article>
+  <article class="prob" id="p-A5">
+    <div class="ph"><span class="pid">A5</span><h3 class="pt">Two delegates</h3><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-A5"><span>done</span></label></div>
+    <div class="pq"><p>A class of 12 students elects 2 delegates with the same role. How many different pairs of delegates are possible?</p><div class="scalars"><label class="sc"><span>pairs</span><input type="text" id="q-A5-1" data-ans="66.0" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>Same role, so {Ali, Sara} = {Sara, Ali}: order does not matter, combination.</p><p>C(12, 2) = 12 × 11 / 2 = <b>66</b>.</p></div></details>
+  </article>
+  <article class="prob" id="p-A6">
+    <div class="ph"><span class="pid">A6</span><h3 class="pt">One of each colour</h3><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-A6"><span>done</span></label></div>
+    <div class="pq"><p>An urn holds 5 red and 3 green balls. You take 2 balls at once.</p><p>(a) How many ways give exactly 1 red and 1 green? (b) How many ways are there in total?</p><div class="scalars"><label class="sc"><span>(a)</span><input type="text" id="q-A6-1" data-ans="15.0" data-tol="0.001" aria-label="answer" autocomplete="off"></label><label class="sc"><span>(b)</span><input type="text" id="q-A6-2" data-ans="28.0" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>(a) Choose 1 red among 5 AND 1 green among 3: C(5, 1) × C(3, 1) = 5 × 3 = <b>15</b>.</p><p>(b) Any 2 of the 8 balls, taken at once (no order): C(8, 2) = 8 × 7 / 2 = <b>28</b>.</p><p>So the chance of one of each colour would be 15/28.</p></div></details>
+  </article>
+  <article class="prob" id="p-A7">
+    <div class="ph"><span class="pid">A7</span><h3 class="pt">Same number</h3><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-A7"><span>done</span></label></div>
+    <div class="pq"><p>Which of these is equal to C(7, 2) = 21?</p><div class="mc" data-ans="3" id="mc-A7-1"><label class="opt"><input type="radio" name="q-A7-1" id="q-A7-1-0" value="0"><span>A(7, 2)</span></label><label class="opt"><input type="radio" name="q-A7-1" id="q-A7-1-1" value="1"><span>7 × 2 × 1</span></label><label class="opt"><input type="radio" name="q-A7-1" id="q-A7-1-2" value="2"><span>C(7, 3)</span></label><label class="opt"><input type="radio" name="q-A7-1" id="q-A7-1-3" value="3"><span>C(7, 5)</span></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>Symmetry: C(n, p) = C(n, n − p), so C(7, 2) = C(7, 5) = <b>21</b>.</p><p>A(7, 2) = 42 (order counted), 7 × 2 × 1 = 14, C(7, 3) = 35.</p></div></details>
+  </article>
+  <article class="prob" id="p-A8">
+    <div class="ph"><span class="pid">A8</span><h3 class="pt">A fruit basket</h3><span class="lvl lc">Challenge</span><label class="done"><input type="checkbox" id="done-A8"><span>done</span></label></div>
+    <div class="pq"><p>A shop sells 4 kinds of fruit. You put 3 fruits in a basket; you may take the same kind several times and the order does not matter. How many different baskets?</p><div class="scalars"><label class="sc"><span>baskets</span><input type="text" id="q-A8-1" data-ans="20.0" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>Combination <b>with</b> repetition, n = 4 kinds, p = 3 fruits: C(n + p − 1, p) = C(6, 3) = <b>20</b>.</p></div></details>
+  </article></section><section class="sec" id="b"><div class="sec-h"><span class="num">B</span><h2>Events and probability rules <span class="fr">(évènements et axiomes)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <article class="prob" id="p-B1">
+    <div class="ph"><span class="pid">B1</span><h3 class="pt">Union on a die</h3><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-B1"><span>done</span></label></div>
+    <div class="pq"><p>Throw a die, Ω = {1, 2, 3, 4, 5, 6}. A = “at least 5” and B = “even”. Which set is A ∪ B?</p><div class="mc" data-ans="1" id="mc-B1-1"><label class="opt"><input type="radio" name="q-B1-1" id="q-B1-1-0" value="0"><span>{6}</span></label><label class="opt"><input type="radio" name="q-B1-1" id="q-B1-1-1" value="1"><span>{2, 4, 5, 6}</span></label><label class="opt"><input type="radio" name="q-B1-1" id="q-B1-1-2" value="2"><span>{2, 4, 6}</span></label><label class="opt"><input type="radio" name="q-B1-1" id="q-B1-1-3" value="3"><span>{1, 2, 3, 4, 5}</span></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>A = {5, 6}, B = {2, 4, 6}. “A or B” keeps every face in at least one of them: A ∪ B = <b>{2, 4, 5, 6}</b>.</p><p>{6} is A ∩ B; {2, 4, 6} is only B.</p></div></details>
+  </article>
+  <article class="prob" id="p-B2">
+    <div class="ph"><span class="pid">B2</span><h3 class="pt">Using the rules</h3><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-B2"><span>done</span></label></div>
+    <div class="pq"><p>P(A) = 0.5, P(B) = 0.4 and P(A ∩ B) = 0.2. Compute (a) P(A ∪ B), (b) P(Ā ∩ B̄), (c) P(A \ B).</p><div class="scalars"><label class="sc"><span>(a)</span><input type="text" id="q-B2-1" data-ans="0.7" data-tol="0.001" aria-label="answer" autocomplete="off"></label><label class="sc"><span>(b)</span><input type="text" id="q-B2-2" data-ans="0.3" data-tol="0.001" aria-label="answer" autocomplete="off"></label><label class="sc"><span>(c)</span><input type="text" id="q-B2-3" data-ans="0.3" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div><div class="aid">P(A ∪ B) = P(A) + P(B) − P(A ∩ B)<br>P(Ā) = 1 − P(A)<br>P(A \ B) = P(A) − P(A ∩ B)</div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>(a) P(A ∪ B) = 0.5 + 0.4 − 0.2 = <b>0.7</b>.</p><p>(b) De Morgan: Ā ∩ B̄ = not(A ∪ B), so 1 − 0.7 = <b>0.3</b>.</p><p>(c) P(A \ B) = P(A) − P(A ∩ B) = 0.5 − 0.2 = <b>0.3</b>.</p></div></details>
+  </article>
+  <article class="prob" id="p-B3">
+    <div class="ph"><span class="pid">B3</span><h3 class="pt">Spot the σ-algebra</h3><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-B3"><span>done</span></label></div>
+    <div class="pq"><p>Ω = {1, 2, 3}. Which family is a σ-algebra (tribu) on Ω?</p><div class="mc" data-ans="0" id="mc-B3-1"><label class="opt"><input type="radio" name="q-B3-1" id="q-B3-1-0" value="0"><span>{∅, {3}, {1, 2}, Ω}</span></label><label class="opt"><input type="radio" name="q-B3-1" id="q-B3-1-1" value="1"><span>{∅, {1}, {2}, {1, 2}, Ω}</span></label><label class="opt"><input type="radio" name="q-B3-1" id="q-B3-1-2" value="2"><span>{∅, {1}, {1, 2}}</span></label><label class="opt"><input type="radio" name="q-B3-1" id="q-B3-1-3" value="3"><span>{{1}, {2, 3}, Ω}</span></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><b>{∅, {3}, {1, 2}, Ω}</b>: it contains Ω, each complement ({3} ↔ {1, 2}, ∅ ↔ Ω) and every union. It is {∅, A, Ā, Ω} with A = {3}.</p><p>{∅, {1}, {2}, {1, 2}, Ω}: the complement of {1} is {2, 3}, missing. {∅, {1}, {1, 2}}: Ω is missing. {{1}, {2, 3}, Ω}: ∅ (the complement of Ω) is missing.</p></div></details>
+  </article>
+  <article class="prob" id="p-B4">
+    <div class="ph"><span class="pid">B4</span><h3 class="pt">Two dice</h3><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-B4"><span>done</span></label></div>
+    <div class="pq"><p>Throw two fair dice (one red, one blue). What is the probability that the sum is 7?</p><div class="scalars"><label class="sc"><span>P</span><input type="text" id="q-B4-1" data-ans="0.16666666666666666" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>Ω = all pairs (red, blue): 6 × 6 = 36 equally likely outcomes.</p><p>Sum 7: (1,6), (2,5), (3,4), (4,3), (5,2), (6,1): 6 favourable. P = 6/36 = <b>1/6</b>.</p></div></details>
+  </article>
+  <article class="prob" id="p-B5">
+    <div class="ph"><span class="pid">B5</span><h3 class="pt">Two white balls</h3><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-B5"><span>done</span></label></div>
+    <div class="pq"><p>An urn holds 6 white and 4 black balls. You take 2 at once. Probability that both are white?</p><div class="scalars"><label class="sc"><span>P</span><input type="text" id="q-B5-1" data-ans="0.3333333333333333" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>Possible: C(10, 2) = 45. Favourable: 2 of the 6 white, C(6, 2) = 15.</p><p>P = 15/45 = <b>1/3</b>.</p></div></details>
+  </article>
+  <article class="prob" id="p-B6">
+    <div class="ph"><span class="pid">B6</span><h3 class="pt">Maths or physics</h3><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-B6"><span>done</span></label></div>
+    <div class="pq"><p>In a class of 30 students, 18 like maths, 12 like physics and 7 like both. (a) How many like at least one of the two? (b) A student is picked at random: probability he or she likes at least one?</p><div class="scalars"><label class="sc"><span>(a)</span><input type="text" id="q-B6-1" data-ans="23.0" data-tol="0.001" aria-label="answer" autocomplete="off"></label><label class="sc"><span>(b)</span><input type="text" id="q-B6-2" data-ans="0.7666666666666667" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>(a) Poincaré for 2 sets: 18 + 12 − 7 = <b>23</b> (the 7 were counted twice).</p><p>(b) Equally likely: 23/30 ≈ <b>0.767</b>.</p></div></details>
+  </article>
+  <article class="prob" id="p-B7">
+    <div class="ph"><span class="pid">B7</span><h3 class="pt">Counting events</h3><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-B7"><span>done</span></label></div>
+    <div class="pq"><p>Ω = {a, b, c, d}. How many subsets (events) does the power set 𝒫(Ω) contain, counting ∅ and Ω?</p><div class="scalars"><label class="sc"><span>subsets</span><input type="text" id="q-B7-1" data-ans="16.0" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>|Ω| = 4, so |𝒫(Ω)| = 2⁴ = <b>16</b>. Each element is either in or out of a subset: 2 × 2 × 2 × 2.</p></div></details>
+  </article></section><section class="sec" id="c"><div class="sec-h"><span class="num">C</span><h2>Conditioning and independence <span class="fr">(conditionnement et indépendance)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <article class="prob" id="p-C1">
+    <div class="ph"><span class="pid">C1</span><h3 class="pt">A six, given even</h3><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-C1"><span>done</span></label></div>
+    <div class="pq"><p>Throw a fair die. Knowing that the result is even, what is the probability that it is a 6?</p><div class="scalars"><label class="sc"><span>P</span><input type="text" id="q-C1-1" data-ans="0.3333333333333333" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>B = even = {2, 4, 6}, P(B) = 1/2. A = {6}, A ∩ B = {6}, P = 1/6.</p><p>P(A | B) = (1/6) / (1/2) = <b>1/3</b>: inside B there are 3 faces, one is a 6.</p></div></details>
+  </article>
+  <article class="prob" id="p-C2">
+    <div class="ph"><span class="pid">C2</span><h3 class="pt">Two white in a row</h3><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-C2"><span>done</span></label></div>
+    <div class="pq"><p>An urn holds 5 red and 3 white balls. Draw 2 balls one at a time, without putting back. Probability that both are white?</p><div class="scalars"><label class="sc"><span>P</span><input type="text" id="q-C2-1" data-ans="0.10714285714285714" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>1st white: 3/8. Then 2 white remain among 7: P(2nd white | 1st white) = 2/7.</p><p>Compound probability: 3/8 × 2/7 = 6/56 = <b>3/28 ≈ 0.107</b>.</p></div></details>
+  </article>
+  <article class="prob" id="p-C3">
+    <div class="ph"><span class="pid">C3</span><h3 class="pt">Two machines</h3><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-C3"><span>done</span></label></div>
+    <div class="pq"><p>A factory has two machines. M1 makes 60% of the parts and M2 makes 40%. 2% of M1's parts and 5% of M2's parts are defective (D).</p><p>(a) A part is picked at random: probability it is defective? (b) It is defective: probability it came from M2?</p><div class="scalars"><label class="sc"><span>(a)</span><input type="text" id="q-C3-1" data-ans="0.032" data-tol="0.0005" aria-label="answer" autocomplete="off"></label><label class="sc"><span>(b)</span><input type="text" id="q-C3-2" data-ans="0.625" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div><div class="aid">P(D) = Σ P(D | Mᵢ) P(Mᵢ)<br>P(M₂ | D) = P(D | M₂) P(M₂) / P(D)</div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>(a) Total probability over {M1, M2}: P(D) = 0.6 × 0.02 + 0.4 × 0.05 = 0.012 + 0.020 = <b>0.032</b>.</p><p>(b) Bayes: P(M2 | D) = 0.020 / 0.032 = <b>0.625</b>. M2 makes fewer parts but most of the defective ones.</p></div></details>
+  </article>
+  <article class="prob" id="p-C4">
+    <div class="ph"><span class="pid">C4</span><h3 class="pt">Independent or not?</h3><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-C4"><span>done</span></label></div>
+    <div class="pq"><p>P(A) = 0.4, P(B) = 0.5 and P(A ∩ B) = 0.2. What can you say about A and B?</p><div class="mc" data-ans="2" id="mc-C4-1"><label class="opt"><input type="radio" name="q-C4-1" id="q-C4-1-0" value="0"><span>Incompatible</span></label><label class="opt"><input type="radio" name="q-C4-1" id="q-C4-1-1" value="1"><span>Neither of the two</span></label><label class="opt"><input type="radio" name="q-C4-1" id="q-C4-1-2" value="2"><span>Independent</span></label><label class="opt"><input type="radio" name="q-C4-1" id="q-C4-1-3" value="3"><span>Both at once</span></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>P(A) × P(B) = 0.4 × 0.5 = 0.2 = P(A ∩ B): <b>independent</b>.</p><p>They are not incompatible, since P(A ∩ B) = 0.2 ≠ 0.</p></div></details>
+  </article>
+  <article class="prob" id="p-C5">
+    <div class="ph"><span class="pid">C5</span><h3 class="pt">Incompatible events</h3><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-C5"><span>done</span></label></div>
+    <div class="pq"><p>A and B are incompatible (A ∩ B = ∅), with P(A) > 0 and P(B) > 0. Are they independent?</p><div class="mc" data-ans="1" id="mc-C5-1"><label class="opt"><input type="radio" name="q-C5-1" id="q-C5-1-0" value="0"><span>They are always independent</span></label><label class="opt"><input type="radio" name="q-C5-1" id="q-C5-1-1" value="1"><span>They are never independent</span></label><label class="opt"><input type="radio" name="q-C5-1" id="q-C5-1-2" value="2"><span>Independent only if P(A) = P(B)</span></label><label class="opt"><input type="radio" name="q-C5-1" id="q-C5-1-3" value="3"><span>We cannot say anything</span></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>P(A ∩ B) = P(∅) = 0, but P(A) × P(B) > 0. The product rule fails: <b>they are never independent</b>. If A happens, B surely does not, so A carries information about B.</p></div></details>
+  </article>
+  <article class="prob" id="p-C6">
+    <div class="ph"><span class="pid">C6</span><h3 class="pt">Product rule</h3><span class="lvl lc">Challenge</span><label class="done"><input type="checkbox" id="done-C6"><span>done</span></label></div>
+    <div class="pq"><p>A and B are independent, P(A) = 0.3 and P(B) = 0.6. Compute (a) P(A ∩ B) and (b) P(A ∪ B).</p><div class="scalars"><label class="sc"><span>(a)</span><input type="text" id="q-C6-1" data-ans="0.18" data-tol="0.001" aria-label="answer" autocomplete="off"></label><label class="sc"><span>(b)</span><input type="text" id="q-C6-2" data-ans="0.72" data-tol="0.001" aria-label="answer" autocomplete="off"></label></div></div>
+    <div class="actions"><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>(a) Independent: P(A ∩ B) = 0.3 × 0.6 = <b>0.18</b>.</p><p>(b) P(A ∪ B) = 0.3 + 0.6 − 0.18 = <b>0.72</b>.</p></div></details>
+  </article></section>
+<section class="sec" id="notes">
+  <div class="note errata"><span class="tag">Notes on the original course</span>
+    <ul><li>These problems are new, written to practise each method of the lesson. The course's own examples are worked out in the lesson.</li>
+    <li>The lesson lists the errors found in the course text (for example Ā = {1, 3, 5}, not {1, 3, 6}).</li></ul>
+  </div>
+</section><script>
+/* auto-check: compares typed numbers (fractions or decimals) and choices with the answers in data-ans */
+(function(){
+  function val(s){s=(s||"").trim().replace(",",".").replace(/\s+/g,"");if(!s)return null;
+    var m=s.match(/^(-?\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);if(m)return parseFloat(m[1])/parseFloat(m[2]);
+    if(/^-?\d*\.?\d+$/.test(s))return parseFloat(s);return NaN;}
+  function fields(p){return p.querySelectorAll('input[type=text][data-ans],select[data-ans],.mc[data-ans]');}
+  function answered(p){var a=false;p.querySelectorAll('input[type=text][data-ans],select[data-ans]').forEach(function(e){if(e.value)a=true;});
+    p.querySelectorAll('.mc input:checked').forEach(function(){a=true;});return a;}
+  function check(p){
+    var all=true,n=0,ok=0;
+    fields(p).forEach(function(e){n++;var good=false;
+      if(e.classList.contains('mc')){var c=e.querySelector('input:checked');
+        e.querySelectorAll('label.opt').forEach(function(l){l.classList.remove('ok','bad');});
+        if(c){good=c.value===e.dataset.ans;c.closest('label.opt').classList.add(good?'ok':'bad');}}
+      else if(e.tagName==='SELECT'){good=e.value!==''&&e.value===e.dataset.ans;e.classList.remove('ok','bad');if(e.value)e.classList.add(good?'ok':'bad');}
+      else{var v=val(e.value),a=parseFloat(e.dataset.ans),t=parseFloat(e.dataset.tol||"0.001");
+        good=v!==null&&!isNaN(v)&&Math.abs(v-a)<=t*Math.max(1,Math.abs(a));e.classList.remove('ok','bad');if(e.value)e.classList.add(good?'ok':'bad');}
+      if(good)ok++;else all=false;});
+    p.classList.remove('ok','bad');p.classList.add(all?'ok':'bad');
+    var fb=p.querySelector('.fb');fb.className='fb '+(all?'ok':'bad');fb.textContent=all?'All correct':(ok+' of '+n+' correct');
+  }
+  function reset(p){
+    p.querySelectorAll('input[type=text][data-ans]').forEach(function(e){e.value='';e.classList.remove('ok','bad');e.dispatchEvent(new Event('input',{bubbles:true}));});
+    p.querySelectorAll('select[data-ans]').forEach(function(e){e.value='';e.classList.remove('ok','bad');e.dispatchEvent(new Event('change',{bubbles:true}));});
+    p.querySelectorAll('.mc input').forEach(function(e){if(e.checked){e.checked=false;e.dispatchEvent(new Event('change',{bubbles:true}));}});
+    p.querySelectorAll('label.opt').forEach(function(l){l.classList.remove('ok','bad');});
+    p.classList.remove('ok','bad');var fb=p.querySelector('.fb');fb.className='fb';fb.textContent='';
+  }
+  document.querySelectorAll('.prob').forEach(function(p){
+    p.querySelector('[data-act=check]').addEventListener('click',function(){check(p);});
+    p.querySelector('[data-act=reset]').addEventListener('click',function(){reset(p);});
+  });
+  document.addEventListener('studyhub:restored',function(){document.querySelectorAll('.prob').forEach(function(p){if(answered(p))check(p);});});
+})();
+</script>
+<footer class="foot">CPSI, Chapter 0 practice. New problems on the methods of the lesson; every answer computed by program (src/practice_gen.py).</footer>
+</div>
+<script>
+/* study-hub:progress — practice pages: counts ticked .done boxes */
+(function(){
+  var boxes=document.querySelectorAll('.done input'), txt=document.getElementById('prog-txt'), bar=document.getElementById('prog-bar');
+  if(!boxes.length||!txt) return;
+  function upd(){var n=0;boxes.forEach(function(b){if(b.checked)n++;});txt.textContent=n+' / '+boxes.length+' done';bar.style.width=(100*n/boxes.length)+'%';}
+  boxes.forEach(function(b){b.addEventListener('change',upd);});
+  upd();
+})();
+</script>
+</body>
+</html>
