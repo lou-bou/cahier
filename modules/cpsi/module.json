@@ -3,5 +3,7 @@
   "title": "Probability Theory",
   "blurb": "Calcul de probabilités.",
   "order": 9,
-  "chapters": {}
+  "chapters": {
+    "ch0": "Chapter 0"
+  }
 }
