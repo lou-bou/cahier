@@ -4,6 +4,7 @@
   "blurb": "Calcul de probabilités.",
   "order": 9,
   "chapters": {
-    "ch0": "Chapter 0"
+    "ch0": "Chapter 0",
+    "ch1": "Chapter 1"
   }
 }

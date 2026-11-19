@@ -1,0 +1,931 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CPSI · Ch 1 · Lesson</title>
+<script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
+<style>
+/* study-hub:base v3 — shared by every remake. build.py swaps in the current copy, so uploads never drift */
+/* tokens: a copy of assets/tokens.css so a page previews on its own; the build links the real file */
+/* Cahier design tokens. Light ("paper") is the default; dark ("night ink") follows.
+   Theme switch: <html data-theme="light|dark">; no attribute = follow the OS. */
+
+:root {
+  /* Brand (theme-independent) */
+  --brand-paper: #F3EBDD;
+  --brand-ink:   #1E2A44;
+  --brand-amber: #D9952B;   /* ribbon: progress, "resume", bookmarks */
+  --brand-green: #3D6B5A;   /* correct / completed */
+
+  /* Type */
+  --font-display: "Fraunces", Georgia, serif;          /* headings, lesson titles */
+  --font-body:    "Source Sans 3", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  --text-xs: 0.8125rem;  /* 13 */
+  --text-sm: 0.9375rem;  /* 15 */
+  --text-md: 1.0625rem;  /* 17 body — reading app, slightly larger */
+  --text-lg: 1.375rem;   /* 22 */
+  --text-xl: 1.875rem;   /* 30 */
+  --text-2xl: 2.5rem;    /* 40 lesson hero */
+  --leading-body: 1.65;
+  --measure: 68ch;       /* max line length for lesson text */
+
+  /* Spacing (4px grid) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 72px;
+
+  /* Shape — quiet, paper-like */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Motion — minimal */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-med: 200ms;
+
+  /* Light / paper (default) */
+  --bg:          #F7F1E6;
+  --surface:     #FFFCF6;
+  --surface-2:   #EFE6D6;
+  --border:      #E2D8C6;
+  --text:        #1E2A44;
+  --text-muted:  #5C6475;
+  --accent:      var(--brand-amber);   /* fills: ribbon, progress bars */
+  --accent-text: #8A5A12;              /* amber text/links on paper (AA) */
+  --link:        #1E4FA0;
+  --correct:     #3D6B5A;
+  --correct-bg:  #E3EEE8;
+  --wrong:       #B4443A;
+  --wrong-bg:    #F6E2DF;
+  --note-bg:     #FBF0D9;              /* "In plain words" / worked example boxes */
+  --focus:       #1E4FA0;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:          #141C2E;
+    --surface:     #1B2540;
+    --surface-2:   #233052;
+    --border:      #2E3A5C;
+    --text:        #F3EBDD;
+    --text-muted:  #A9B0C0;
+    --accent:      #E5A945;
+    --accent-text: #F0BE6A;
+    --link:        #8DB4F5;
+    --correct:     #6FA88F;
+    --correct-bg:  #1F3A33;
+    --wrong:       #E07A6E;
+    --wrong-bg:    #43262A;
+    --note-bg:     #2A2A3A;
+    --focus:       #8DB4F5;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:          #141C2E;
+  --surface:     #1B2540;
+  --surface-2:   #233052;
+  --border:      #2E3A5C;
+  --text:        #F3EBDD;
+  --text-muted:  #A9B0C0;
+  --accent:      #E5A945;
+  --accent-text: #F0BE6A;
+  --link:        #8DB4F5;
+  --correct:     #6FA88F;
+  --correct-bg:  #1F3A33;
+  --wrong:       #E07A6E;
+  --wrong-bg:    #43262A;
+  --note-bg:     #2A2A3A;
+  --focus:       #8DB4F5;
+  color-scheme: dark;
+}
+
+/* Project additions, not in the brand kit. */
+:root {
+  /* Figures in lessons. Amber means "my place" only, so diagrams use these. */
+  --fig: #1E4FA0; --fig-soft: #DCE6F5;
+  --c1: #E8C98C; --c2: #E3AE9B; --c3: #AFCDB8; --c4: #B9C6E0;  /* dark text sits on all of them */
+  --font-math: "Cambria Math", "STIX Two Math", Georgia, serif;
+  --primary: var(--text); --on-primary: var(--bg);             /* main buttons: ink, never amber */
+  /* Names older remakes use in their own CSS, mapped onto this theme. */
+  --ink: var(--text); --muted: var(--text-muted); --faint: var(--text-muted);
+  --line: var(--border); --line-strong: var(--border); --sunken: var(--surface-2); --hover: var(--surface-2);
+  --code-bg: var(--surface-2); --ok: var(--correct); --ok-soft: var(--correct-bg); --hi: var(--wrong); --hi-soft: var(--wrong-bg);
+  --accent-soft: var(--fig-soft);
+  --f-display: var(--font-display); --f-body: var(--font-body); --f-mono: var(--font-mono); --f-math: var(--font-math);
+  --l0: #8FA8D3; --l1: #A9BDDF; --l2: #C2D1E8; --l3: #D9E3F1; --l4: #ECF1F8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --fig: #8DB4F5; --fig-soft: #233052; }
+}
+:root[data-theme="dark"] { --fig: #8DB4F5; --fig-soft: #233052; }
+/* /tokens */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:var(--text-md); line-height:var(--leading-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px var(--space-8); margin:0;
+}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--link);text-decoration:underline;text-underline-offset:2px}
+a,button,label,summary,input,select{touch-action:manipulation}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);padding:1px 5px;border-radius:var(--radius-sm)}
+.en{font-weight:600}
+.fr{color:var(--text-muted);font-style:italic;font-weight:400}
+sub,sup{line-height:0}
+.m{font-family:var(--font-math);font-style:italic}
+.ov{text-decoration:overline}
+.eq{font-family:var(--font-math);font-size:var(--text-md);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-4);margin:var(--space-3) 0;overflow-x:auto;white-space:pre}
+.res{display:inline-block;background:var(--correct-bg);color:var(--text);border-radius:var(--radius-sm);padding:1px 7px;font-weight:600;font-variant-numeric:tabular-nums}
+.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--radius-md);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.toggle svg{width:20px;height:20px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:var(--space-6);align-items:center;padding-bottom:var(--space-6)}
+.hero.solo{grid-template-columns:minmax(0,1fr)}
+.eyebrow{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+h1{font-family:var(--font-display);font-weight:600;font-variation-settings:"opsz" 72;font-size:clamp(1.875rem,4.4vw,var(--text-2xl));line-height:1.12;letter-spacing:-.01em;margin:var(--space-2) 0 var(--space-3);text-wrap:balance}
+.lead{font-size:var(--text-lg);line-height:1.4;color:var(--text-muted);max-width:var(--measure);margin:0 0 var(--space-4)}
+.how{display:grid;gap:var(--space-2);margin:0;padding:0;list-style:none;max-width:var(--measure)}
+.how li{display:flex;gap:var(--space-3);align-items:baseline;font-size:var(--text-sm)}
+.how .tag{flex:0 0 auto;min-width:10em}
+.pills{display:flex;flex-wrap:wrap;gap:var(--space-2);margin:0}
+.pill{background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:2px 10px;font:600 var(--text-xs) var(--font-body);font-variant-numeric:tabular-nums}
+.herofig{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);min-width:0;overflow-x:auto}
+.herofig svg{display:block;width:100%;height:auto;min-width:var(--minw,0)}
+.herofig figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2)}
+
+/* resume chip: the ribbon marks my place */
+.resume-chip{display:inline-flex;align-items:center;gap:var(--space-2);min-height:44px;margin:0 0 var(--space-5);padding:var(--space-2) var(--space-4) var(--space-2) var(--space-3);background:var(--note-bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:600 var(--text-sm)/1.3 var(--font-body);text-align:left;cursor:pointer}
+.resume-chip svg{flex-shrink:0;width:9px;height:22px}
+
+/* contents */
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--space-5);padding-block:var(--space-5) var(--space-2);border-top:1px solid var(--border)}
+.part h3{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted);margin:0 0 var(--space-2)}
+.part ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.part a{display:flex;gap:var(--space-3);text-decoration:none;color:var(--text);padding:var(--space-1) 0;font-size:var(--text-sm)}
+.part a small{display:block;color:var(--text-muted);font-size:var(--text-xs);line-height:1.35}
+.part .n{font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);min-width:1.6em}
+.part .sc{margin-left:auto;font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);white-space:nowrap}
+
+/* sections */
+.sec{margin-top:var(--space-7);padding-top:var(--space-6);border-top:1px solid var(--border);scroll-margin-top:var(--space-3)}
+.sec-h{display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap}
+.num{font:600 var(--text-xl)/1.15 var(--font-display);color:var(--text-muted)}
+.sec h2{font-family:var(--font-display);font-weight:600;font-size:var(--text-xl);line-height:1.15;margin:0;text-wrap:balance;min-width:0}
+.sec h2 .fr{font-family:var(--font-body);font-size:.6em}
+.sec h3{font-family:var(--font-display);font-weight:500;font-size:var(--text-lg);line-height:1.2;margin:var(--space-5) 0 var(--space-2)}
+.sec h3 .fr{font-family:var(--font-body);font-size:.75em}
+.sec>p,.sec>ul,.sec>ol{max-width:var(--measure)}
+.back{margin-left:auto;font-size:var(--text-xs);color:var(--text-muted);text-decoration:none}
+.secscore{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.tag{display:inline-block;font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);margin-top:var(--space-5)}
+.plain{margin-top:var(--space-5);background:var(--note-bg);border-left:3px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:var(--space-3) var(--space-4)}
+.intro .plain{margin-top:0;align-self:start}
+.plain p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+.defs{list-style:none;margin:var(--space-5) 0 0;padding:0;display:grid;gap:var(--space-3);min-width:0}
+.intro .defs{margin-top:0}
+.defs li{display:grid;gap:1px;font-size:var(--text-sm)}
+.defs .mean{color:var(--text-muted)}
+.defs .eg{color:var(--text-muted);font-size:var(--text-sm)}
+.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--text)}
+.callout{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.callout>b:first-child{color:var(--text)}
+.callout ol,.callout ul{margin:6px 0 2px;padding-left:22px}
+.callout li{margin:var(--space-1) 0}
+details.more{margin-top:var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4);background:var(--surface)}
+details.more summary{cursor:pointer;font-weight:600}
+
+/* figures */
+.figs{display:flex;flex-wrap:wrap;gap:var(--space-4);margin-top:var(--space-5)}
+.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3)}
+figure.fig{margin:var(--space-5) 0 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3);overflow-x:auto}
+figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-width:var(--maxw,560px);margin-inline:auto}
+figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2);line-height:1.45}
+
+/* worked example */
+.calc{margin-top:var(--space-5);background:var(--note-bg);border-radius:var(--radius-md);padding:var(--space-4)}
+.calc>.tag{color:var(--text)}
+.calc>p{margin:10px 0 0}
+.calc ol{margin:10px 0 0;padding-left:22px}
+.calc li{margin:var(--space-2) 0}
+.calc li>b:first-child{color:var(--text)}
+.calc figure.fig,.calc .figs figure{background:var(--surface)}
+.calc code{background:var(--surface)}
+ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
+ul.ln li::before{content:"\203A\00a0";color:var(--text-muted);font-weight:600}
+
+/* tables */
+.scroll{overflow-x:auto;margin-top:var(--space-3);max-width:100%}
+table.t{border-collapse:collapse;font:400 var(--text-sm)/1.45 var(--font-body);font-variant-numeric:tabular-nums;min-width:260px}
+table.t th{font-weight:600;text-align:left;color:var(--text-muted)}
+table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--border);vertical-align:top}
+table.t.mono{font-family:var(--font-mono);font-size:var(--text-xs)}
+table.t.mono th,table.t.mono td{white-space:nowrap}
+table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--border)}
+table.t.grid th{background:var(--surface-2);color:var(--text)}
+table.t .c,table.t.center th,table.t.center td{text-align:center}
+table.t.center .l{text-align:left}
+table.t td.ok{color:var(--correct);font-weight:600}
+table.t td.bad,table.t td.x{color:var(--wrong);font-weight:600}
+table.t tr.best td{background:var(--correct-bg);font-weight:600}
+
+/* notes and footer */
+.note{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.note.errata{background:var(--surface-2);border-color:transparent;color:var(--text-muted)}
+.note.errata>.tag{color:var(--text-muted)}
+.note ul,.note ol{margin:var(--space-2) 0 0;padding-left:1.2em;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+.foot{margin-top:var(--space-7);padding-top:var(--space-4);border-top:1px solid var(--border);font-size:var(--text-xs);color:var(--text-muted)}
+
+/* practice */
+.prog{display:flex;align-items:center;gap:var(--space-3);max-width:460px;margin-top:var(--space-4);font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.prog .track{flex:1;height:6px;border-radius:var(--radius-sm);background:var(--surface-2);overflow:hidden}
+.prog .fill{display:block;height:100%;width:0;background:var(--accent);transition:width var(--dur-med) var(--ease-out)}
+.legend{display:flex;gap:var(--space-2) var(--space-4);flex-wrap:wrap;margin-top:var(--space-4);font-size:var(--text-sm);color:var(--text-muted)}
+.setmeta{margin:6px 0 0;color:var(--text-muted);font-size:var(--text-sm)}
+.prob{margin-top:var(--space-4);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);scroll-margin-top:var(--space-3);transition:border-color var(--dur-med) var(--ease-out)}
+.prob.ok{border-color:var(--correct)}
+.prob.bad{border-color:var(--wrong)}
+.ph{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.pid{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.ph .pt{font:600 var(--text-md)/1.35 var(--font-body);margin:0;min-width:0;flex:1 1 16em}
+.lvl{font:600 var(--text-xs)/1 var(--font-body);padding:4px 8px;border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text-muted)}
+.lw,.ls,.lc{background:var(--surface-2);color:var(--text-muted)}
+.lc{color:var(--text)}
+.done{margin-left:auto;display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted);cursor:pointer}
+.done input{width:18px;height:18px;accent-color:var(--correct);cursor:pointer}
+.pq{margin-top:10px;max-width:var(--measure)}
+.pq>p,.prob>p{margin:10px 0 0}
+.parts{margin:var(--space-2) 0 0;padding-left:1.4em;display:grid;gap:var(--space-1)}
+.pfs{display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-3)}
+.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-3) var(--space-2)}
+.prob details{margin-top:var(--space-3)}
+.prob summary{cursor:pointer;display:inline-flex;align-items:center;gap:var(--space-2);font:600 var(--text-sm) var(--font-body);color:var(--text);padding:var(--space-1) var(--space-3) var(--space-1) var(--space-2);border-radius:var(--radius-sm);list-style:none}
+.prob summary::-webkit-details-marker{display:none}
+.prob summary::before{content:"\203A";font-size:1.2em;line-height:1;color:var(--text-muted);transition:transform var(--dur-fast) var(--ease-out)}
+.prob details[open]>summary::before{transform:rotate(90deg)}
+.sol{margin-top:var(--space-2);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4) var(--space-3);font-size:var(--text-sm)}
+.sol p{margin:10px 0 0;max-width:var(--measure)}
+.sol li>b:first-child{color:var(--text)}
+.sol .pfs figure,.sol .eq{background:var(--surface)}
+.sol code{background:var(--surface)}
+.aid{margin-top:var(--space-3);background:var(--surface-2);border-radius:var(--radius-sm);padding:10px var(--space-3);font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;overflow-x:auto}
+.aid>b:first-child{color:var(--text)}
+.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;font-variant-numeric:tabular-nums;text-align:center;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob textarea{width:100%;font:inherit;padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob select{font:inherit;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob input.ok,.prob select.ok{border-color:var(--correct);background:var(--correct-bg)}
+.prob input.bad,.prob select.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+table.t.inp td{padding:3px 6px 3px 0}
+.scalars{display:flex;flex-wrap:wrap;gap:var(--space-3) var(--space-4);margin:var(--space-3) 0 0}
+label.sc{display:flex;align-items:center;gap:var(--space-2)}
+label.sc>span{font-weight:600;min-width:34px}
+label.sc small{color:var(--text-muted);font-size:var(--text-xs)}
+.mc{display:grid;gap:var(--space-2);margin:var(--space-3) 0 0}
+label.opt{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--surface);transition:background var(--dur-fast) var(--ease-out),border-color var(--dur-med) var(--ease-out)}
+label.opt.ok{border-color:var(--correct);background:var(--correct-bg)}
+label.opt.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+label.opt.reveal{border-color:var(--correct)}
+/* correct and wrong are never colour alone */
+label.opt.ok::after{content:"\2713\00a0 Correct";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+label.opt.bad::after{content:"\2715\00a0Wrong";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.prob.ok>.ph::after{content:"\2713\00a0 Correct";font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+.prob.bad>.ph::after{content:"\2715\00a0Wrong";font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.fb.ok::before{content:"\2713\00a0"}
+.fb.bad::before{content:"\2715\00a0"}
+label.opt input{margin-top:6px;accent-color:var(--primary)}
+.chips-set{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+label.chipbox{position:relative;border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 12px;cursor:pointer;background:var(--surface);font-size:var(--text-sm)}
+label.chipbox:has(input:checked){border-color:var(--text);background:var(--text);color:var(--bg)}
+label.chipbox input{position:absolute;opacity:0;pointer-events:none}
+.chips-set.ok label.chipbox:has(input:checked){border-color:var(--correct);background:var(--correct-bg);color:var(--correct)}
+.chips-set.bad{outline:2px solid var(--wrong);outline-offset:3px;border-radius:var(--radius-sm)}
+.actions{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center;margin-top:var(--space-3)}
+.b{font:600 var(--text-sm) var(--font-body);min-height:36px;padding:6px var(--space-4);border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.b.chk{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.fb{font-size:var(--text-sm);font-weight:600}
+.fb.ok{color:var(--correct)} .fb.bad{color:var(--wrong)}
+.solution,.expl{margin-top:var(--space-3);border-top:1px solid var(--border);padding-top:10px;font-size:var(--text-sm)}
+.solution>p,.expl>p{margin:6px 0}
+.expl{color:var(--text-muted)}
+
+/* live figure: a process played step by step (REMAKE_BRIEF.md, "Live figures") */
+.live-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);align-items:start}
+figure.fig.live svg{max-width:none;max-height:72vh}
+.live-side{display:grid;gap:var(--space-3);min-width:0}
+.live-side .aid,.live-side .actions{margin-top:0}
+.live-val{display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap}
+.live-val b{font:600 var(--text-xl) var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.live input[type=range]{width:100%;margin:0;accent-color:var(--fig)}
+.live-status{min-height:4.4em;padding:var(--space-2) var(--space-3);background:var(--surface-2);border-left:3px solid var(--fig);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:var(--text-sm)}
+.live-status.ok{border-color:var(--correct);background:var(--correct-bg)}
+.live-status.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+.live-status.ok b{color:var(--correct)} .live-status.bad b{color:var(--wrong)}
+.live table.t{width:100%;min-width:0}
+.live tr.past td{color:var(--text-muted)}
+.live figcaption p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+/* the site zooms pages 125% / 150% on wide screens: keep the whole drawing on screen */
+@media (min-width:1200px){figure.fig.live svg{max-height:58vh}}
+@media (min-width:1500px){figure.fig.live svg{max-height:48vh}}
+
+@media (hover:hover){
+  .toggle:hover,.b:hover,label.opt:hover,.prob summary:hover{background:var(--surface-2)}
+  .b.chk:hover{background:var(--primary);opacity:.88}
+  .part a:hover,.back:hover{color:var(--link)}
+  label.opt.ok:hover{background:var(--correct-bg)} label.opt.bad:hover{background:var(--wrong-bg)}
+}
+@media (max-width:820px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .live-grid{grid-template-columns:minmax(0,1fr)}
+  figure.fig.live svg{max-height:60vh}
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .how li{flex-direction:column;gap:2px}
+  body{padding-top:56px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.toggle{display:none}body{background:#fff}}
+/* /study-hub:base */
+</style>
+<style>
+/* page-specific styles (figures), tokens only; classes prefixed c1- */
+.c1-svg text{fill:var(--text);font-family:var(--font-body);font-size:12px}
+.c1-svg .mu{fill:var(--text-muted)}
+.c1-svg .dk{fill:var(--brand-ink)}
+.c1-svg .ax{stroke:var(--text-muted);stroke-width:1;fill:none}
+.c1-svg .ln{stroke:var(--fig);stroke-width:1.6;fill:none}
+.c1-svg .lnm{stroke:var(--text-muted);stroke-width:1.2;fill:none}
+.c1-svg .box{fill:var(--surface);stroke:var(--border);stroke-width:1.2}
+.c1-svg .soft{fill:var(--fig-soft);stroke:var(--fig);stroke-width:1.4}
+.c1-svg .figc{fill:var(--fig)}
+.c1-svg .k1{fill:var(--c1)} .c1-svg .k2{fill:var(--c2)} .c1-svg .k3{fill:var(--c3)} .c1-svg .k4{fill:var(--c4)}
+.c1-svg .setA{fill:var(--fig-soft);stroke:var(--fig);stroke-width:1.4;fill-opacity:.7}
+.c1-svg .setB{fill:none;stroke:var(--text-muted);stroke-width:1.4;stroke-dasharray:5 3}
+.c1-svg .hit{fill:var(--c3);stroke:var(--fig);stroke-width:1.2}
+.c1-svg .mark{stroke:var(--wrong);stroke-width:2;fill:none}
+.c1-svg .b{font-weight:600}
+.c1-svg .sm{font-size:10.5px}
+.c1-svg .lg{font-size:15px;font-weight:600}
+.c1-svg .mth{font-family:var(--font-math);font-style:italic}
+.c1-pick{display:inline-block;padding:0 6px;border-radius:var(--radius-sm);background:var(--fig-soft);font-weight:600}
+.c1-svg .area{fill:var(--fig-soft);stroke:none}
+.c1-svg .area2{fill:var(--fig-soft);stroke:none;opacity:.5}
+.c1-svg .bar{fill:var(--fig-soft);stroke:var(--fig);stroke-width:1.2}
+.c1-svg .barhi{fill:var(--c3);stroke:var(--fig);stroke-width:1.2}
+.c1-svg .cv1{stroke:var(--fig);stroke-width:2;fill:none}
+.c1-svg .cv2{stroke:var(--correct);stroke-width:2;fill:none}
+.c1-svg .cv3{stroke:var(--text-muted);stroke-width:1.6;fill:none;stroke-dasharray:5 3}
+.c1-svg .cv4{stroke:var(--wrong);stroke-width:1.8;fill:none}
+.c1-svg .grid{stroke:var(--border);stroke-width:1}
+.c1-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.c1-h3{margin:18px 0 8px}
+.c1-svg .lab1{fill:var(--fig)} .c1-svg .lab2{fill:var(--correct)} .c1-svg .lab4{fill:var(--wrong)}
+</style>
+</head>
+<body>
+<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/></svg></button>
+<div class="wrap">
+
+<header class="hero" id="top">
+  <div>
+    <div class="eyebrow">CPSI · Chapter 1 · Lesson</div>
+    <h1>Random variables and the usual laws</h1>
+    <p class="lead">How to turn the result of an experiment into a number, how to describe that number's chances (law, distribution function, density), how to summarise it (mean, variance, moments), and the catalogue of laws that keep coming back: binomial, Poisson, normal and the rest. <span class="fr">(Rappels de probabilité, Lois usuelles)</span></p>
+    <ul class="how">
+      <li><span class="tag">In plain words</span><span>What the idea means, without the formal language.</span></li>
+      <li><span class="tag">Keywords</span><span><b class="en">term</b> <span class="fr">(terme)</span>: English first, the course's French word after.</span></li>
+      <li><span class="tag">Worked example</span><span>The course's own examples, redone, plus a few of ours where the course gives none. Every number checked by program.</span></li>
+    </ul>
+  </div>
+  <figure class="herofig"><svg class="c1-svg" viewBox="0 0 300 180" role="img" aria-label="A bell curve with the middle area between m minus sigma and m plus sigma shaded."><polygon points="117.5,156.0 117.5,86.1 118.4,84.4 119.2,82.6 120.1,80.9 121.0,79.1 121.8,77.4 122.7,75.7 123.5,74.0 124.4,72.3 125.3,70.6 126.1,69.0 127.0,67.4 127.8,65.8 128.7,64.2 129.6,62.7 130.4,61.2 131.3,59.7 132.2,58.3 133.0,56.9 133.9,55.6 134.8,54.3 135.6,53.0 136.5,51.8 137.3,50.7 138.2,49.6 139.1,48.6 139.9,47.6 140.8,46.7 141.7,45.8 142.5,45.0 143.4,44.3 144.2,43.6 145.1,43.0 146.0,42.5 146.8,42.0 147.7,41.6 148.5,41.3 149.4,41.1 150.3,40.9 151.1,40.8 152.0,40.8 152.9,40.8 153.7,40.9 154.6,41.1 155.4,41.3 156.3,41.6 157.2,42.0 158.0,42.5 158.9,43.0 159.8,43.6 160.6,44.3 161.5,45.0 162.3,45.8 163.2,46.7 164.1,47.6 164.9,48.6 165.8,49.6 166.7,50.7 167.5,51.8 168.4,53.0 169.2,54.3 170.1,55.6 171.0,56.9 171.8,58.3 172.7,59.7 173.6,61.2 174.4,62.7 175.3,64.2 176.2,65.8 177.0,67.4 177.9,69.0 178.7,70.6 179.6,72.3 180.5,74.0 181.3,75.7 182.2,77.4 183.1,79.1 183.9,80.9 184.8,82.6 185.6,84.4 186.5,86.1 186.5,156.0" class="area"/><polyline points="14.0,156.0 15.7,156.0 17.5,155.9 19.2,155.9 20.9,155.9 22.6,155.9 24.3,155.9 26.1,155.9 27.8,155.8 29.5,155.8 31.2,155.7 33.0,155.7 34.7,155.6 36.4,155.6 38.2,155.5 39.9,155.4 41.6,155.3 43.3,155.2 45.0,155.1 46.8,154.9 48.5,154.7 50.2,154.5 52.0,154.3 53.7,154.0 55.4,153.7 57.1,153.4 58.8,153.0 60.6,152.6 62.3,152.1 64.0,151.5 65.8,150.9 67.5,150.3 69.2,149.5 70.9,148.7 72.7,147.8 74.4,146.8 76.1,145.8 77.8,144.6 79.5,143.3 81.3,141.9 83.0,140.4 84.7,138.8 86.5,137.0 88.2,135.2 89.9,133.2 91.6,131.1 93.3,128.8 95.1,126.5 96.8,124.0 98.5,121.3 100.2,118.6 102.0,115.7 103.7,112.7 105.4,109.7 107.2,106.5 108.9,103.2 110.6,99.9 112.3,96.5 114.0,93.1 115.8,89.6 117.5,86.1 119.2,82.6 121.0,79.1 122.7,75.7 124.4,72.3 126.1,69.0 127.8,65.8 129.6,62.7 131.3,59.7 133.0,56.9 134.8,54.3 136.5,51.8 138.2,49.6 139.9,47.6 141.7,45.8 143.4,44.3 145.1,43.0 146.8,42.0 148.5,41.3 150.3,40.9 152.0,40.8 153.7,40.9 155.4,41.3 157.2,42.0 158.9,43.0 160.6,44.3 162.3,45.8 164.1,47.6 165.8,49.6 167.5,51.8 169.2,54.3 171.0,56.9 172.7,59.7 174.4,62.7 176.2,65.8 177.9,69.0 179.6,72.3 181.3,75.7 183.1,79.1 184.8,82.6 186.5,86.1 188.2,89.6 189.9,93.1 191.7,96.5 193.4,99.9 195.1,103.2 196.8,106.5 198.6,109.7 200.3,112.7 202.0,115.7 203.8,118.6 205.5,121.3 207.2,124.0 208.9,126.5 210.7,128.8 212.4,131.1 214.1,133.2 215.8,135.2 217.6,137.0 219.3,138.8 221.0,140.4 222.7,141.9 224.4,143.3 226.2,144.6 227.9,145.8 229.6,146.8 231.3,147.8 233.1,148.7 234.8,149.5 236.5,150.3 238.2,150.9 240.0,151.5 241.7,152.1 243.4,152.6 245.2,153.0 246.9,153.4 248.6,153.7 250.3,154.0 252.1,154.3 253.8,154.5 255.5,154.7 257.2,154.9 258.9,155.1 260.7,155.2 262.4,155.3 264.1,155.4 265.9,155.5 267.6,155.6 269.3,155.6 271.0,155.7 272.8,155.7 274.5,155.8 276.2,155.8 277.9,155.9 279.7,155.9 281.4,155.9 283.1,155.9 284.8,155.9 286.6,155.9 288.3,156.0 290.0,156.0" class="cv1"/><line x1="14" y1="156.0" x2="294" y2="156.0" class="ax"/><line x1="14.0" y1="22" x2="14.0" y2="156.0" class="ax"/><text x="83.0" y="170.0" text-anchor="middle" class="sm mu">m−2σ</text><text x="152.0" y="170.0" text-anchor="middle" class="sm mu">m</text><text x="221.0" y="170.0" text-anchor="middle" class="sm mu">m+2σ</text><text x="150.0" y="16.0" text-anchor="middle" class="sm mu">a random variable turns chance into numbers</text><text x="150.0" y="120.0" text-anchor="middle" class="b">68%</text></svg><figcaption>Part A and B describe one random number; Parts C and D are the laws you will meet again and again.</figcaption></figure>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <div class="part"><h3>A · Discrete random variables</h3><ul>
+    <li><a href="#s1"><span class="n">1</span><span>What a random variable is<small>X : Ω → ℝ</small></span></a></li>
+    <li><a href="#s2"><span class="n">2</span><span>The law of a discrete variable<small>table of values and chances</small></span></a></li>
+    <li><a href="#s3"><span class="n">3</span><span>The distribution function F<small>P(X ≤ x)</small></span></a></li>
+    <li><a href="#s4"><span class="n">4</span><span>Expectation<small>the long-run average</small></span></a></li>
+    <li><a href="#s5"><span class="n">5</span><span>Variance and standard deviation<small>how spread out</small></span></a></li>
+    <li><a href="#s6"><span class="n">6</span><span>Moments and the generating function</span></a></li>
+  </ul></div>
+  <div class="part"><h3>B · Continuous random variables</h3><ul>
+    <li><a href="#s7"><span class="n">7</span><span>Density<small>chance = area</small></span></a></li>
+    <li><a href="#s8"><span class="n">8</span><span>Mean and variance with integrals</span></a></li>
+    <li><a href="#s9"><span class="n">9</span><span>A function of a variable<small>Y = g(X)</small></span></a></li>
+  </ul></div>
+  <div class="part"><h3>C · Usual discrete laws</h3><ul>
+    <li><a href="#s10"><span class="n">10</span><span>Discrete uniform</span></a></li>
+    <li><a href="#s11"><span class="n">11</span><span>Bernoulli<small>one yes/no trial</small></span></a></li>
+    <li><a href="#s12"><span class="n">12</span><span>Binomial<small>successes in n trials</small></span></a></li>
+    <li><a href="#s13"><span class="n">13</span><span>Geometric<small>waiting for the 1st success</small></span></a></li>
+    <li><a href="#s14"><span class="n">14</span><span>Hypergeometric<small>draws without putting back</small></span></a></li>
+    <li><a href="#s15"><span class="n">15</span><span>Poisson<small>rare events</small></span></a></li>
+  </ul></div>
+  <div class="part"><h3>D · Usual continuous laws</h3><ul>
+    <li><a href="#s16"><span class="n">16</span><span>Continuous uniform</span></a></li>
+    <li><a href="#s17"><span class="n">17</span><span>Exponential<small>lifetimes</small></span></a></li>
+    <li><a href="#s18"><span class="n">18</span><span>Normal<small>the bell curve, Φ table</small></span></a></li>
+    <li><a href="#s19"><span class="n">19</span><span>Gamma</span></a></li>
+    <li><a href="#s20"><span class="n">20</span><span>Chi-square, Student, Fisher</span></a></li>
+    <li><a href="#s21"><span class="n">21</span><span>Sums of independent variables<small>summary table</small></span></a></li>
+    <li><a href="#notes"><span class="n">·</span><span>Notes on the original course</span></a></li>
+  </ul></div>
+</nav>
+
+<section class="sec" id="s1">
+  <div class="sec-h"><span class="num">1</span><h2>What a random variable is <span class="fr">(variable aléatoire réelle)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>An experiment gives a result ω (a face, a card, a person). Often we only care about a <b>number</b> attached to that result: the gain in a game, the number of sixes, a height. A <b>random variable</b> X is just that rule: “result ω → number X(ω)”.</p><p>One condition: for every value x, the set of results that give x, written X⁻¹(x), must be an <b>event</b>, meaning a set the probability P knows how to measure. Otherwise we could not ask “what is the chance that X = x?”.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">Probability space (Ω, B, P)</b> <span class="fr">(espace de probabilité)</span></span><span class="mean">Ω = all possible results; B = the family of events (sets of results that get a probability); P = the probability. Reminder from Chapter 0.</span></li><li><span class="term"><b class="en">Random variable X</b> <span class="fr">(variable aléatoire (v.a.))</span></span><span class="mean">A function X : Ω → E ⊆ ℝ such that X⁻¹(x) is in B for every x.</span><span class="eg">the gain in a dice game</span></li><li><span class="term"><b class="en">X⁻¹(x)</b> <span class="fr">(image réciproque)</span></span><span class="mean">Read “the results sent to x”: {ω ∈ Ω : X(ω) = x}. It goes backwards, from the value to the results.</span><span class="eg">X⁻¹(1) = {a, d}</span></li><li><span class="term"><b class="en">X(Ω)</b></span><span class="mean">The set of values X can take.</span><span class="eg">{0, 1}</span></li><li><span class="term"><b class="en">Discrete variable</b> <span class="fr">(variable aléatoire discrète, VAD)</span></span><span class="mean">X(Ω) is countable: you can number its values one by one (finite, ℕ or ℤ).</span><span class="eg">a count, a face</span></li><li><span class="term"><b class="en">Continuous variable</b> <span class="fr">(variable aléatoire continue)</span></span><span class="mean">X(Ω) is a whole interval of ℝ, like a time or a length.</span><span class="eg">a waiting time</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 310 176" role="img" aria-label="Four outcomes a, b, c, d sent to the values 1, 0, 0, 1."><rect x="14" y="20" width="110" height="120" rx="12" class="box"/><text x="30.0" y="38.0" text-anchor="start" class="b">Ω</text><circle cx="70" cy="50" r="11" class="soft"/><text x="70.0" y="54.0" text-anchor="middle">a</text><circle cx="70" cy="76" r="11" class="soft"/><text x="70.0" y="80.0" text-anchor="middle">b</text><circle cx="70" cy="102" r="11" class="soft"/><text x="70.0" y="106.0" text-anchor="middle">c</text><circle cx="70" cy="128" r="11" class="soft"/><text x="70.0" y="132.0" text-anchor="middle">d</text><rect x="210" y="40" width="80" height="80" rx="12" class="box"/><text x="250.0" y="34.0" text-anchor="middle" class="sm mu">values X(ω)</text><circle cx="250" cy="62" r="13" class="hit"/><text x="250.0" y="67.0" text-anchor="middle" class="b">1</text><circle cx="250" cy="100" r="13" class="hit"/><text x="250.0" y="105.0" text-anchor="middle" class="b">0</text><line x1="82" y1="50" x2="236" y2="62" class="lnm"/><line x1="82" y1="76" x2="236" y2="100" class="lnm"/><line x1="82" y1="102" x2="236" y2="100" class="lnm"/><line x1="82" y1="128" x2="236" y2="62" class="lnm"/><text x="160.0" y="166.0" text-anchor="middle" class="sm">X⁻¹(1) = {a, d},  X⁻¹(0) = {b, c}</text></svg><figcaption>Each result of Ω is sent to a number; reading the arrows backwards gives X⁻¹(1) and X⁻¹(0).</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>Example 1 (course).</b> Ω = {a, b, c, d}, every subset is an event (B = P(Ω), all subsets). X(a) = X(d) = 1 and X(b) = X(c) = 0.</li><li>X(Ω) = {0, 1}. X⁻¹(0) = {b, c} and X⁻¹(1) = {a, d}. Both are subsets of Ω, so both are events: <b>X is a random variable</b>, and a discrete one.</li><li><b>Example 2 (course).</b> Same Ω and same X, but now the events are only B = {∅, {a}, {b}, {c, d}, {a, b}, {a, c, d}, {b, c, d}, Ω}.</li><li>X⁻¹(0) = {b, c} is <b>not</b> in this list, so P({b, c}) is not defined and “P(X = 0)” makes no sense: here <b>X is not a random variable</b>.</li></ul>
+  </div>
+</section>
+<section class="sec" id="s2">
+  <div class="sec-h"><span class="num">2</span><h2>The law of a discrete variable <span class="fr">(loi de probabilité d'une VAD)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>The <b>law</b> of X is the list of its values with the chance of each one. For a discrete X it fits in a two-row table: values on top, chances below.</p><p>To fill the table, go back to the results: P(X = x) is the probability of the set of results that give x. The chances in the table always add up to 1.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">Law of X</b> <span class="fr">(loi de probabilité)</span></span><span class="mean">The numbers P(X = x) = P(X⁻¹(x)) for every x in X(Ω).</span></li><li><span class="term"><b class="en">Check</b></span><span class="mean">Σ P(X = x) over all values = 1.</span></li><li><span class="term"><b class="en">Certain variable</b> <span class="fr">(variable certaine)</span></span><span class="mean">X always equals the same number a: P(X = a) = 1. (Also called the Dirac law at a.)</span><span class="eg">X = 5 whatever happens</span></li><li><span class="term"><b class="en">Indicator of A</b> <span class="fr">(variable indicatrice, I_A)</span></span><span class="mean">X = 1 if the result is in A, 0 otherwise. P(X = 1) = P(A), P(X = 0) = 1 − P(A).</span><span class="eg">1 if the die is even</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 320 196" role="img" aria-label="Bar chart of the dice game: −10 with 1/6, 10 with 1/2, 20 with 1/3."><rect x="71.4" y="120.6" width="34.0" height="39.4" class="bar"/><text x="88.4" y="116.6" text-anchor="middle" class="sm">1/6</text><rect x="180.2" y="41.7" width="34.0" height="118.3" class="bar"/><text x="197.2" y="37.7" text-anchor="middle" class="sm">1/2</text><rect x="234.6" y="81.1" width="34.0" height="78.9" class="bar"/><text x="251.6" y="77.1" text-anchor="middle" class="sm">1/3</text><line x1="34" y1="160.0" x2="310" y2="160.0" class="ax"/><line x1="34.0" y1="14" x2="34.0" y2="160.0" class="ax"/><text x="88.4" y="174.0" text-anchor="middle" class="sm mu">−10</text><text x="142.8" y="174.0" text-anchor="middle" class="sm mu">0</text><text x="197.2" y="174.0" text-anchor="middle" class="sm mu">10</text><text x="251.6" y="174.0" text-anchor="middle" class="sm mu">20</text><text x="30.0" y="45.7" text-anchor="end" class="sm mu">0.5</text><line x1="34" y1="41.7" x2="306" y2="41.7" class="grid"/><text x="170.0" y="193.0" text-anchor="middle" class="sm mu">gain x (DA)</text></svg><figcaption>The law of the dice-game gain: one bar per value, its height is the chance.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>Example 1 (course).</b> Throw a fair die, X = the face. X(Ω) = {1, …, 6} and P(X = k) = 1/6 for each k.</li><li><b>Example 2 (course): a dice game.</b> Throw a fair die. You win 10 DA if the face is even, win 20 DA on a 1 or a 3, and lose 10 DA on a 5. X = your gain.</li><li>Values: X(Ω) = {−10, 10, 20}. Go back to the faces: X⁻¹(−10) = {5}, X⁻¹(10) = {2, 4, 6}, X⁻¹(20) = {1, 3}.</li><li>Chances: P(X = −10) = 1/6, P(X = 10) = 3/6 = <b>1/2</b>, P(X = 20) = 2/6 = <b>1/3</b>. Check: 1/6 + 3/6 + 2/6 = 1.</li></ul><div class="scroll"><table class="t"><thead><tr><th>x</th><th>−10</th><th>10</th><th>20</th></tr></thead><tbody><tr><td>P(X = x)</td><td>1/6</td><td>1/2</td><td>1/3</td></tr></tbody></table></div>
+  </div>
+</section>
+<section class="sec" id="s3">
+  <div class="sec-h"><span class="num">3</span><h2>The distribution function F <span class="fr">(fonction de répartition)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>F(x) answers one question for every number x: <b>what is the chance that X is at most x?</b> It collects all the probability sitting at x or to its left.</p><p>For a discrete X the graph is a staircase: flat between two values, with a jump at each value equal to its chance. From F you can get the chance of any interval, but watch the ends: “&lt;” and “≤” are not the same when X has a jump there.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">F(x)</b> <span class="fr">(fonction de répartition)</span></span><span class="mean">F(x) = P(X ≤ x). For a discrete X: F(x) = sum of P(X = xᵢ) over the values xᵢ ≤ x.</span></li><li><span class="term"><b class="en">Properties</b></span><span class="mean">0 ≤ F(x) ≤ 1; F never goes down (increasing, croissante); F → 0 far left and F → 1 far right.</span></li><li><span class="term"><b class="en">Interval ]a, b]</b></span><span class="mean">P(a &lt; X ≤ b) = F(b) − F(a). This one has no correction.</span></li><li><span class="term"><b class="en">Interval [a, b]</b></span><span class="mean">P(a ≤ X ≤ b) = F(b) − F(a) + P(X = a): add back the jump at a.</span></li><li><span class="term"><b class="en">Interval [a, b[</b></span><span class="mean">P(a ≤ X &lt; b) = F(b) − F(a) − P(X = b) + P(X = a).</span></li><li><span class="term"><b class="en">Interval ]a, b[</b></span><span class="mean">P(a &lt; X &lt; b) = F(b) − F(a) − P(X = b).</span></li><li><span class="term"><b class="en">Other convention</b></span><span class="mean">Some slides (Boussaha) define F(x) = P(X &lt; x) instead. Same idea, but the jump values move to the other side. This course uses ≤.</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 320 180" role="img" aria-label="Staircase distribution function of a fair die, jumping by 1/6 at each face."><line x1="34" y1="144.0" x2="310" y2="144.0" class="ax"/><line x1="34.0" y1="10" x2="34.0" y2="144.0" class="ax"/><text x="72.9" y="158.0" text-anchor="middle" class="sm mu">1</text><text x="111.7" y="158.0" text-anchor="middle" class="sm mu">2</text><text x="150.6" y="158.0" text-anchor="middle" class="sm mu">3</text><text x="189.4" y="158.0" text-anchor="middle" class="sm mu">4</text><text x="228.3" y="158.0" text-anchor="middle" class="sm mu">5</text><text x="267.1" y="158.0" text-anchor="middle" class="sm mu">6</text><text x="30.0" y="88.9" text-anchor="end" class="sm mu">1/2</text><line x1="34" y1="84.9" x2="306" y2="84.9" class="grid"/><text x="30.0" y="29.8" text-anchor="end" class="sm mu">1</text><line x1="34" y1="25.8" x2="306" y2="25.8" class="grid"/><text x="170.0" y="177.0" text-anchor="middle" class="sm mu">x</text><line x1="34.0" y1="144.0" x2="72.9" y2="144.0" class="cv1"/><line x1="72.9" y1="124.3" x2="111.7" y2="124.3" class="cv1"/><circle cx="72.9" cy="124.3" r="3.2" class="figc"/><line x1="111.7" y1="104.6" x2="150.6" y2="104.6" class="cv1"/><circle cx="111.7" cy="104.6" r="3.2" class="figc"/><line x1="150.6" y1="84.9" x2="189.4" y2="84.9" class="cv1"/><circle cx="150.6" cy="84.9" r="3.2" class="figc"/><line x1="189.4" y1="65.2" x2="228.3" y2="65.2" class="cv1"/><circle cx="189.4" cy="65.2" r="3.2" class="figc"/><line x1="228.3" y1="45.5" x2="267.1" y2="45.5" class="cv1"/><circle cx="228.3" cy="45.5" r="3.2" class="figc"/><line x1="267.1" y1="25.8" x2="306.0" y2="25.8" class="cv1"/><circle cx="267.1" cy="25.8" r="3.2" class="figc"/><circle cx="72.9" cy="144.0" r="3" class="box" style="stroke:var(--fig)"/><circle cx="111.7" cy="124.3" r="3" class="box" style="stroke:var(--fig)"/><circle cx="150.6" cy="104.6" r="3" class="box" style="stroke:var(--fig)"/><circle cx="189.4" cy="84.9" r="3" class="box" style="stroke:var(--fig)"/><circle cx="228.3" cy="65.2" r="3" class="box" style="stroke:var(--fig)"/><circle cx="267.1" cy="45.5" r="3" class="box" style="stroke:var(--fig)"/></svg><figcaption>The die's staircase: at each jump the full dot is the value F takes; the empty dot just below marks the end of the previous step.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>Example (course).</b> Fair die, X = the face, P(X = k) = 1/6.</li><li>F(x) = 0 for x &lt; 1, 1/6 on [1, 2[, 1/3 on [2, 3[, 1/2 on [3, 4[, 2/3 on [4, 5[, 5/6 on [5, 6[, and 1 for x ≥ 6.</li><li><b>Same interval, four ends</b> (our check). P(2 &lt; X ≤ 4) = F(4) − F(2) = 4/6 − 2/6 = <b>1/3</b> (faces 3, 4).</li><li>P(2 ≤ X ≤ 4) = 1/3 + P(X = 2) = <b>1/2</b> (faces 2, 3, 4). P(2 ≤ X &lt; 4) = 1/3 − 1/6 + 1/6 = <b>1/3</b> (faces 2, 3). P(2 &lt; X &lt; 4) = 1/3 − 1/6 = <b>1/6</b> (face 3).</li></ul>
+  <figure class="fig live" id="lf1">
+    <div class="live-grid">
+      <svg id="lf1-svg" class="c1-svg" viewBox="0 0 300 220" role="img" aria-label="The distribution function of a fair die built one face at a time, climbing by 1/6 at each face"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf1-val">0 / 7</b></div>
+        <div class="actions"><button class="b chk" id="lf1-play" type="button">Play</button><button class="b" id="lf1-step" type="button">Step</button><button class="b" id="lf1-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf1-range">Drag to any step</label>
+        <input id="lf1-range" type="range" min="0" max="7" step="1" value="0">
+        <div class="live-status" id="lf1-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>For x in</th><th>F(x) = P(X ≤ x)</th></tr></thead><tbody id="lf1-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p>Move x from left to right. F(x) collects all the probability sitting at or before x. Between two faces nothing new is collected, so the graph stays flat; at each face it jumps by that face's chance, here 1/6. The full dot shows the value F takes exactly at the jump.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf1-"+id);};
+    var VALS=[1,2,3,4,5,6],P=[1,1,1,1,1,1],DEN=6;  // course example: fair die, P(X = k) = 1/6
+    function frac(a,b){function g(x,y){return y?g(y,x%y):x;}if(a===0)return "0";var d=g(a,b);return (b/d===1)?String(a/d):(a/d)+"/"+(b/d);}
+    var STEPS=[{k:0,text:"Before the first face (x < 1) nothing has been collected: F(x) = 0."}],acc=0;
+    for(var k=0;k<VALS.length;k++){acc+=P[k];
+      STEPS.push({k:k+1,acc:acc,text:"At x = "+VALS[k]+" we pick up P(X = "+VALS[k]+") = 1/6. Now F(x) = "+frac(acc,DEN)+(k<5?" until the next face, "+VALS[k+1]+".":" for every x ≥ 6.")});}
+    STEPS.push({k:6,acc:acc,end:true,text:"F climbed from 0 to 1 in six jumps of 1/6. Check one interval: P(2 < X ≤ 4) = F(4) − F(2) = 2/3 − 1/3 = 1/3."});
+    var NS="http://www.w3.org/2000/svg";
+    function el(n,a,txt){var e=document.createElementNS(NS,n);for(var q in a)e.setAttribute(q,a[q]);if(txt!=null)e.textContent=txt;return e;}
+    var X=function(x){return 30+x*36;},Y=function(y){return 186-y*160;};
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function draw(){
+      var s=STEPS[i],svg=$("svg");while(svg.firstChild)svg.removeChild(svg.firstChild);
+      svg.appendChild(el("line",{x1:22,y1:Y(0),x2:292,y2:Y(0),"class":"ax"}));
+      svg.appendChild(el("line",{x1:X(0),y1:16,x2:X(0),y2:Y(0),"class":"ax"}));
+      [[1/2,"1/2"],[1,"1"]].forEach(function(t){svg.appendChild(el("line",{x1:X(0),y1:Y(t[0]),x2:292,y2:Y(t[0]),"class":"grid"}));
+        svg.appendChild(el("text",{x:X(0)-4,y:Y(t[0])+4,"text-anchor":"end","class":"sm mu"},t[1]));});
+      for(var v=1;v<=7;v++)svg.appendChild(el("text",{x:X(v),y:Y(0)+15,"text-anchor":"middle","class":"sm mu"},v<7?v:"x"));
+      var c=0;
+      for(var k=0;k<=s.k;k++){
+        var y=c/DEN,x1=k===0?0:VALS[k-1],x2=k<6?VALS[k]:7;
+        if(k===s.k&&!s.end&&k<6)x2=k===0?1:VALS[k-1]+0.6;
+        svg.appendChild(el("line",{x1:X(x1),y1:Y(y),x2:X(x2),y2:Y(y),"class":"cv1"}));
+        if(k>0)svg.appendChild(el("circle",{cx:X(x1),cy:Y(y),r:3.4,"class":"figc"}));
+        if(k>0)svg.appendChild(el("circle",{cx:X(x1),cy:Y((c-P[k-1])/DEN),r:3,"class":"box",style:"stroke:var(--fig)"}));
+        if(k<6)c+=P[k];
+      }
+      if(s.k>0){var lastx=VALS[s.k-1];svg.appendChild(el("text",{x:X(lastx)+6,y:Y(s.acc/DEN)-8,"text-anchor":"start","class":"sm b"},"F = "+frac(s.acc,DEN)));}
+      if(s.end){svg.appendChild(el("line",{x1:X(2),y1:Y(1/3),x2:X(2),y2:Y(2/3),"class":"cv4"}));
+        svg.appendChild(el("line",{x1:X(4),y1:Y(1/3),x2:X(4),y2:Y(2/3),"class":"cv4"}));
+        svg.appendChild(el("text",{x:X(4)+6,y:Y(0.5)+4,"text-anchor":"start","class":"sm lab4"},"+1/3"));}
+      var rows=$("rows");rows.innerHTML="";var cc=0;
+      for(var k=0;k<=Math.min(s.k,6);k++){var tr=document.createElement("tr");if(k<s.k)tr.className="past";
+        var rng=k===0?"x < 1":(k<6?"["+VALS[k-1]+", "+VALS[k]+"[":"x ≥ 6");
+        tr.innerHTML="<td>"+rng+"</td><td>"+frac(cc,DEN)+"</td>";rows.appendChild(tr);if(k<6)cc+=P[k];}
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},1200);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+  </div>
+</section>
+<section class="sec" id="s4">
+  <div class="sec-h"><span class="num">4</span><h2>Expectation <span class="fr">(espérance mathématique)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>The <b>expectation</b> E(X) is the average value of X if you repeat the experiment a very large number of times. Each value counts in proportion to its chance.</p><p>Picture the bars of the law on a ruler: E(X) is the point where the ruler balances. The <b>transfer theorem</b> says: to get the mean of g(X), you do not need the law of g(X), just apply g to each value and keep the same chances.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">E(X)</b> <span class="fr">(espérance)</span></span><span class="mean">E(X) = Σ xᵢ P(X = xᵢ). If all n values are equally likely, it is the plain average (x₁ + … + xₙ)/n.</span></li><li><span class="term"><b class="en">Linearity</b> <span class="fr">(linéarité)</span></span><span class="mean">E(a) = a; E(X + a) = E(X) + a; E(aX) = a E(X); E(X + Y) = E(X) + E(Y).</span><span class="eg">E(2X + 3) = 2E(X) + 3</span></li><li><span class="term"><b class="en">Transfer theorem</b> <span class="fr">(théorème de transfert)</span></span><span class="mean">E(g(X)) = Σ g(xᵢ) P(X = xᵢ).</span><span class="eg">E(X²) = Σ xᵢ² P(X = xᵢ)</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 320 196" role="img" aria-label="Bar chart of the dice game: −10 with 1/6, 10 with 1/2, 20 with 1/3."><rect x="71.4" y="120.6" width="34.0" height="39.4" class="bar"/><text x="88.4" y="116.6" text-anchor="middle" class="sm">1/6</text><rect x="180.2" y="41.7" width="34.0" height="118.3" class="bar"/><text x="197.2" y="37.7" text-anchor="middle" class="sm">1/2</text><rect x="234.6" y="81.1" width="34.0" height="78.9" class="bar"/><text x="251.6" y="77.1" text-anchor="middle" class="sm">1/3</text><line x1="34" y1="160.0" x2="310" y2="160.0" class="ax"/><line x1="34.0" y1="14" x2="34.0" y2="160.0" class="ax"/><text x="88.4" y="174.0" text-anchor="middle" class="sm mu">−10</text><text x="142.8" y="174.0" text-anchor="middle" class="sm mu">0</text><text x="197.2" y="174.0" text-anchor="middle" class="sm mu">10</text><text x="251.6" y="174.0" text-anchor="middle" class="sm mu">20</text><text x="30.0" y="45.7" text-anchor="end" class="sm mu">0.5</text><line x1="34" y1="41.7" x2="306" y2="41.7" class="grid"/><polygon points="197.2,178.0 189.2,190.0 205.2,190.0" class="figc"/><text x="184.2" y="190.0" text-anchor="end" class="sm b">E(X) = 10: the balance point</text></svg><figcaption>The gain bars balance at 10: the mean gain per throw.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="eq">E(X) = Σ xᵢ P(X = xᵢ)        E(g(X)) = Σ g(xᵢ) P(X = xᵢ)</div><ul class="ln"><li><b>Example (course): the dice game.</b> Throw a fair die; win 10 DA on an even face, win 20 DA on 1 or 3, lose 10 DA on 5. Law: P(X = −10) = 1/6, P(X = 10) = 1/2, P(X = 20) = 1/3.</li><li>E(X) = (−10) × 1/6 + 10 × 1/2 + 20 × 1/3 = (−10 + 30 + 40)/6 = <b>10</b>. On average you win 10 DA per throw.</li><li><b>Transfer (ours).</b> E(X²) = 100 × 1/6 + 100 × 1/2 + 400 × 1/3 = (100 + 300 + 800)/6 = <b>200</b>. No need to find the law of X² first.</li><li><b>Linearity (ours).</b> If the prize is doubled and 3 DA added: E(2X + 3) = 2 × 10 + 3 = <b>23</b>.</li></ul>
+  </div>
+</section>
+<section class="sec" id="s5">
+  <div class="sec-h"><span class="num">5</span><h2>Variance and standard deviation <span class="fr">(variance, écart-type)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Two variables can have the same mean and still behave very differently: one stays close to its mean, the other jumps far away. The <b>variance</b> measures that spread: the average of the squared distance to the mean.</p><p>Because it squares distances, the variance is in “units squared”. Its square root, the <b>standard deviation</b> σ, is back in the units of X.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">Var(X)</b> <span class="fr">(variance)</span></span><span class="mean">Var(X) = Σ (xᵢ − E(X))² P(X = xᵢ) = E[(X − E(X))²].</span></li><li><span class="term"><b class="en">Shortcut (König)</b></span><span class="mean">Var(X) = E(X²) − (E(X))². Usually the fastest way.</span></li><li><span class="term"><b class="en">Properties</b></span><span class="mean">Var(X) ≥ 0; Var(X) = 0 only if X is constant; Var(X + a) = Var(X) (shifting does not spread); Var(aX) = a² Var(X).</span><span class="eg">Var(2X + 3) = 4 Var(X)</span></li><li><span class="term"><b class="en">Standard deviation σ</b> <span class="fr">(écart-type)</span></span><span class="mean">σ(X) = √Var(X).</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 340 210" role="img" aria-label="Two laws with the same mean 4.5: X has values 2, 4, 6 close together, Y has −4, 3, 33 far apart."><line x1="22" y1="82" x2="332" y2="82" class="ax"/><text x="14.0" y="60.0" text-anchor="middle" class="b">X</text><rect x="80.4" y="54.5" width="12" height="27.5" class="bar"/><text x="86.4" y="95.0" text-anchor="middle" class="sm mu">2</text><rect x="94.5" y="54.5" width="12" height="27.5" class="bar"/><text x="100.5" y="95.0" text-anchor="middle" class="sm mu">4</text><rect x="108.6" y="27.0" width="12" height="55.0" class="bar"/><text x="114.6" y="95.0" text-anchor="middle" class="sm mu">6</text><line x1="22" y1="178" x2="332" y2="178" class="ax"/><text x="14.0" y="156.0" text-anchor="middle" class="b">Y</text><rect x="38.1" y="123.0" width="12" height="55.0" class="barhi"/><text x="44.1" y="119.0" text-anchor="middle" class="sm">1/2</text><text x="44.1" y="191.0" text-anchor="middle" class="sm mu">−4</text><rect x="87.4" y="141.3" width="12" height="36.7" class="barhi"/><text x="93.4" y="137.3" text-anchor="middle" class="sm">1/3</text><text x="93.4" y="191.0" text-anchor="middle" class="sm mu">3</text><rect x="298.9" y="159.7" width="12" height="18.3" class="barhi"/><text x="304.9" y="155.7" text-anchor="middle" class="sm">1/6</text><text x="304.9" y="191.0" text-anchor="middle" class="sm mu">33</text><line x1="104.0" y1="12" x2="104.0" y2="182" class="cv4" style="stroke-dasharray:4 3"/><text x="109.0" y="18.0" text-anchor="start" class="sm lab4">both means = 4.5</text><text x="213.2" y="60.0" text-anchor="middle" class="sm">X: Var = 11/4</text><text x="213.2" y="150.0" text-anchor="middle" class="sm">Y: Var = 689/4</text></svg><figcaption>Same mean 4.5 (dashed line). X (chances 1/4, 1/4, 1/2) stays near it; Y has a value 33 far away, so a much larger variance.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="eq">Var(X) = E(X²) − (E(X))²        Var(aX + b) = a² Var(X)</div><ul class="ln"><li><b>Example (course).</b> X takes 2, 4, 6 with chances 1/4, 1/4, 1/2. Y takes −4, 3, 33 with chances 1/2, 1/3, 1/6.</li><li>Means: E(X) = 2/4 + 4/4 + 6/2 = 9/2. E(Y) = −4/2 + 3/3 + 33/6 = 9/2. <b>Same mean, 4.5.</b></li><li>E(X²) = 4/4 + 16/4 + 36/2 = 23, so Var(X) = 23 − (9/2)² = 23 − 81/4 = <b>11/4</b> (σ ≈ 1.66).</li><li>E(Y²) = 16/2 + 9/3 + 1089/6 = 385/2, so Var(Y) = 385/2 − 81/4 = <b>689/4</b> (σ ≈ 13.12). Y is far more spread out.</li><li><b>Dice game (ours).</b> E(X) = 10 and E(X²) = 200, so Var(X) = 200 − 100 = <b>100</b> and σ = 10. Then Var(2X + 3) = 4 × 100 = <b>400</b>.</li></ul>
+  </div>
+</section>
+<section class="sec" id="s6">
+  <div class="sec-h"><span class="num">6</span><h2>Moments and the generating function <span class="fr">(moments, fonction génératrice des moments)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p><b>Moments</b> are the averages of the powers of X. The 1st moment is the mean, the 2nd centred moment is the variance. Higher ones describe the shape: the 3rd centred moment is negative when the long tail is on the left.</p><p>The <b>moment generating function</b> (from the handwritten summary) packs all the moments into one function M(t). Its slope at t = 0 gives E(X), its second derivative at 0 gives E(X²).</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">Raw moment of order r</b> <span class="fr">(moment non centré)</span></span><span class="mean">M_r(X) = E(X^r) = Σ xᵢ^r P(X = xᵢ).</span><span class="eg">M₁ = E(X)</span></li><li><span class="term"><b class="en">Centred moment of order r</b> <span class="fr">(moment centré)</span></span><span class="mean">μ_r(X) = E[(X − E(X))^r]. Always μ₁ = 0 and μ₂ = Var(X).</span></li><li><span class="term"><b class="en">Variance from moments</b></span><span class="mean">Var(X) = M₂ − M₁².</span></li><li><span class="term"><b class="en">MGF</b> <span class="fr">(fonction génératrice des moments)</span></span><span class="mean">M_X(t) = E(e^{tX}). Then M′_X(0) = E(X), M″_X(0) = E(X²), and the r-th derivative at 0 is E(X^r).</span></li><li><span class="term"><b class="en">Useful MGFs</b></span><span class="mean">Bernoulli: 1 − p + p eᵗ. Binomial B(n, p): (p eᵗ + 1 − p)ⁿ. Poisson P(λ): e^{λ(eᵗ − 1)}.</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 300 180" role="img" aria-label="The moment generating function of a Bernoulli law with p = 1/2 and its tangent at 0 with slope p."><line x1="30" y1="144.0" x2="292" y2="144.0" class="ax"/><line x1="30.0" y1="10" x2="30.0" y2="144.0" class="ax"/><text x="73.0" y="158.0" text-anchor="middle" class="sm mu">−1</text><text x="159.0" y="158.0" text-anchor="middle" class="sm mu">0</text><text x="245.0" y="158.0" text-anchor="middle" class="sm mu">1</text><text x="26.0" y="107.4" text-anchor="end" class="sm mu">1</text><line x1="30" y1="103.4" x2="288" y2="103.4" class="grid"/><text x="26.0" y="66.8" text-anchor="end" class="sm mu">2</text><line x1="30" y1="62.8" x2="288" y2="62.8" class="grid"/><text x="26.0" y="26.1" text-anchor="end" class="sm mu">3</text><line x1="30" y1="22.1" x2="288" y2="22.1" class="grid"/><text x="159.0" y="177.0" text-anchor="middle" class="sm mu">t</text><polyline points="30.0,119.2 31.6,119.1 33.2,119.0 34.8,118.9 36.4,118.8 38.1,118.7 39.7,118.6 41.3,118.5 42.9,118.4 44.5,118.3 46.1,118.2 47.7,118.1 49.4,118.0 51.0,117.9 52.6,117.8 54.2,117.7 55.8,117.6 57.4,117.5 59.0,117.3 60.6,117.2 62.2,117.1 63.9,117.0 65.5,116.8 67.1,116.7 68.7,116.6 70.3,116.4 71.9,116.3 73.5,116.2 75.2,116.0 76.8,115.9 78.4,115.7 80.0,115.6 81.6,115.4 83.2,115.3 84.8,115.1 86.4,115.0 88.1,114.8 89.7,114.6 91.3,114.4 92.9,114.3 94.5,114.1 96.1,113.9 97.7,113.7 99.3,113.5 100.9,113.3 102.6,113.1 104.2,113.0 105.8,112.7 107.4,112.5 109.0,112.3 110.6,112.1 112.2,111.9 113.9,111.7 115.5,111.4 117.1,111.2 118.7,111.0 120.3,110.7 121.9,110.5 123.5,110.2 125.1,110.0 126.8,109.7 128.4,109.5 130.0,109.2 131.6,108.9 133.2,108.6 134.8,108.4 136.4,108.1 138.0,107.8 139.6,107.5 141.3,107.2 142.9,106.8 144.5,106.5 146.1,106.2 147.7,105.9 149.3,105.5 150.9,105.2 152.6,104.8 154.2,104.5 155.8,104.1 157.4,103.8 159.0,103.4 160.6,103.0 162.2,102.6 163.8,102.2 165.5,101.8 167.1,101.4 168.7,101.0 170.3,100.5 171.9,100.1 173.5,99.6 175.1,99.2 176.7,98.7 178.4,98.2 180.0,97.8 181.6,97.3 183.2,96.8 184.8,96.3 186.4,95.7 188.0,95.2 189.6,94.7 191.2,94.1 192.9,93.6 194.5,93.0 196.1,92.4 197.7,91.8 199.3,91.2 200.9,90.6 202.5,90.0 204.1,89.4 205.8,88.7 207.4,88.0 209.0,87.4 210.6,86.7 212.2,86.0 213.8,85.3 215.4,84.5 217.0,83.8 218.7,83.0 220.3,82.3 221.9,81.5 223.5,80.7 225.1,79.9 226.7,79.0 228.3,78.2 230.0,77.3 231.6,76.5 233.2,75.6 234.8,74.7 236.4,73.7 238.0,72.8 239.6,71.8 241.2,70.8 242.9,69.8 244.5,68.8 246.1,67.8 247.7,66.7 249.3,65.6 250.9,64.5 252.5,63.4 254.1,62.3 255.8,61.1 257.4,59.9 259.0,58.7 260.6,57.5 262.2,56.2 263.8,55.0 265.4,53.7 267.0,52.3 268.6,51.0 270.3,49.6 271.9,48.2 273.5,46.8 275.1,45.3 276.7,43.9 278.3,42.3 279.9,40.8 281.5,39.2 283.2,37.6 284.8,36.0 286.4,34.3 288.0,32.7" class="cv1"/><polyline points="55.8,127.8 57.1,127.4 58.4,127.1 59.7,126.8 61.0,126.5 62.2,126.2 63.5,125.9 64.8,125.6 66.1,125.3 67.4,125.0 68.7,124.7 70.0,124.4 71.3,124.1 72.6,123.8 73.9,123.5 75.2,123.2 76.4,122.9 77.7,122.6 79.0,122.3 80.3,122.0 81.6,121.7 82.9,121.4 84.2,121.0 85.5,120.7 86.8,120.4 88.1,120.1 89.3,119.8 90.6,119.5 91.9,119.2 93.2,118.9 94.5,118.6 95.8,118.3 97.1,118.0 98.4,117.7 99.7,117.4 101.0,117.1 102.2,116.8 103.5,116.5 104.8,116.2 106.1,115.9 107.4,115.6 108.7,115.3 110.0,115.0 111.3,114.6 112.6,114.3 113.9,114.0 115.1,113.7 116.4,113.4 117.7,113.1 119.0,112.8 120.3,112.5 121.6,112.2 122.9,111.9 124.2,111.6 125.5,111.3 126.8,111.0 128.0,110.7 129.3,110.4 130.6,110.1 131.9,109.8 133.2,109.5 134.5,109.2 135.8,108.9 137.1,108.6 138.4,108.2 139.6,107.9 140.9,107.6 142.2,107.3 143.5,107.0 144.8,106.7 146.1,106.4 147.4,106.1 148.7,105.8 150.0,105.5 151.3,105.2 152.6,104.9 153.8,104.6 155.1,104.3 156.4,104.0 157.7,103.7 159.0,103.4 160.3,103.1 161.6,102.8 162.9,102.5 164.2,102.2 165.5,101.9 166.7,101.5 168.0,101.2 169.3,100.9 170.6,100.6 171.9,100.3 173.2,100.0 174.5,99.7 175.8,99.4 177.1,99.1 178.4,98.8 179.6,98.5 180.9,98.2 182.2,97.9 183.5,97.6 184.8,97.3 186.1,97.0 187.4,96.7 188.7,96.4 190.0,96.1 191.2,95.8 192.5,95.5 193.8,95.1 195.1,94.8 196.4,94.5 197.7,94.2 199.0,93.9 200.3,93.6 201.6,93.3 202.9,93.0 204.2,92.7 205.4,92.4 206.7,92.1 208.0,91.8 209.3,91.5 210.6,91.2 211.9,90.9 213.2,90.6 214.5,90.3 215.8,90.0 217.0,89.7 218.3,89.4 219.6,89.1 220.9,88.8 222.2,88.4 223.5,88.1 224.8,87.8 226.1,87.5 227.4,87.2 228.7,86.9 230.0,86.6 231.2,86.3 232.5,86.0 233.8,85.7 235.1,85.4 236.4,85.1 237.7,84.8 239.0,84.5 240.3,84.2 241.6,83.9 242.8,83.6 244.1,83.3 245.4,83.0 246.7,82.7 248.0,82.4 249.3,82.0 250.6,81.7 251.9,81.4 253.2,81.1 254.5,80.8 255.8,80.5 257.0,80.2 258.3,79.9 259.6,79.6 260.9,79.3 262.2,79.0" class="cv4"/><circle cx="159.0" cy="103.4" r="3.5" class="figc"/><text x="189.1" y="38.4" text-anchor="start" class="sm lab1">M(t) = 1 − p + p·eᵗ</text><text x="38.6" y="135.9" text-anchor="start" class="sm lab4">slope at 0 = p = E(X)</text></svg><figcaption>Bernoulli MGF with p = 1/2: it passes through 1 at t = 0, and its slope there is p, the mean.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>Dice game (ours).</b> Values −10, 10, 20 with chances 1/6, 1/2, 1/3, mean 10.</li><li>Third centred moment: μ₃ = (−20)³ × 1/6 + 0³ × 1/2 + 10³ × 1/3 = −8000/6 + 1000/3 = <b>−1000</b>. Negative: the lone loss (−10) pulls a tail to the left.</li><li><b>Bernoulli MGF (summary).</b> X = 1 with chance p, 0 with chance 1 − p. M(t) = e^{0·t}(1 − p) + e^{1·t} p = 1 − p + p eᵗ.</li><li>M′(t) = p eᵗ, so M′(0) = <b>p = E(X)</b>. M″(0) = p = E(X²), so Var(X) = p − p² = p(1 − p).</li></ul>
+  </div>
+</section>
+<section class="sec" id="s7">
+  <div class="sec-h"><span class="num">7</span><h2>Continuous variables and density <span class="fr">(variable absolument continue, densité de probabilité)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>A continuous X (a time, a length) can take every value of an interval. The chance of one exact value is 0: the chance of a bus coming at exactly 8:00:00.000… is nothing. Only <b>intervals</b> get a chance.</p><p>The <b>density</b> f is a curve whose <b>area</b> gives the chance: P(a ≤ X ≤ b) = area under f between a and b. A density is never negative and its total area is 1. And since single points weigh 0, it does not matter here whether the ends are “&lt;” or “≤”.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">Absolutely continuous</b> <span class="fr">(absolument continue)</span></span><span class="mean">F is continuous (no jumps) and has a derivative from the left and from the right.</span></li><li><span class="term"><b class="en">Density f</b> <span class="fr">(densité de probabilité)</span></span><span class="mean">The derivative of F: F(x) = ∫₋∞ˣ f(t) dt.</span></li><li><span class="term"><b class="en">Rules</b></span><span class="mean">f(x) ≥ 0 everywhere; ∫ f = 1 over ℝ. Any function with these two properties is a density.</span></li><li><span class="term"><b class="en">Chances</b></span><span class="mean">P(X = x) = 0, and P(a ≤ X ≤ b) = P(a &lt; X &lt; b) = F(b) − F(a) = ∫ₐᵇ f(x) dx.</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 320 190" role="img" aria-label="Density 2e^(−2x) with the area from 0 to 1 shaded, and its distribution function."><polygon points="30.0,154.0 30.0,28.5 31.2,31.6 32.3,34.7 33.5,37.6 34.6,40.5 35.8,43.3 37.0,46.0 38.1,48.7 39.3,51.3 40.4,53.8 41.6,56.3 42.7,58.7 43.9,61.1 45.1,63.4 46.2,65.6 47.4,67.8 48.5,69.9 49.7,72.0 50.8,74.0 52.0,76.0 53.2,77.9 54.3,79.8 55.5,81.6 56.6,83.4 57.8,85.1 59.0,86.8 60.1,88.5 61.3,90.1 62.4,91.7 63.6,93.2 64.8,94.7 65.9,96.2 67.1,97.6 68.2,99.0 69.4,100.4 70.5,101.7 71.7,103.0 72.9,104.3 74.0,105.5 75.2,106.7 76.3,107.8 77.5,109.0 78.7,110.1 79.8,111.2 81.0,112.2 82.1,113.3 83.3,114.3 84.4,115.3 85.6,116.2 86.8,117.1 87.9,118.1 89.1,118.9 90.2,119.8 91.4,120.7 92.6,121.5 93.7,122.3 94.9,123.1 96.0,123.8 97.2,124.6 98.3,125.3 99.5,126.0 100.7,126.7 101.8,127.4 103.0,128.0 104.1,128.7 105.3,129.3 106.4,129.9 107.6,130.5 108.8,131.1 109.9,131.6 111.1,132.2 112.2,132.7 113.4,133.3 114.6,133.8 115.7,134.3 116.9,134.8 118.0,135.2 119.2,135.7 120.4,136.2 121.5,136.6 122.7,137.0 122.7,154.0" class="area"/><polyline points="30.0,28.5 31.7,33.2 33.5,37.6 35.2,41.9 37.0,46.0 38.7,50.0 40.4,53.8 42.2,57.5 43.9,61.1 45.6,64.5 47.4,67.8 49.1,70.9 50.8,74.0 52.6,77.0 54.3,79.8 56.1,82.5 57.8,85.1 59.5,87.7 61.3,90.1 63.0,92.5 64.8,94.7 66.5,96.9 68.2,99.0 70.0,101.0 71.7,103.0 73.4,104.9 75.2,106.7 76.9,108.4 78.7,110.1 80.4,111.7 82.1,113.3 83.9,114.8 85.6,116.2 87.3,117.6 89.1,118.9 90.8,120.2 92.6,121.5 94.3,122.7 96.0,123.8 97.8,124.9 99.5,126.0 101.2,127.0 103.0,128.0 104.7,129.0 106.4,129.9 108.2,130.8 109.9,131.6 111.7,132.5 113.4,133.3 115.1,134.0 116.9,134.8 118.6,135.5 120.4,136.2 122.1,136.8 123.8,137.4 125.6,138.1 127.3,138.6 129.0,139.2 130.8,139.7 132.5,140.3 134.2,140.8 136.0,141.3 137.7,141.7 139.5,142.2 141.2,142.6 142.9,143.0 144.7,143.4 146.4,143.8 148.1,144.2 149.9,144.6 151.6,144.9 153.4,145.2 155.1,145.6 156.8,145.9 158.6,146.2 160.3,146.5 162.1,146.7 163.8,147.0 165.5,147.3 167.3,147.5 169.0,147.8 170.7,148.0 172.5,148.2 174.2,148.4 176.0,148.6 177.7,148.8 179.4,149.0 181.2,149.2 182.9,149.4 184.6,149.5 186.4,149.7 188.1,149.9 189.9,150.0 191.6,150.2 193.3,150.3 195.1,150.4 196.8,150.6 198.5,150.7 200.3,150.8 202.0,150.9 203.8,151.0 205.5,151.2 207.2,151.3 209.0,151.4 210.7,151.5 212.4,151.6 214.2,151.6 215.9,151.7 217.6,151.8 219.4,151.9 221.1,152.0 222.9,152.0 224.6,152.1 226.3,152.2 228.1,152.3 229.8,152.3 231.5,152.4 233.3,152.4 235.0,152.5 236.8,152.6 238.5,152.6 240.2,152.7 242.0,152.7 243.7,152.8 245.5,152.8 247.2,152.8 248.9,152.9 250.7,152.9 252.4,153.0 254.1,153.0 255.9,153.0 257.6,153.1 259.4,153.1 261.1,153.1 262.8,153.2 264.6,153.2 266.3,153.2 268.0,153.3 269.8,153.3 271.5,153.3 273.2,153.3 275.0,153.4 276.7,153.4 278.5,153.4 280.2,153.4 281.9,153.5 283.7,153.5 285.4,153.5 287.1,153.5 288.9,153.5 290.6,153.5 292.4,153.6 294.1,153.6 295.8,153.6 297.6,153.6 299.3,153.6 301.1,153.6 302.8,153.7 304.5,153.7 306.3,153.7 308.0,153.7" class="cv1"/><polyline points="30.0,154.0 31.7,151.7 33.5,149.5 35.2,147.3 37.0,145.3 38.7,143.3 40.4,141.4 42.2,139.5 43.9,137.7 45.6,136.0 47.4,134.4 49.1,132.8 50.8,131.3 52.6,129.8 54.3,128.4 56.1,127.0 57.8,125.7 59.5,124.4 61.3,123.2 63.0,122.0 64.8,120.9 66.5,119.8 68.2,118.8 70.0,117.8 71.7,116.8 73.4,115.8 75.2,114.9 76.9,114.1 78.7,113.2 80.4,112.4 82.1,111.6 83.9,110.9 85.6,110.2 87.3,109.5 89.1,108.8 90.8,108.2 92.6,107.5 94.3,106.9 96.0,106.4 97.8,105.8 99.5,105.3 101.2,104.8 103.0,104.3 104.7,103.8 106.4,103.3 108.2,102.9 109.9,102.4 111.7,102.0 113.4,101.6 115.1,101.3 116.9,100.9 118.6,100.5 120.4,100.2 122.1,99.9 123.8,99.6 125.6,99.2 127.3,99.0 129.0,98.7 130.8,98.4 132.5,98.1 134.2,97.9 136.0,97.6 137.7,97.4 139.5,97.2 141.2,97.0 142.9,96.8 144.7,96.6 146.4,96.4 148.1,96.2 149.9,96.0 151.6,95.8 153.4,95.6 155.1,95.5 156.8,95.3 158.6,95.2 160.3,95.0 162.1,94.9 163.8,94.8 165.5,94.6 167.3,94.5 169.0,94.4 170.7,94.3 172.5,94.2 174.2,94.1 176.0,94.0 177.7,93.9 179.4,93.8 181.2,93.7 182.9,93.6 184.6,93.5 186.4,93.4 188.1,93.3 189.9,93.3 191.6,93.2 193.3,93.1 195.1,93.1 196.8,93.0 198.5,92.9 200.3,92.9 202.0,92.8 203.8,92.7 205.5,92.7 207.2,92.6 209.0,92.6 210.7,92.5 212.4,92.5 214.2,92.5 215.9,92.4 217.6,92.4 219.4,92.3 221.1,92.3 222.9,92.2 224.6,92.2 226.3,92.2 228.1,92.1 229.8,92.1 231.5,92.1 233.3,92.1 235.0,92.0 236.8,92.0 238.5,92.0 240.2,91.9 242.0,91.9 243.7,91.9 245.5,91.9 247.2,91.9 248.9,91.8 250.7,91.8 252.4,91.8 254.1,91.8 255.9,91.8 257.6,91.7 259.4,91.7 261.1,91.7 262.8,91.7 264.6,91.7 266.3,91.7 268.0,91.6 269.8,91.6 271.5,91.6 273.2,91.6 275.0,91.6 276.7,91.6 278.5,91.6 280.2,91.6 281.9,91.5 283.7,91.5 285.4,91.5 287.1,91.5 288.9,91.5 290.6,91.5 292.4,91.5 294.1,91.5 295.8,91.5 297.6,91.5 299.3,91.5 301.1,91.5 302.8,91.4 304.5,91.4 306.3,91.4 308.0,91.4" class="cv3"/><line x1="30" y1="154.0" x2="312" y2="154.0" class="ax"/><line x1="30.0" y1="12" x2="30.0" y2="154.0" class="ax"/><text x="30.0" y="168.0" text-anchor="middle" class="sm mu">0</text><text x="122.7" y="168.0" text-anchor="middle" class="sm mu">1</text><text x="215.3" y="168.0" text-anchor="middle" class="sm mu">2</text><text x="308.0" y="168.0" text-anchor="middle" class="sm mu">3</text><text x="26.0" y="95.3" text-anchor="end" class="sm mu">1</text><line x1="30" y1="91.3" x2="308" y2="91.3" class="grid"/><text x="26.0" y="32.5" text-anchor="end" class="sm mu">2</text><line x1="30" y1="28.5" x2="308" y2="28.5" class="grid"/><text x="169.0" y="187.0" text-anchor="middle" class="sm mu">x</text><text x="87.5" y="142.7" text-anchor="middle" class="sm b">area 0.865</text><text x="48.5" y="25.4" text-anchor="start" class="sm lab1">f(x) = 2e^(−2x)</text><text x="178.3" y="83.7" text-anchor="start" class="sm mu">F(x) = 1 − e^(−2x)</text></svg><figcaption>The density 2e^(−2x) (blue) and its distribution function (dashed). The shaded area is P(X ≤ 1).</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>Example (course).</b> X has density f(x) = a e^{−2x} for x &gt; 0 and 0 otherwise. Find a, then F.</li><li>f ≥ 0 forces a ≥ 0. Total area = 1: ∫₀^∞ a e^{−2x} dx = a × 1/2 = 1, so <b>a = 2</b>.</li><li>F(x) = 0 for x ≤ 0, and for x ≥ 0: F(x) = ∫₀ˣ 2e^{−2t} dt = <b>1 − e^{−2x}</b>.</li><li><b>Use it (ours).</b> P(X ≤ 1) = F(1) = 1 − e⁻² ≈ <b>0.865</b>. P(X &gt; 0.5) = 1 − F(0.5) = e⁻¹ ≈ <b>0.368</b>.</li></ul>
+  </div>
+</section>
+<section class="sec" id="s8">
+  <div class="sec-h"><span class="num">8</span><h2>Mean and variance with integrals <span class="fr">(moments d'une VAR absolument continue)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Everything from Part A carries over: just replace the sum Σ by an integral ∫ and the chances P(X = xᵢ) by f(x) dx.</p><p>Same linearity, same transfer theorem, same shortcut Var(X) = E(X²) − (E(X))².</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">E(X)</b> <span class="fr">(espérance)</span></span><span class="mean">E(X) = ∫ x f(x) dx over ℝ.</span></li><li><span class="term"><b class="en">Transfer theorem</b> <span class="fr">(théorème de transfert)</span></span><span class="mean">E(g(X)) = ∫ g(x) f(x) dx.</span></li><li><span class="term"><b class="en">Var(X)</b> <span class="fr">(variance)</span></span><span class="mean">Var(X) = ∫ (x − E(X))² f(x) dx = E(X²) − (E(X))².</span></li><li><span class="term"><b class="en">Moments</b></span><span class="mean">M_r = ∫ x^r f(x) dx and μ_r = ∫ (x − E(X))^r f(x) dx, with μ₁ = 0 and μ₂ = Var(X).</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 320 190" role="img" aria-label="Density 2e^(−2x) with its balance point, the mean 1/2, marked under the axis."><polyline points="30.0,28.5 31.7,33.2 33.5,37.6 35.2,41.9 37.0,46.0 38.7,50.0 40.4,53.8 42.2,57.5 43.9,61.1 45.6,64.5 47.4,67.8 49.1,70.9 50.8,74.0 52.6,77.0 54.3,79.8 56.1,82.5 57.8,85.1 59.5,87.7 61.3,90.1 63.0,92.5 64.8,94.7 66.5,96.9 68.2,99.0 70.0,101.0 71.7,103.0 73.4,104.9 75.2,106.7 76.9,108.4 78.7,110.1 80.4,111.7 82.1,113.3 83.9,114.8 85.6,116.2 87.3,117.6 89.1,118.9 90.8,120.2 92.6,121.5 94.3,122.7 96.0,123.8 97.8,124.9 99.5,126.0 101.2,127.0 103.0,128.0 104.7,129.0 106.4,129.9 108.2,130.8 109.9,131.6 111.7,132.5 113.4,133.3 115.1,134.0 116.9,134.8 118.6,135.5 120.4,136.2 122.1,136.8 123.8,137.4 125.6,138.1 127.3,138.6 129.0,139.2 130.8,139.7 132.5,140.3 134.2,140.8 136.0,141.3 137.7,141.7 139.5,142.2 141.2,142.6 142.9,143.0 144.7,143.4 146.4,143.8 148.1,144.2 149.9,144.6 151.6,144.9 153.4,145.2 155.1,145.6 156.8,145.9 158.6,146.2 160.3,146.5 162.1,146.7 163.8,147.0 165.5,147.3 167.3,147.5 169.0,147.8 170.7,148.0 172.5,148.2 174.2,148.4 176.0,148.6 177.7,148.8 179.4,149.0 181.2,149.2 182.9,149.4 184.6,149.5 186.4,149.7 188.1,149.9 189.9,150.0 191.6,150.2 193.3,150.3 195.1,150.4 196.8,150.6 198.5,150.7 200.3,150.8 202.0,150.9 203.8,151.0 205.5,151.2 207.2,151.3 209.0,151.4 210.7,151.5 212.4,151.6 214.2,151.6 215.9,151.7 217.6,151.8 219.4,151.9 221.1,152.0 222.9,152.0 224.6,152.1 226.3,152.2 228.1,152.3 229.8,152.3 231.5,152.4 233.3,152.4 235.0,152.5 236.8,152.6 238.5,152.6 240.2,152.7 242.0,152.7 243.7,152.8 245.5,152.8 247.2,152.8 248.9,152.9 250.7,152.9 252.4,153.0 254.1,153.0 255.9,153.0 257.6,153.1 259.4,153.1 261.1,153.1 262.8,153.2 264.6,153.2 266.3,153.2 268.0,153.3 269.8,153.3 271.5,153.3 273.2,153.3 275.0,153.4 276.7,153.4 278.5,153.4 280.2,153.4 281.9,153.5 283.7,153.5 285.4,153.5 287.1,153.5 288.9,153.5 290.6,153.5 292.4,153.6 294.1,153.6 295.8,153.6 297.6,153.6 299.3,153.6 301.1,153.6 302.8,153.7 304.5,153.7 306.3,153.7 308.0,153.7" class="cv1"/><line x1="30" y1="154.0" x2="312" y2="154.0" class="ax"/><line x1="30.0" y1="12" x2="30.0" y2="154.0" class="ax"/><text x="30.0" y="168.0" text-anchor="middle" class="sm mu">0</text><text x="76.3" y="168.0" text-anchor="middle" class="sm mu">1/2</text><text x="122.7" y="168.0" text-anchor="middle" class="sm mu">1</text><text x="215.3" y="168.0" text-anchor="middle" class="sm mu">2</text><text x="308.0" y="168.0" text-anchor="middle" class="sm mu">3</text><text x="26.0" y="95.3" text-anchor="end" class="sm mu">1</text><line x1="30" y1="91.3" x2="308" y2="91.3" class="grid"/><text x="26.0" y="32.5" text-anchor="end" class="sm mu">2</text><line x1="30" y1="28.5" x2="308" y2="28.5" class="grid"/><text x="169.0" y="187.0" text-anchor="middle" class="sm mu">x</text><polygon points="76.3,155.0 68.3,167.0 84.3,167.0" class="figc"/><text x="99.5" y="119.5" text-anchor="start" class="sm b">E(X) = 1/2: the balance point</text><text x="48.5" y="25.4" text-anchor="start" class="sm lab1">f(x) = 2e^(−2x)</text></svg><figcaption>The same density 2e^(−2x): its balance point, the mean, is at 1/2.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="eq">E(X) = ∫ x f(x) dx        E(X²) = ∫ x² f(x) dx</div><ul class="ln"><li><b>Example (ours, with the course's density).</b> f(x) = 2e^{−2x} for x &gt; 0.</li><li>E(X) = ∫₀^∞ x · 2e^{−2x} dx. Integrate by parts: = <b>1/2</b>.</li><li>E(X²) = ∫₀^∞ x² · 2e^{−2x} dx = 2/4 = 1/2, so Var(X) = 1/2 − 1/4 = <b>1/4</b> and σ = 1/2.</li><li>This is the exponential law with θ = 2 (section 17): mean 1/θ, variance 1/θ².</li></ul>
+  </div>
+</section>
+<section class="sec" id="s9">
+  <div class="sec-h"><span class="num">9</span><h2>A function of a variable: Y = g(X) <span class="fr">(loi d'une fonction d'une v.a.)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Often we know the law of X and want the law of a new variable Y = g(X), like the area of a square whose side X is random.</p><p>Safe method (from the handwritten summary): <b>first find F_Y</b> by turning “Y ≤ y” into a condition on X, <b>then differentiate</b> to get the density f_Y. Never transform the density directly.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">Step 1</b></span><span class="mean">F_Y(y) = P(Y ≤ y) = P(g(X) ≤ y): solve for X.</span></li><li><span class="term"><b class="en">Step 2</b></span><span class="mean">f_Y(y) = F_Y′(y).</span></li><li><span class="term"><b class="en">Linear case</b></span><span class="mean">Y = aX + b with a &gt; 0: F_Y(y) = F_X((y − b)/a) and f_Y(y) = f_X((y − b)/a) / a.</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 320 190" role="img" aria-label="Density of Y = X squared when X is uniform on 0 to 1: 1 over 2 root y; the area up to 0.25 is one half."><polygon points="30.1,154.0 30.1,16.0 31.0,16.0 31.9,16.0 32.7,16.0 33.6,16.0 34.5,16.0 35.3,16.0 36.2,16.0 37.1,16.0 37.9,17.9 38.8,24.8 39.7,30.7 40.5,35.9 41.4,40.5 42.3,44.6 43.1,48.2 44.0,51.5 44.9,54.6 45.7,57.4 46.6,59.9 47.5,62.3 48.3,64.5 49.2,66.5 50.1,68.4 50.9,70.2 51.8,71.9 52.7,73.5 53.5,75.0 54.4,76.4 55.3,77.7 56.1,79.0 57.0,80.2 57.9,81.4 58.8,82.5 59.6,83.5 60.5,84.5 61.4,85.5 62.2,86.4 63.1,87.3 64.0,88.2 64.8,89.0 65.7,89.8 66.6,90.6 67.4,91.3 68.3,92.0 69.2,92.7 70.0,93.4 70.9,94.0 71.8,94.7 72.6,95.3 73.5,95.8 74.4,96.4 75.2,97.0 76.1,97.5 77.0,98.0 77.8,98.5 78.7,99.0 79.6,99.5 80.4,100.0 81.3,100.5 82.2,100.9 83.0,101.3 83.9,101.8 84.8,102.2 85.6,102.6 86.5,103.0 87.4,103.4 88.2,103.7 89.1,104.1 90.0,104.5 90.8,104.8 91.7,105.2 92.6,105.5 93.4,105.8 94.3,106.2 95.2,106.5 96.0,106.8 96.9,107.1 97.8,107.4 98.6,107.7 99.5,108.0 99.5,154.0" class="area"/><polyline points="35.6,9.1 37.3,11.7 39.0,25.9 40.7,36.6 42.4,45.0 44.1,51.8 45.8,57.5 47.5,62.3 49.2,66.4 50.9,70.1 52.6,73.3 54.3,76.2 56.0,78.8 57.7,81.1 59.4,83.3 61.1,85.2 62.8,87.0 64.5,88.7 66.2,90.3 67.9,91.7 69.6,93.1 71.3,94.3 73.0,95.5 74.7,96.7 76.4,97.7 78.1,98.7 79.8,99.7 81.5,100.6 83.2,101.4 84.9,102.3 86.6,103.0 88.3,103.8 90.0,104.5 91.8,105.2 93.5,105.9 95.2,106.5 96.9,107.1 98.6,107.7 100.3,108.3 102.0,108.8 103.7,109.3 105.4,109.8 107.1,110.3 108.8,110.8 110.5,111.3 112.2,111.7 113.9,112.1 115.6,112.5 117.3,113.0 119.0,113.3 120.7,113.7 122.4,114.1 124.1,114.5 125.8,114.8 127.5,115.2 129.2,115.5 130.9,115.8 132.6,116.1 134.3,116.5 136.0,116.8 137.7,117.1 139.4,117.3 141.1,117.6 142.8,117.9 144.5,118.2 146.2,118.4 147.9,118.7 149.6,118.9 151.3,119.2 153.0,119.4 154.8,119.7 156.5,119.9 158.2,120.1 159.9,120.3 161.6,120.6 163.3,120.8 165.0,121.0 166.7,121.2 168.4,121.4 170.1,121.6 171.8,121.8 173.5,122.0 175.2,122.2 176.9,122.4 178.6,122.5 180.3,122.7 182.0,122.9 183.7,123.1 185.4,123.2 187.1,123.4 188.8,123.6 190.5,123.7 192.2,123.9 193.9,124.0 195.6,124.2 197.3,124.4 199.0,124.5 200.7,124.7 202.4,124.8 204.1,124.9 205.8,125.1 207.5,125.2 209.2,125.4 210.9,125.5 212.6,125.6 214.3,125.8 216.1,125.9 217.8,126.0 219.5,126.1 221.2,126.3 222.9,126.4 224.6,126.5 226.3,126.6 228.0,126.7 229.7,126.9 231.4,127.0 233.1,127.1 234.8,127.2 236.5,127.3 238.2,127.4 239.9,127.5 241.6,127.6 243.3,127.7 245.0,127.8 246.7,127.9 248.4,128.1 250.1,128.2 251.8,128.3 253.5,128.3 255.2,128.4 256.9,128.5 258.6,128.6 260.3,128.7 262.0,128.8 263.7,128.9 265.4,129.0 267.1,129.1 268.8,129.2 270.5,129.3 272.2,129.4 273.9,129.4 275.6,129.5 277.4,129.6 279.1,129.7 280.8,129.8 282.5,129.9 284.2,129.9 285.9,130.0 287.6,130.1 289.3,130.2 291.0,130.3 292.7,130.3 294.4,130.4 296.1,130.5 297.8,130.6 299.5,130.6 301.2,130.7 302.9,130.8 304.6,130.9 306.3,130.9 308.0,131.0" class="cv1"/><line x1="30.0" y1="108.0" x2="308.0" y2="108.0" class="cv3"/><line x1="30" y1="154.0" x2="312" y2="154.0" class="ax"/><line x1="30.0" y1="12" x2="30.0" y2="154.0" class="ax"/><text x="30.0" y="168.0" text-anchor="middle" class="sm mu">0</text><text x="99.5" y="168.0" text-anchor="middle" class="sm mu">0.25</text><text x="169.0" y="168.0" text-anchor="middle" class="sm mu">0.5</text><text x="308.0" y="168.0" text-anchor="middle" class="sm mu">1</text><text x="26.0" y="112.0" text-anchor="end" class="sm mu">1</text><line x1="30" y1="108.0" x2="308" y2="108.0" class="grid"/><text x="26.0" y="66.0" text-anchor="end" class="sm mu">2</text><line x1="30" y1="62.0" x2="308" y2="62.0" class="grid"/><text x="169.0" y="187.0" text-anchor="middle" class="sm mu">y</text><text x="202.4" y="98.8" text-anchor="start" class="sm mu">dashed: X ~ U[0, 1]</text><text x="119.0" y="48.2" text-anchor="start" class="sm lab1">f_Y(y) = 1/(2√y)</text><text x="63.4" y="137.9" text-anchor="middle" class="sm b">½</text></svg><figcaption>X uniform on [0, 1]; Y = X² piles up near 0. Half of the time Y ≤ 0.25 (shaded).</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>Example A (ours).</b> X uniform on [0, 1] (density 1 there), Y = X². Y lives in [0, 1].</li><li>F_Y(y) = P(X² ≤ y) = P(X ≤ √y) = <b>√y</b> for y in [0, 1]. So f_Y(y) = 1/(2√y).</li><li>Check: P(Y ≤ 0.25) = √0.25 = <b>0.5</b>. Of course: X² ≤ 0.25 exactly when X ≤ 0.5.</li><li><b>Example B (ours).</b> Same X, Y = 2X + 1. F_Y(y) = P(X ≤ (y − 1)/2) = (y − 1)/2 on [1, 3], so f_Y = 1/2 there: <b>Y is uniform on [1, 3]</b>.</li></ul>
+  </div>
+</section>
+<section class="sec" id="s10">
+  <div class="sec-h"><span class="num">10</span><h2>Discrete uniform law <span class="fr">(loi uniforme discrète)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>n values, all <b>equally likely</b>: each gets 1/n. A fair die is the classic case.</p><p>Its mean is the ordinary average of the values.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">X ~ U{x₁, …, xₙ}</b> <span class="fr">(loi uniforme discrète)</span></span><span class="mean">P(X = xᵢ) = 1/n for each i.</span></li><li><span class="term"><b class="en">Mean, variance</b></span><span class="mean">E(X) = x̄ = (x₁ + … + xₙ)/n; Var(X) = (1/n) Σ xᵢ² − x̄².</span></li><li><span class="term"><b class="en">On {1, …, n}</b></span><span class="mean">E(X) = (n + 1)/2; Var(X) = (n² − 1)/12.</span><span class="eg">die: 7/2 and 35/12</span></li><li><span class="term"><b class="en">On {a, …, b} (slides)</b></span><span class="mean">P(X = x) = 1/(b − a + 1); E(X) = (a + b)/2; Var(X) = ((b − a + 1)² − 1)/12.</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 300 170" role="img" aria-label="Six equal bars of height 1/6."><rect x="57.3" y="69.6" width="26.0" height="64.4" class="bar"/><text x="70.3" y="65.6" text-anchor="middle" class="sm">1/6</text><rect x="93.6" y="69.6" width="26.0" height="64.4" class="bar"/><text x="106.6" y="65.6" text-anchor="middle" class="sm">1/6</text><rect x="129.9" y="69.6" width="26.0" height="64.4" class="bar"/><text x="142.9" y="65.6" text-anchor="middle" class="sm">1/6</text><rect x="166.1" y="69.6" width="26.0" height="64.4" class="bar"/><text x="179.1" y="65.6" text-anchor="middle" class="sm">1/6</text><rect x="202.4" y="69.6" width="26.0" height="64.4" class="bar"/><text x="215.4" y="65.6" text-anchor="middle" class="sm">1/6</text><rect x="238.7" y="69.6" width="26.0" height="64.4" class="bar"/><text x="251.7" y="65.6" text-anchor="middle" class="sm">1/6</text><line x1="34" y1="134.0" x2="292" y2="134.0" class="ax"/><line x1="34.0" y1="14" x2="34.0" y2="134.0" class="ax"/><text x="70.3" y="148.0" text-anchor="middle" class="sm mu">1</text><text x="106.6" y="148.0" text-anchor="middle" class="sm mu">2</text><text x="142.9" y="148.0" text-anchor="middle" class="sm mu">3</text><text x="179.1" y="148.0" text-anchor="middle" class="sm mu">4</text><text x="215.4" y="148.0" text-anchor="middle" class="sm mu">5</text><text x="251.7" y="148.0" text-anchor="middle" class="sm mu">6</text><text x="161.0" y="167.0" text-anchor="middle" class="sm mu">k</text></svg><figcaption>A fair die: six equal bars of 1/6.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>Example (course).</b> An urn holds n balls numbered 1 to n. Draw one; X = its number. Each number has chance 1/n, so X ~ U{1, …, n}.</li><li>E(X) = (1 + 2 + … + n)/n = n(n + 1)/(2n) = (n + 1)/2. E(X²) = (n + 1)(2n + 1)/6, so Var(X) = (n² − 1)/12.</li><li><b>Fair die</b>, n = 6: E(X) = 7/2 = <b>3.5</b>, Var(X) = 35/12 ≈ <b>2.92</b>.</li><li><b>Values 3 to 8 (ours).</b> 6 values: E(X) = (3 + 8)/2 = <b>5.5</b>, Var(X) = (6² − 1)/12 = <b>35/12</b>. Same spread as the die: shifting does not change the variance.</li></ul>
+  </div>
+</section>
+<section class="sec" id="s11">
+  <div class="sec-h"><span class="num">11</span><h2>Bernoulli law <span class="fr">(loi de Bernoulli)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>One trial with two outcomes: <b>success</b> (coded 1) with chance p, <b>failure</b> (coded 0) with chance 1 − p. Every yes/no question is a Bernoulli variable.</p><p>It is the building block of the next laws: count Bernoulli successes and you get the binomial; wait for the first success and you get the geometric.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">X ~ B(p)</b> <span class="fr">(loi de Bernoulli)</span></span><span class="mean">X(Ω) = {0, 1}, P(X = 1) = p, P(X = 0) = 1 − p. Short form: P(X = k) = p^k (1 − p)^{1−k}.</span></li><li><span class="term"><b class="en">q</b></span><span class="mean">Short for 1 − p, the chance of failure.</span></li><li><span class="term"><b class="en">F(x)</b></span><span class="mean">0 if x &lt; 0; q = 1 − p if 0 ≤ x &lt; 1; 1 if x ≥ 1.</span></li><li><span class="term"><b class="en">Mean, variance</b></span><span class="mean">E(X) = p; E(X²) = p; Var(X) = p(1 − p) = pq.</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 260 170" role="img" aria-label="Bernoulli law: two bars, 1 − p at 0 and p at 1."><rect x="79.8" y="72.9" width="40.0" height="61.1" class="bar"/><rect x="162.2" y="72.9" width="40.0" height="61.1" class="bar"/><text x="99.8" y="66.9" text-anchor="middle" class="sm">1 − p</text><text x="182.2" y="66.9" text-anchor="middle" class="sm">p</text><line x1="34" y1="134.0" x2="252" y2="134.0" class="ax"/><line x1="34.0" y1="14" x2="34.0" y2="134.0" class="ax"/><text x="99.8" y="148.0" text-anchor="middle" class="sm mu">0 failure</text><text x="182.2" y="148.0" text-anchor="middle" class="sm mu">1 success</text></svg><figcaption>Two bars: 1 − p at 0 (failure) and p at 1 (success).</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>Example (course).</b> Toss a fair coin; I win on heads. X = 1 on heads, 0 on tails. So X ~ B(1/2).</li><li>E(X) = 0 × 1/2 + 1 × 1/2 = <b>1/2</b>. E(X²) = 1/2, so Var(X) = 1/2 − 1/4 = <b>1/4</b>.</li><li><b>Another (course).</b> A survey question answered “yes” (1) or “no” (0) is a Bernoulli variable; p is the share of “yes”.</li></ul>
+  </div>
+</section>
+<section class="sec" id="s12">
+  <div class="sec-h"><span class="num">12</span><h2>Binomial law <span class="fr">(loi binomiale)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Repeat the <b>same</b> Bernoulli trial n times, <b>independently</b> (one trial does not affect the others). X = the number of successes. Then X is binomial B(n, p).</p><p>Why C(n, k)? A result with exactly k successes is a choice of which k of the n trials succeed (C(n, k) ways, Chapter 0); each such result has chance p^k (1 − p)^{n−k}.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">X ~ B(n, p)</b> <span class="fr">(loi binomiale)</span></span><span class="mean">X(Ω) = {0, 1, …, n}; P(X = k) = C(n, k) p^k (1 − p)^{n−k}.</span></li><li><span class="term"><b class="en">Sum of Bernoullis</b></span><span class="mean">X = X₁ + … + Xₙ with Xᵢ ~ B(p) independent. That is how the mean and variance are found.</span></li><li><span class="term"><b class="en">Mean, variance</b></span><span class="mean">E(X) = np; Var(X) = np(1 − p).</span></li><li><span class="term"><b class="en">Independent</b> <span class="fr">(indépendantes)</span></span><span class="mean">Knowing the result of some trials does not change the chances of the others.</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 320 180" role="img" aria-label="Binomial law B(5, 1/6): bars 0.402, 0.402, 0.161, 0.032, 0.003, 0.000."><rect x="49.0" y="38.5" width="30.0" height="105.5" class="bar"/><text x="64.0" y="34.5" text-anchor="middle" class="sm">0.402</text><rect x="91.8" y="38.5" width="30.0" height="105.5" class="bar"/><text x="106.8" y="34.5" text-anchor="middle" class="sm">0.402</text><rect x="134.6" y="101.8" width="30.0" height="42.2" class="barhi"/><text x="149.6" y="97.8" text-anchor="middle" class="sm">0.161</text><rect x="177.4" y="135.6" width="30.0" height="8.4" class="bar"/><text x="192.4" y="131.6" text-anchor="middle" class="sm">0.032</text><rect x="220.2" y="143.2" width="30.0" height="0.8" class="bar"/><text x="235.2" y="139.2" text-anchor="middle" class="sm"></text><rect x="263.0" y="144.0" width="30.0" height="0.0" class="bar"/><text x="278.0" y="140.0" text-anchor="middle" class="sm"></text><line x1="34" y1="144.0" x2="312" y2="144.0" class="ax"/><line x1="34.0" y1="14" x2="34.0" y2="144.0" class="ax"/><text x="64.0" y="158.0" text-anchor="middle" class="sm mu">0</text><text x="106.8" y="158.0" text-anchor="middle" class="sm mu">1</text><text x="149.6" y="158.0" text-anchor="middle" class="sm mu">2</text><text x="192.4" y="158.0" text-anchor="middle" class="sm mu">3</text><text x="235.2" y="158.0" text-anchor="middle" class="sm mu">4</text><text x="278.0" y="158.0" text-anchor="middle" class="sm mu">5</text><text x="171.0" y="177.0" text-anchor="middle" class="sm mu">number of 1s</text></svg><figcaption>B(5, 1/6): the bar at 2 (highlighted) is P(X = 2) ≈ 0.161.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="eq">P(X = k) = C(n, k) p^k (1 − p)^(n − k)</div><ul class="ln"><li><b>Example (course).</b> Throw a fair die 5 times; X = the number of 1s. Each throw is a Bernoulli trial with p = 1/6, and the throws are independent, so X ~ B(5, 1/6).</li><li>P(X = k) = C(5, k) (1/6)^k (5/6)^{5−k}. E(X) = 5/6 ≈ <b>0.83</b>, Var(X) = 5 × 1/6 × 5/6 = <b>25/36</b>.</li><li><b>Use it (ours).</b> P(X = 2) = C(5, 2) × (1/6)² × (5/6)³ = 10 × 1/36 × 125/216 = 625/3888 ≈ <b>0.161</b>.</li><li>At least one 1: P(X ≥ 1) = 1 − P(X = 0) = 1 − (5/6)⁵ = 4651/7776 ≈ <b>0.598</b>.</li></ul>
+  </div>
+</section>
+<section class="sec" id="s13">
+  <div class="sec-h"><span class="num">13</span><h2>Geometric law <span class="fr">(loi géométrique)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Repeat a Bernoulli trial <b>until the first success</b>. X = the number of trials it took (the success included). Unlike the binomial, the number of trials is not fixed in advance.</p><p>X = k means k − 1 failures then one success, which has chance (1 − p)^{k−1} p.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">X ~ G(p)</b> <span class="fr">(loi géométrique)</span></span><span class="mean">X(Ω) = {1, 2, 3, …}; P(X = k) = (1 − p)^{k−1} p.</span></li><li><span class="term"><b class="en">Mean, variance</b></span><span class="mean">E(X) = 1/p; Var(X) = (1 − p)/p².</span><span class="eg">p = 1/6: wait 6 throws on average</span></li><li><span class="term"><b class="en">Tail</b></span><span class="mean">P(X &gt; k) = (1 − p)^k: the first k trials all failed.</span></li><li><span class="term"><b class="en">Negative binomial (slides)</b> <span class="fr">(loi binomiale négative)</span></span><span class="mean">Wait for the n-th success instead of the first: mean n/p, variance n(1 − p)/p².</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 330 170" role="img" aria-label="Geometric law with p = 1/6: decreasing bars starting at 1/6."><rect x="47.8" y="37.3" width="16.0" height="96.7" class="bar"/><rect x="69.7" y="53.4" width="16.0" height="80.6" class="bar"/><rect x="91.5" y="66.9" width="16.0" height="67.1" class="barhi"/><rect x="113.4" y="78.1" width="16.0" height="55.9" class="bar"/><rect x="135.2" y="87.4" width="16.0" height="46.6" class="bar"/><rect x="157.1" y="95.2" width="16.0" height="38.8" class="bar"/><rect x="178.9" y="101.6" width="16.0" height="32.4" class="bar"/><rect x="200.8" y="107.0" width="16.0" height="27.0" class="bar"/><rect x="222.6" y="111.5" width="16.0" height="22.5" class="bar"/><rect x="244.5" y="115.3" width="16.0" height="18.7" class="bar"/><rect x="266.3" y="118.4" width="16.0" height="15.6" class="bar"/><rect x="288.2" y="121.0" width="16.0" height="13.0" class="bar"/><line x1="34" y1="134.0" x2="322" y2="134.0" class="ax"/><line x1="34.0" y1="14" x2="34.0" y2="134.0" class="ax"/><text x="55.8" y="148.0" text-anchor="middle" class="sm mu">1</text><text x="99.5" y="148.0" text-anchor="middle" class="sm mu">3</text><text x="165.1" y="148.0" text-anchor="middle" class="sm mu">6</text><text x="230.6" y="148.0" text-anchor="middle" class="sm mu">9</text><text x="296.2" y="148.0" text-anchor="middle" class="sm mu">12</text><text x="30.0" y="41.3" text-anchor="end" class="sm mu">1/6</text><line x1="34" y1="37.3" x2="318" y2="37.3" class="grid"/><text x="176.0" y="167.0" text-anchor="middle" class="sm mu">throw of the 1st six</text><text x="109.5" y="60.9" text-anchor="start" class="sm">25/216</text></svg><figcaption>Throw a die until the first six: the bars shrink by a factor 5/6 each time.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>Example (course).</b> An urn has a share p of white balls. Draw with replacement (put the ball back) until the first white; X = number of draws. The draws are independent with the same p, so X ~ G(p) and P(X = k) = p(1 − p)^{k−1}.</li><li><b>With numbers (ours).</b> Throw a fair die until the first six: p = 1/6.</li><li>P(X = 3) = (5/6)² × 1/6 = 25/216 ≈ <b>0.116</b>. E(X) = 1/p = <b>6</b>. Var(X) = (5/6)/(1/36) = <b>30</b>.</li><li>No six in the first 3 throws: P(X &gt; 3) = (5/6)³ = 125/216 ≈ <b>0.579</b>.</li></ul>
+  </div>
+</section>
+<section class="sec" id="s14">
+  <div class="sec-h"><span class="num">14</span><h2>Hypergeometric law <span class="fr">(loi hypergéométrique)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Like the binomial, but the draws are made <b>without putting back</b>, so the urn changes after each draw and the draws are not independent.</p><p>Count with combinations (Chapter 0): choose x objects among the N_A “good” ones and n − x among the others, out of all C(N, n) samples.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">X ~ H(N, n, N_A)</b> <span class="fr">(loi hypergéométrique)</span></span><span class="mean">Urn of N objects, N_A of type A. Draw n without replacement; X = number of type A drawn.</span></li><li><span class="term"><b class="en">Law</b></span><span class="mean">P(X = x) = C(N_A, x) C(N − N_A, n − x) / C(N, n), for max{0, n − (N − N_A)} ≤ x ≤ min{n, N_A}.</span></li><li><span class="term"><b class="en">Mean, variance</b></span><span class="mean">E(X) = n N_A/N; Var(X) = n × (N − n)/(N − 1) × N_A/N × (1 − N_A/N).</span></li><li><span class="term"><b class="en">Link with binomial</b></span><span class="mean">Same mean as B(n, N_A/N); the variance has the extra factor (N − n)/(N − 1) &lt; 1.</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 300 180" role="img" aria-label="Hypergeometric law: 3 balls from 16 white and 4 black; bars 0.491, 0.421, 0.084, 0.004."><rect x="57.4" y="40.8" width="34.0" height="103.2" class="bar"/><text x="74.4" y="36.8" text-anchor="middle" class="sm">0.491</text><rect x="115.1" y="55.6" width="34.0" height="88.4" class="barhi"/><text x="132.1" y="51.6" text-anchor="middle" class="sm">0.421</text><rect x="172.9" y="126.3" width="34.0" height="17.7" class="bar"/><text x="189.9" y="122.3" text-anchor="middle" class="sm">0.084</text><rect x="230.6" y="143.3" width="34.0" height="0.7" class="bar"/><text x="247.6" y="139.3" text-anchor="middle" class="sm">0.004</text><line x1="34" y1="144.0" x2="292" y2="144.0" class="ax"/><line x1="34.0" y1="14" x2="34.0" y2="144.0" class="ax"/><text x="74.4" y="158.0" text-anchor="middle" class="sm mu">0</text><text x="132.1" y="158.0" text-anchor="middle" class="sm mu">1</text><text x="189.9" y="158.0" text-anchor="middle" class="sm mu">2</text><text x="247.6" y="158.0" text-anchor="middle" class="sm mu">3</text><text x="161.0" y="177.0" text-anchor="middle" class="sm mu">black balls drawn</text></svg><figcaption>3 balls from 16 white and 4 black: most often 0 or 1 black.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>Example (ours).</b> An urn has N = 20 balls: N_A = 4 black, 16 white. Draw n = 3 without putting back; X = number of black balls.</li><li>C(20, 3) = 1140 samples. P(X = 0) = C(16, 3)/1140 = 560/1140 = <b>28/57 ≈ 0.491</b>. P(X = 1) = 4 × 120/1140 = <b>8/19 ≈ 0.421</b>.</li><li>P(X = 2) = 6 × 16/1140 = 8/95 ≈ 0.084. P(X = 3) = 4/1140 = 1/285 ≈ 0.004. Sum: 1.</li><li>E(X) = 3 × 4/20 = <b>3/5</b>. Var(X) = 3 × 17/19 × 1/5 × 4/5 = <b>204/475 ≈ 0.43</b>.</li></ul>
+  </div>
+</section>
+<section class="sec" id="s15">
+  <div class="sec-h"><span class="num">15</span><h2>Poisson law <span class="fr">(loi de Poisson)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>The Poisson law counts how many times a <b>rare event</b> happens in a fixed period: breakdowns per month, clients per hour, typos per page. Its only parameter λ is the <b>average count</b>.</p><p>It appears when you have many chances for the event, each very small: B(n, p) with n large and p small is close to Poisson with λ = np.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">X ~ P(λ)</b> <span class="fr">(loi de Poisson)</span></span><span class="mean">X(Ω) = ℕ = {0, 1, 2, …}; P(X = k) = e^{−λ} λ^k / k!.</span></li><li><span class="term"><b class="en">Mean, variance</b></span><span class="mean">E(X) = λ and Var(X) = λ (the same number).</span></li><li><span class="term"><b class="en">Poisson approximation</b> <span class="fr">(approximation)</span></span><span class="mean">If n ≥ 30 and p &lt; 0.1 (summary's rule), B(n, p) ≈ P(np).</span></li><li><span class="term"><b class="en">Sum</b></span><span class="mean">X₁ ~ P(λ₁), X₂ ~ P(λ₂) independent ⇒ X₁ + X₂ ~ P(λ₁ + λ₂).</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 320 180" role="img" aria-label="Poisson law with lambda = 2: bars 0.135, 0.271, 0.271, 0.180, 0.090 and so on."><rect x="43.4" y="92.3" width="22.0" height="51.7" class="barhi"/><text x="54.4" y="88.3" text-anchor="middle" class="sm">0.135</text><rect x="72.6" y="40.7" width="22.0" height="103.3" class="bar"/><text x="83.6" y="36.7" text-anchor="middle" class="sm">0.271</text><rect x="101.7" y="40.7" width="22.0" height="103.3" class="bar"/><text x="112.7" y="36.7" text-anchor="middle" class="sm">0.271</text><rect x="130.9" y="75.1" width="22.0" height="68.9" class="bar"/><text x="141.9" y="71.1" text-anchor="middle" class="sm">0.180</text><rect x="160.0" y="109.6" width="22.0" height="34.4" class="bar"/><text x="171.0" y="105.6" text-anchor="middle" class="sm">0.090</text><rect x="189.1" y="130.2" width="22.0" height="13.8" class="bar"/><text x="200.1" y="126.2" text-anchor="middle" class="sm">0.036</text><rect x="218.3" y="139.4" width="22.0" height="4.6" class="bar"/><text x="229.3" y="135.4" text-anchor="middle" class="sm">0.012</text><rect x="247.4" y="142.7" width="22.0" height="1.3" class="bar"/><text x="258.4" y="138.7" text-anchor="middle" class="sm"></text><rect x="276.6" y="143.7" width="22.0" height="0.3" class="bar"/><text x="287.6" y="139.7" text-anchor="middle" class="sm"></text><line x1="34" y1="144.0" x2="312" y2="144.0" class="ax"/><line x1="34.0" y1="14" x2="34.0" y2="144.0" class="ax"/><text x="54.4" y="158.0" text-anchor="middle" class="sm mu">0</text><text x="83.6" y="158.0" text-anchor="middle" class="sm mu">1</text><text x="112.7" y="158.0" text-anchor="middle" class="sm mu">2</text><text x="141.9" y="158.0" text-anchor="middle" class="sm mu">3</text><text x="171.0" y="158.0" text-anchor="middle" class="sm mu">4</text><text x="200.1" y="158.0" text-anchor="middle" class="sm mu">5</text><text x="229.3" y="158.0" text-anchor="middle" class="sm mu">6</text><text x="258.4" y="158.0" text-anchor="middle" class="sm mu">7</text><text x="287.6" y="158.0" text-anchor="middle" class="sm mu">8</text><text x="171.0" y="177.0" text-anchor="middle" class="sm mu">breakdowns in a month</text></svg><figcaption>P(2): no breakdown 0.135 (highlighted), exactly 1 or 2 breakdowns 0.271 each.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="eq">P(X = k) = e^(−λ) λ^k / k!</div><ul class="ln"><li><b>Example (course).</b> A machine breaks down 2 times a month on average; X = breakdowns in a month, assumed Poisson. Since E(X) = λ, λ = 2.</li><li><b>1. No breakdown:</b> P(X = 0) = e⁻² × 2⁰/0! = e⁻² ≈ <b>0.135</b> (recall 0! = 1).</li><li><b>2. At least two:</b> P(X ≥ 2) = 1 − P(X = 0) − P(X = 1) = 1 − e⁻² − 2e⁻² = 1 − 3e⁻² ≈ <b>0.594</b>.</li><li><b>Example (slides).</b> 15 clients per hour on average arrive at a counter, independently. P(exactly 20 in an hour) = e⁻¹⁵ × 15²⁰/20! ≈ <b>0.0418</b>, about 4.2%.</li></ul>
+  <figure class="fig live" id="lf2">
+    <div class="live-grid">
+      <svg id="lf2-svg" class="c1-svg" viewBox="0 0 300 220" role="img" aria-label="Binomial bars with n p = 2 for n = 5, 10, 20, 50, 100 compared with Poisson 2 markers"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf2-val">0 / 5</b></div>
+        <div class="actions"><button class="b chk" id="lf2-play" type="button">Play</button><button class="b" id="lf2-step" type="button">Step</button><button class="b" id="lf2-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf2-range">Drag to any step</label>
+        <input id="lf2-range" type="range" min="0" max="5" step="1" value="0">
+        <div class="live-status" id="lf2-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>n</th><th>p = 2/n</th><th>P(X = 0)</th><th>gap to e⁻²</th></tr></thead><tbody id="lf2-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p>Keep the average number of breakdowns at np = 2, but split the month into more and more tiny time slots (n grows, p = 2/n shrinks). The binomial bars (filled) move onto the Poisson values (dashes). That is why Poisson is called the law of rare events.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf2-"+id);};
+    var LAM=2,NS_=[5,10,20,50,100],K=7;  // course example: a machine breaks down 2 times a month on average
+    function binom(n,p,k){var c=1;for(var j=0;j<k;j++)c=c*(n-j)/(j+1);return c*Math.pow(p,k)*Math.pow(1-p,n-k);}
+    function pois(k){var f=1;for(var j=2;j<=k;j++)f*=j;return Math.exp(-LAM)*Math.pow(LAM,k)/f;}
+    var r4=function(x){return x.toFixed(4);};
+    var PO=[];for(var k=0;k<K;k++)PO.push(pois(k));
+    var STEPS=[];
+    NS_.forEach(function(n){var p=LAM/n,B=[];for(var k=0;k<K;k++)B.push(binom(n,p,k));
+      STEPS.push({n:n,p:p,B:B,text:"n = "+n+" slots, p = 2/"+n+" = "+p+". Binomial P(X = 0) = (1 − "+p+")^"+n+" = "+r4(B[0])+"; Poisson says "+r4(PO[0])+"."});});
+    STEPS.push({n:0,B:PO,end:true,text:"Limit: Poisson with λ = np = 2. P(no breakdown) = e⁻² = "+r4(PO[0])+" ≈ 0.135, and P(at least 2) = 1 − 3e⁻² = "+r4(1-PO[0]-PO[1])+"."});
+    var NS="http://www.w3.org/2000/svg";
+    function el(n,a,txt){var e=document.createElementNS(NS,n);for(var q in a)e.setAttribute(q,a[q]);if(txt!=null)e.textContent=txt;return e;}
+    var X=function(k){return 50+k*38;},Y=function(y){return 186-y/0.4*160;};
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function draw(){
+      var s=STEPS[i],svg=$("svg");while(svg.firstChild)svg.removeChild(svg.firstChild);
+      svg.appendChild(el("line",{x1:30,y1:Y(0),x2:296,y2:Y(0),"class":"ax"}));
+      [[0.1,"0.1"],[0.2,"0.2"],[0.3,"0.3"]].forEach(function(t){svg.appendChild(el("line",{x1:30,y1:Y(t[0]),x2:296,y2:Y(t[0]),"class":"grid"}));
+        svg.appendChild(el("text",{x:27,y:Y(t[0])+4,"text-anchor":"end","class":"sm mu"},t[1]));});
+      for(var k=0;k<K;k++){
+        svg.appendChild(el("rect",{x:X(k)-12,y:Y(s.B[k]),width:24,height:Y(0)-Y(s.B[k]),"class":k===0?"barhi":"bar"}));
+        svg.appendChild(el("line",{x1:X(k)-16,y1:Y(PO[k]),x2:X(k)+16,y2:Y(PO[k]),"class":"cv4"}));
+        svg.appendChild(el("text",{x:X(k),y:Y(0)+15,"text-anchor":"middle","class":"sm mu"},k));}
+      svg.appendChild(el("text",{x:150,y:16,"text-anchor":"middle","class":"sm b"},s.end?"Poisson P(2)":"B("+s.n+", "+s.p+")  vs  Poisson P(2)"));
+      svg.appendChild(el("text",{x:X(0),y:Math.min(Y(s.B[0]),Y(PO[0]))-6,"text-anchor":"middle","class":"sm b"},s.B[0].toFixed(3)));
+      var rows=$("rows");rows.innerHTML="";
+      for(var j=0;j<=Math.min(i,NS_.length-1);j++){var t=STEPS[j],tr=document.createElement("tr");if(j<i)tr.className="past";
+        tr.innerHTML="<td>"+t.n+"</td><td>"+t.p+"</td><td>"+r4(t.B[0])+"</td><td>"+r4(PO[0]-t.B[0])+"</td>";rows.appendChild(tr);}
+      if(s.end){var tr=document.createElement("tr");tr.innerHTML="<td>∞</td><td>→ 0</td><td>"+r4(PO[0])+"</td><td>0</td>";rows.appendChild(tr);}
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},1200);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+  </div>
+</section>
+<section class="sec" id="s16">
+  <div class="sec-h"><span class="num">16</span><h2>Continuous uniform law <span class="fr">(loi uniforme continue)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>X falls “anywhere” in [a, b] with no preferred place: the density is flat. The chance of a piece of the interval is just its <b>length divided by b − a</b>.</p><p>The mean is the middle of the interval.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">X ~ U[a, b]</b> <span class="fr">(loi uniforme continue)</span></span><span class="mean">f(x) = 1/(b − a) on [a, b], 0 outside.</span></li><li><span class="term"><b class="en">F(x)</b></span><span class="mean">0 if x &lt; a; (x − a)/(b − a) on [a, b[; 1 if x ≥ b.</span></li><li><span class="term"><b class="en">Mean, variance</b></span><span class="mean">E(X) = (a + b)/2; Var(X) = (b − a)²/12.</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 320 170" role="img" aria-label="Uniform density 1/10 on 0 to 10, area between 2 and 5 shaded: 0.3."><polygon points="112.3,134.0 112.3,51.1 113.0,51.1 113.8,51.1 114.5,51.1 115.2,51.1 116.0,51.1 116.7,51.1 117.4,51.1 118.2,51.1 118.9,51.1 119.6,51.1 120.4,51.1 121.1,51.1 121.8,51.1 122.6,51.1 123.3,51.1 124.0,51.1 124.8,51.1 125.5,51.1 126.2,51.1 127.0,51.1 127.7,51.1 128.4,51.1 129.2,51.1 129.9,51.1 130.6,51.1 131.4,51.1 132.1,51.1 132.8,51.1 133.6,51.1 134.3,51.1 135.0,51.1 135.8,51.1 136.5,51.1 137.2,51.1 138.0,51.1 138.7,51.1 139.4,51.1 140.2,51.1 140.9,51.1 141.6,51.1 142.4,51.1 143.1,51.1 143.8,51.1 144.6,51.1 145.3,51.1 146.0,51.1 146.8,51.1 147.5,51.1 148.2,51.1 149.0,51.1 149.7,51.1 150.4,51.1 151.2,51.1 151.9,51.1 152.7,51.1 153.4,51.1 154.1,51.1 154.9,51.1 155.6,51.1 156.3,51.1 157.1,51.1 157.8,51.1 158.5,51.1 159.3,51.1 160.0,51.1 160.7,51.1 161.5,51.1 162.2,51.1 162.9,51.1 163.7,51.1 164.4,51.1 165.1,51.1 165.9,51.1 166.6,51.1 167.3,51.1 168.1,51.1 168.8,51.1 169.5,51.1 170.3,51.1 171.0,51.1 171.0,134.0" class="area"/><polyline points="34.0,134.0 73.1,134.0 73.1,51.1 268.9,51.1 268.9,134.0 308.0,134.0" class="cv1"/><line x1="34" y1="134.0" x2="312" y2="134.0" class="ax"/><line x1="34.0" y1="14" x2="34.0" y2="134.0" class="ax"/><text x="73.1" y="148.0" text-anchor="middle" class="sm mu">0</text><text x="112.3" y="148.0" text-anchor="middle" class="sm mu">2</text><text x="171.0" y="148.0" text-anchor="middle" class="sm mu">5</text><text x="268.9" y="148.0" text-anchor="middle" class="sm mu">10</text><text x="30.0" y="55.1" text-anchor="end" class="sm mu">1/10</text><line x1="34" y1="51.1" x2="308" y2="51.1" class="grid"/><text x="171.0" y="167.0" text-anchor="middle" class="sm mu">x</text><text x="141.6" y="92.6" text-anchor="middle" class="b">0.3</text></svg><figcaption>U[0, 10]: flat density 1/10; the shaded piece from 2 to 5 has area 3/10.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>Example (ours).</b> A bus passes every 10 minutes; you arrive at a random time. X = waiting time in minutes ~ U[0, 10].</li><li>E(X) = (0 + 10)/2 = <b>5 min</b>. Var(X) = 10²/12 = 25/3 ≈ 8.33, σ ≈ 2.89 min.</li><li>P(2 &lt; X &lt; 5) = (5 − 2)/10 = <b>0.3</b>.</li><li><b>U[2, 6]:</b> E(X) = 4, Var(X) = 16/12 = <b>4/3</b>, and P(X ≤ 3) = (3 − 2)/4 = 1/4.</li></ul>
+  </div>
+</section>
+<section class="sec" id="s17">
+  <div class="sec-h"><span class="num">17</span><h2>Exponential law <span class="fr">(loi exponentielle)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>The exponential law models a <b>lifetime</b> or a waiting time: how long a lamp lasts, how long until the next client. Short times are the most likely; long ones become rarer and rarer.</p><p>θ is a <b>rate</b> (events per unit of time); the mean lifetime is 1/θ.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">X ~ E(θ)</b> <span class="fr">(loi exponentielle)</span></span><span class="mean">f(x) = θ e^{−θx} for x ≥ 0, 0 otherwise (θ &gt; 0).</span></li><li><span class="term"><b class="en">F(x)</b></span><span class="mean">F(x) = 1 − e^{−θx} for x ≥ 0. So P(X &gt; x) = e^{−θx}.</span></li><li><span class="term"><b class="en">Mean, variance</b></span><span class="mean">E(X) = 1/θ; Var(X) = 1/θ².</span></li><li><span class="term"><b class="en">Lifetime</b> <span class="fr">(durée de vie)</span></span><span class="mean">The course's typical uses: life of a device, length of unemployment, length of a hospital stay.</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 320 180" role="img" aria-label="Exponential densities for theta 2, 1 and 0.5, area after 3 shaded for theta 0.5."><polyline points="30.0,22.1 31.7,30.9 33.5,39.1 35.2,46.7 37.0,53.7 38.7,60.2 40.4,66.3 42.2,71.9 43.9,77.1 45.6,81.9 47.4,86.4 49.1,90.6 50.8,94.4 52.6,98.0 54.3,101.3 56.1,104.4 57.8,107.3 59.5,109.9 61.3,112.4 63.0,114.7 64.8,116.8 66.5,118.8 68.2,120.6 70.0,122.3 71.7,123.8 73.4,125.3 75.2,126.7 76.9,127.9 78.7,129.1 80.4,130.2 82.1,131.2 83.9,132.1 85.6,132.9 87.3,133.7 89.1,134.5 90.8,135.2 92.6,135.8 94.3,136.4 96.0,136.9 97.8,137.5 99.5,137.9 101.2,138.4 103.0,138.8 104.7,139.2 106.4,139.5 108.2,139.8 109.9,140.1 111.7,140.4 113.4,140.7 115.1,140.9 116.9,141.1 118.6,141.3 120.4,141.5 122.1,141.7 123.8,141.9 125.6,142.0 127.3,142.2 129.0,142.3 130.8,142.4 132.5,142.5 134.2,142.6 136.0,142.7 137.7,142.8 139.5,142.9 141.2,143.0 142.9,143.1 144.7,143.1 146.4,143.2 148.1,143.3 149.9,143.3 151.6,143.4 153.4,143.4 155.1,143.4 156.8,143.5 158.6,143.5 160.3,143.6 162.1,143.6 163.8,143.6 165.5,143.6 167.3,143.7 169.0,143.7 170.7,143.7 172.5,143.7 174.2,143.8 176.0,143.8 177.7,143.8 179.4,143.8 181.2,143.8 182.9,143.8 184.6,143.8 186.4,143.9 188.1,143.9 189.9,143.9 191.6,143.9 193.3,143.9 195.1,143.9 196.8,143.9 198.5,143.9 200.3,143.9 202.0,143.9 203.8,143.9 205.5,143.9 207.2,143.9 209.0,143.9 210.7,144.0 212.4,144.0 214.2,144.0 215.9,144.0 217.6,144.0 219.4,144.0 221.1,144.0 222.9,144.0 224.6,144.0 226.3,144.0 228.1,144.0 229.8,144.0 231.5,144.0 233.3,144.0 235.0,144.0 236.8,144.0 238.5,144.0 240.2,144.0 242.0,144.0 243.7,144.0 245.5,144.0 247.2,144.0 248.9,144.0 250.7,144.0 252.4,144.0 254.1,144.0 255.9,144.0 257.6,144.0 259.4,144.0 261.1,144.0 262.8,144.0 264.6,144.0 266.3,144.0 268.0,144.0 269.8,144.0 271.5,144.0 273.2,144.0 275.0,144.0 276.7,144.0 278.5,144.0 280.2,144.0 281.9,144.0 283.7,144.0 285.4,144.0 287.1,144.0 288.9,144.0 290.6,144.0 292.4,144.0 294.1,144.0 295.8,144.0 297.6,144.0 299.3,144.0 301.1,144.0 302.8,144.0 304.5,144.0 306.3,144.0 308.0,144.0" class="cv1"/><polyline points="30.0,83.0 31.7,85.3 33.5,87.5 35.2,89.5 37.0,91.5 38.7,93.5 40.4,95.3 42.2,97.1 43.9,98.8 45.6,100.5 47.4,102.1 49.1,103.6 50.8,105.1 52.6,106.6 54.3,107.9 56.1,109.3 57.8,110.5 59.5,111.8 61.3,113.0 63.0,114.1 64.8,115.2 66.5,116.3 68.2,117.3 70.0,118.3 71.7,119.2 73.4,120.1 75.2,121.0 76.9,121.9 78.7,122.7 80.4,123.5 82.1,124.2 83.9,124.9 85.6,125.6 87.3,126.3 89.1,127.0 90.8,127.6 92.6,128.2 94.3,128.8 96.0,129.3 97.8,129.9 99.5,130.4 101.2,130.9 103.0,131.4 104.7,131.8 106.4,132.3 108.2,132.7 109.9,133.1 111.7,133.5 113.4,133.9 115.1,134.3 116.9,134.7 118.6,135.0 120.4,135.3 122.1,135.6 123.8,136.0 125.6,136.3 127.3,136.5 129.0,136.8 130.8,137.1 132.5,137.3 134.2,137.6 136.0,137.8 137.7,138.0 139.5,138.3 141.2,138.5 142.9,138.7 144.7,138.9 146.4,139.1 148.1,139.2 149.9,139.4 151.6,139.6 153.4,139.7 155.1,139.9 156.8,140.1 158.6,140.2 160.3,140.3 162.1,140.5 163.8,140.6 165.5,140.7 167.3,140.8 169.0,141.0 170.7,141.1 172.5,141.2 174.2,141.3 176.0,141.4 177.7,141.5 179.4,141.6 181.2,141.7 182.9,141.8 184.6,141.8 186.4,141.9 188.1,142.0 189.9,142.1 191.6,142.1 193.3,142.2 195.1,142.3 196.8,142.3 198.5,142.4 200.3,142.5 202.0,142.5 203.8,142.6 205.5,142.6 207.2,142.7 209.0,142.7 210.7,142.8 212.4,142.8 214.2,142.9 215.9,142.9 217.6,142.9 219.4,143.0 221.1,143.0 222.9,143.1 224.6,143.1 226.3,143.1 228.1,143.2 229.8,143.2 231.5,143.2 233.3,143.2 235.0,143.3 236.8,143.3 238.5,143.3 240.2,143.3 242.0,143.4 243.7,143.4 245.5,143.4 247.2,143.4 248.9,143.5 250.7,143.5 252.4,143.5 254.1,143.5 255.9,143.5 257.6,143.6 259.4,143.6 261.1,143.6 262.8,143.6 264.6,143.6 266.3,143.6 268.0,143.6 269.8,143.7 271.5,143.7 273.2,143.7 275.0,143.7 276.7,143.7 278.5,143.7 280.2,143.7 281.9,143.7 283.7,143.7 285.4,143.8 287.1,143.8 288.9,143.8 290.6,143.8 292.4,143.8 294.1,143.8 295.8,143.8 297.6,143.8 299.3,143.8 301.1,143.8 302.8,143.8 304.5,143.8 306.3,143.8 308.0,143.8" class="cv2"/><polyline points="30.0,113.5 31.7,114.1 33.5,114.6 35.2,115.2 37.0,115.7 38.7,116.3 40.4,116.8 42.2,117.3 43.9,117.8 45.6,118.3 47.4,118.7 49.1,119.2 50.8,119.7 52.6,120.1 54.3,120.6 56.1,121.0 57.8,121.4 59.5,121.8 61.3,122.3 63.0,122.7 64.8,123.1 66.5,123.4 68.2,123.8 70.0,124.2 71.7,124.6 73.4,124.9 75.2,125.3 76.9,125.6 78.7,126.0 80.4,126.3 82.1,126.6 83.9,127.0 85.6,127.3 87.3,127.6 89.1,127.9 90.8,128.2 92.6,128.5 94.3,128.8 96.0,129.1 97.8,129.3 99.5,129.6 101.2,129.9 103.0,130.1 104.7,130.4 106.4,130.6 108.2,130.9 109.9,131.1 111.7,131.4 113.4,131.6 115.1,131.8 116.9,132.1 118.6,132.3 120.4,132.5 122.1,132.7 123.8,132.9 125.6,133.1 127.3,133.3 129.0,133.5 130.8,133.7 132.5,133.9 134.2,134.1 136.0,134.3 137.7,134.5 139.5,134.6 141.2,134.8 142.9,135.0 144.7,135.2 146.4,135.3 148.1,135.5 149.9,135.6 151.6,135.8 153.4,135.9 155.1,136.1 156.8,136.2 158.6,136.4 160.3,136.5 162.1,136.7 163.8,136.8 165.5,136.9 167.3,137.1 169.0,137.2 170.7,137.3 172.5,137.5 174.2,137.6 176.0,137.7 177.7,137.8 179.4,137.9 181.2,138.0 182.9,138.1 184.6,138.3 186.4,138.4 188.1,138.5 189.9,138.6 191.6,138.7 193.3,138.8 195.1,138.9 196.8,139.0 198.5,139.1 200.3,139.1 202.0,139.2 203.8,139.3 205.5,139.4 207.2,139.5 209.0,139.6 210.7,139.7 212.4,139.7 214.2,139.8 215.9,139.9 217.6,140.0 219.4,140.1 221.1,140.1 222.9,140.2 224.6,140.3 226.3,140.3 228.1,140.4 229.8,140.5 231.5,140.5 233.3,140.6 235.0,140.7 236.8,140.7 238.5,140.8 240.2,140.8 242.0,140.9 243.7,141.0 245.5,141.0 247.2,141.1 248.9,141.1 250.7,141.2 252.4,141.2 254.1,141.3 255.9,141.3 257.6,141.4 259.4,141.4 261.1,141.5 262.8,141.5 264.6,141.6 266.3,141.6 268.0,141.7 269.8,141.7 271.5,141.8 273.2,141.8 275.0,141.8 276.7,141.9 278.5,141.9 280.2,142.0 281.9,142.0 283.7,142.0 285.4,142.1 287.1,142.1 288.9,142.1 290.6,142.2 292.4,142.2 294.1,142.2 295.8,142.3 297.6,142.3 299.3,142.3 301.1,142.4 302.8,142.4 304.5,142.4 306.3,142.5 308.0,142.5" class="cv3"/><polygon points="169.0,144.0 169.0,137.2 170.7,137.3 172.5,137.5 174.2,137.6 176.0,137.7 177.7,137.8 179.4,137.9 181.2,138.0 182.9,138.1 184.6,138.3 186.4,138.4 188.1,138.5 189.9,138.6 191.6,138.7 193.3,138.8 195.1,138.9 196.8,139.0 198.5,139.1 200.3,139.1 202.0,139.2 203.8,139.3 205.5,139.4 207.2,139.5 209.0,139.6 210.7,139.7 212.4,139.7 214.2,139.8 215.9,139.9 217.6,140.0 219.4,140.1 221.1,140.1 222.9,140.2 224.6,140.3 226.3,140.3 228.1,140.4 229.8,140.5 231.5,140.5 233.3,140.6 235.0,140.7 236.8,140.7 238.5,140.8 240.2,140.8 242.0,140.9 243.7,141.0 245.5,141.0 247.2,141.1 248.9,141.1 250.7,141.2 252.4,141.2 254.1,141.3 255.9,141.3 257.6,141.4 259.4,141.4 261.1,141.5 262.8,141.5 264.6,141.6 266.3,141.6 268.0,141.7 269.8,141.7 271.5,141.8 273.2,141.8 275.0,141.8 276.7,141.9 278.5,141.9 280.2,142.0 281.9,142.0 283.7,142.0 285.4,142.1 287.1,142.1 288.9,142.1 290.6,142.2 292.4,142.2 294.1,142.2 295.8,142.3 297.6,142.3 299.3,142.3 301.1,142.4 302.8,142.4 304.5,142.4 306.3,142.5 308.0,142.5 308.0,144.0" class="area"/><line x1="30" y1="144.0" x2="312" y2="144.0" class="ax"/><line x1="30.0" y1="12" x2="30.0" y2="144.0" class="ax"/><text x="30.0" y="158.0" text-anchor="middle" class="sm mu">0</text><text x="76.3" y="158.0" text-anchor="middle" class="sm mu">1</text><text x="122.7" y="158.0" text-anchor="middle" class="sm mu">2</text><text x="169.0" y="158.0" text-anchor="middle" class="sm mu">3</text><text x="215.3" y="158.0" text-anchor="middle" class="sm mu">4</text><text x="261.7" y="158.0" text-anchor="middle" class="sm mu">5</text><text x="308.0" y="158.0" text-anchor="middle" class="sm mu">6</text><text x="26.0" y="87.0" text-anchor="end" class="sm mu">1</text><line x1="30" y1="83.0" x2="308" y2="83.0" class="grid"/><text x="26.0" y="26.1" text-anchor="end" class="sm mu">2</text><line x1="30" y1="22.1" x2="308" y2="22.1" class="grid"/><text x="169.0" y="177.0" text-anchor="middle" class="sm mu">x</text><text x="43.9" y="28.2" text-anchor="start" class="sm lab1">θ = 2</text><text x="81.0" y="98.3" text-anchor="start" class="sm lab2">θ = 1</text><text x="316.0" y="110.5" text-anchor="end" class="sm">θ = 0.5: area after 3 = 0.223</text></svg><figcaption>Higher θ: the curve drops faster (short lives). Shaded: for θ = 0.5, the chance to last more than 3.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>Example (ours).</b> A lamp's life X in years follows E(0.5), so θ = 0.5.</li><li>E(X) = 1/0.5 = <b>2 years</b>; Var(X) = 1/0.25 = <b>4</b>, σ = 2.</li><li>P(lasts more than 3 years) = e^{−0.5 × 3} = e^{−1.5} ≈ <b>0.223</b>.</li><li>P(dies within 2 years) = 1 − e^{−1} ≈ <b>0.632</b>.</li><li><b>Course density.</b> f(x) = 2e^{−2x} of section 7 is E(2): mean 1/2, variance 1/4.</li></ul>
+  </div>
+</section>
+<section class="sec" id="s18">
+  <div class="sec-h"><span class="num">18</span><h2>Normal law <span class="fr">(loi normale, loi de Laplace-Gauss)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>The <b>bell curve</b>: values pile up around the mean m and thin out symmetrically on both sides. Heights, measurement errors and many sums of small effects look like this.</p><p>There is no formula for its area, so we use a <b>table</b> of Φ, the distribution function of the standard bell N(0, 1). Any normal X is brought back to it by <b>standardising</b>: U = (X − m)/σ.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">X ~ N(m, σ²)</b> <span class="fr">(loi normale)</span></span><span class="mean">f(x) = e^{−(x − m)²/(2σ²)} / (σ√(2π)). The 2nd number is the <b>variance</b> σ².</span><span class="eg">N(3, 9): σ = 3</span></li><li><span class="term"><b class="en">Mean, variance</b></span><span class="mean">E(X) = m, Var(X) = σ².</span></li><li><span class="term"><b class="en">Standard normal</b> <span class="fr">(loi normale centrée réduite)</span></span><span class="mean">U = (X − m)/σ ~ N(0, 1), density φ(u) = e^{−u²/2}/√(2π).</span></li><li><span class="term"><b class="en">Φ</b> <span class="fr">(fonction de répartition de N(0, 1))</span></span><span class="mean">Φ(u) = P(U ≤ u), read in the table for u ≥ 0. For negatives: Φ(−u) = 1 − Φ(u).</span><span class="eg">Φ(1) = 0.8413</span></li><li><span class="term"><b class="en">Reading F</b></span><span class="mean">F_X(x) = Φ((x − m)/σ).</span></li><li><span class="term"><b class="en">68 – 95 – 99.7</b></span><span class="mean">About 68.3% of values within m ± σ, 95.4% within m ± 2σ, 99.7% within m ± 3σ. Also P(|U| ≤ 1.96) = 0.95.</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 340 200" role="img" aria-label="Normal curve: 68.3% of the area within one sigma, 95.4% within two, 99.7% within three."><polygon points="93.0,164.0 93.0,146.0 95.0,144.1 97.0,142.1 98.9,140.0 100.9,137.7 102.9,135.2 104.8,132.7 106.8,129.9 108.8,127.0 110.8,124.0 112.8,120.8 114.7,117.5 116.7,114.1 118.7,110.5 120.7,106.9 122.6,103.1 124.6,99.3 126.6,95.4 128.6,91.4 130.5,87.4 132.5,83.3 134.5,79.3 136.4,75.3 138.4,71.3 140.4,67.4 142.4,63.6 144.3,59.9 146.3,56.3 148.3,52.9 150.3,49.7 152.2,46.6 154.2,43.8 156.2,41.2 158.2,38.9 160.2,36.9 162.1,35.1 164.1,33.7 166.1,32.5 168.0,31.7 170.0,31.2 172.0,31.0 174.0,31.2 175.9,31.7 177.9,32.5 179.9,33.7 181.9,35.1 183.8,36.9 185.8,38.9 187.8,41.2 189.8,43.8 191.8,46.6 193.7,49.7 195.7,52.9 197.7,56.3 199.7,59.9 201.6,63.6 203.6,67.4 205.6,71.3 207.6,75.3 209.5,79.3 211.5,83.3 213.5,87.4 215.4,91.4 217.4,95.4 219.4,99.3 221.4,103.1 223.3,106.9 225.3,110.5 227.3,114.1 229.3,117.5 231.2,120.8 233.2,124.0 235.2,127.0 237.2,129.9 239.2,132.7 241.1,135.2 243.1,137.7 245.1,140.0 247.1,142.1 249.0,144.1 251.0,146.0 251.0,164.0" class="area2"/><polygon points="132.5,164.0 132.5,83.3 133.5,81.3 134.5,79.3 135.5,77.3 136.4,75.3 137.4,73.3 138.4,71.3 139.4,69.4 140.4,67.4 141.4,65.5 142.4,63.6 143.4,61.8 144.3,59.9 145.3,58.1 146.3,56.3 147.3,54.6 148.3,52.9 149.3,51.3 150.3,49.7 151.3,48.1 152.2,46.6 153.2,45.2 154.2,43.8 155.2,42.5 156.2,41.2 157.2,40.0 158.2,38.9 159.2,37.9 160.2,36.9 161.1,36.0 162.1,35.1 163.1,34.3 164.1,33.7 165.1,33.0 166.1,32.5 167.1,32.1 168.0,31.7 169.0,31.4 170.0,31.2 171.0,31.1 172.0,31.0 173.0,31.1 174.0,31.2 175.0,31.4 175.9,31.7 176.9,32.1 177.9,32.5 178.9,33.0 179.9,33.7 180.9,34.3 181.9,35.1 182.9,36.0 183.8,36.9 184.8,37.9 185.8,38.9 186.8,40.0 187.8,41.2 188.8,42.5 189.8,43.8 190.8,45.2 191.8,46.6 192.7,48.1 193.7,49.7 194.7,51.3 195.7,52.9 196.7,54.6 197.7,56.3 198.7,58.1 199.7,59.9 200.6,61.8 201.6,63.6 202.6,65.5 203.6,67.4 204.6,69.4 205.6,71.3 206.6,73.3 207.6,75.3 208.5,77.3 209.5,79.3 210.5,81.3 211.5,83.3 211.5,164.0" class="area"/><polyline points="14.0,164.0 16.0,163.9 18.0,163.9 19.9,163.9 21.9,163.9 23.9,163.9 25.8,163.9 27.8,163.8 29.8,163.8 31.8,163.8 33.8,163.7 35.7,163.7 37.7,163.6 39.7,163.5 41.7,163.4 43.6,163.3 45.6,163.2 47.6,163.1 49.5,162.9 51.5,162.7 53.5,162.5 55.5,162.3 57.5,162.0 59.4,161.7 61.4,161.4 63.4,161.0 65.3,160.5 67.3,160.0 69.3,159.5 71.3,158.9 73.2,158.2 75.2,157.4 77.2,156.5 79.2,155.6 81.2,154.6 83.1,153.4 85.1,152.2 87.1,150.8 89.0,149.3 91.0,147.7 93.0,146.0 95.0,144.1 97.0,142.1 98.9,140.0 100.9,137.7 102.9,135.2 104.8,132.7 106.8,129.9 108.8,127.0 110.8,124.0 112.8,120.8 114.7,117.5 116.7,114.1 118.7,110.5 120.7,106.9 122.6,103.1 124.6,99.3 126.6,95.4 128.6,91.4 130.5,87.4 132.5,83.3 134.5,79.3 136.4,75.3 138.4,71.3 140.4,67.4 142.4,63.6 144.3,59.9 146.3,56.3 148.3,52.9 150.3,49.7 152.2,46.6 154.2,43.8 156.2,41.2 158.2,38.9 160.2,36.9 162.1,35.1 164.1,33.7 166.1,32.5 168.0,31.7 170.0,31.2 172.0,31.0 174.0,31.2 175.9,31.7 177.9,32.5 179.9,33.7 181.9,35.1 183.8,36.9 185.8,38.9 187.8,41.2 189.8,43.8 191.8,46.6 193.7,49.7 195.7,52.9 197.7,56.3 199.7,59.9 201.6,63.6 203.6,67.4 205.6,71.3 207.6,75.3 209.5,79.3 211.5,83.3 213.5,87.4 215.4,91.4 217.4,95.4 219.4,99.3 221.4,103.1 223.3,106.9 225.3,110.5 227.3,114.1 229.3,117.5 231.2,120.8 233.2,124.0 235.2,127.0 237.2,129.9 239.2,132.7 241.1,135.2 243.1,137.7 245.1,140.0 247.1,142.1 249.0,144.1 251.0,146.0 253.0,147.7 254.9,149.3 256.9,150.8 258.9,152.2 260.9,153.4 262.9,154.6 264.8,155.6 266.8,156.5 268.8,157.4 270.8,158.2 272.7,158.9 274.7,159.5 276.7,160.0 278.7,160.5 280.6,161.0 282.6,161.4 284.6,161.7 286.6,162.0 288.5,162.3 290.5,162.5 292.5,162.7 294.4,162.9 296.4,163.1 298.4,163.2 300.4,163.3 302.3,163.4 304.3,163.5 306.3,163.6 308.3,163.7 310.2,163.7 312.2,163.8 314.2,163.8 316.2,163.8 318.2,163.9 320.1,163.9 322.1,163.9 324.1,163.9 326.1,163.9 328.0,163.9 330.0,164.0" class="cv1"/><line x1="14" y1="164.0" x2="334" y2="164.0" class="ax"/><line x1="14.0" y1="10" x2="14.0" y2="164.0" class="ax"/><text x="53.5" y="178.0" text-anchor="middle" class="sm mu">m−3σ</text><text x="93.0" y="178.0" text-anchor="middle" class="sm mu">m−2σ</text><text x="132.5" y="178.0" text-anchor="middle" class="sm mu">m−σ</text><text x="172.0" y="178.0" text-anchor="middle" class="sm mu">m</text><text x="211.5" y="178.0" text-anchor="middle" class="sm mu">m+σ</text><text x="251.0" y="178.0" text-anchor="middle" class="sm mu">m+2σ</text><text x="290.5" y="178.0" text-anchor="middle" class="sm mu">m+3σ</text><text x="172.0" y="97.3" text-anchor="middle" class="b">68.3%</text><text x="247.1" y="97.3" text-anchor="start" class="sm">95.4% within 2σ</text><text x="336.0" y="130.7" text-anchor="end" class="sm mu">99.7% within 3σ</text></svg><figcaption>The 68 – 95 – 99.7 rule on any normal curve.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="eq">U = (X − m)/σ ~ N(0, 1)        F_X(x) = Φ((x − m)/σ)        Φ(−u) = 1 − Φ(u)</div><ul class="ln"><li><b>Example (course).</b> X ~ N(3, 9), so m = 3 and σ = √9 = 3.</li><li>F(6) = Φ((6 − 3)/3) = Φ(1) = <b>0.8413</b>.</li><li>P(2 &lt; X ≤ 4) = Φ(1/3) − Φ(−1/3) = 2Φ(0.33) − 1 = 2 × 0.6293 − 1 = <b>0.2586</b>.</li><li>P(X &gt; 0) = 1 − Φ(−1) = Φ(1) = <b>0.8413</b>.</li><li>P(|X − 3| &gt; 6) = P(|U| &gt; 2) = 2(1 − Φ(2)) = 2 × (1 − 0.9772) = <b>0.0456</b>.</li><li><b>Heights (ours).</b> X ~ N(170, 10²) in cm. P(X ≤ 180) = Φ(1) = 0.8413. P(160 &lt; X &lt; 190) = Φ(2) − Φ(−1) = 0.9772 − 0.1587 = <b>0.8186</b>.</li><li><b>Sum (summary).</b> X ~ N(1, 4) and Y ~ N(2, 5) independent: X + Y ~ N(1 + 2, 4 + 5) = <b>N(3, 9)</b>. Means add and <b>variances</b> add (not the σ's).</li></ul>
+  <figure class="fig live" id="lf3">
+    <div class="live-grid">
+      <svg id="lf3-svg" class="c1-svg" viewBox="0 0 300 220" role="img" aria-label="Normal curve with mean 3 and standard deviation 3; the area asked by each question is shaded in turn"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Question</span><b id="lf3-val">0 / 4</b></div>
+        <div class="actions"><button class="b chk" id="lf3-play" type="button">Play</button><button class="b" id="lf3-step" type="button">Step</button><button class="b" id="lf3-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf3-range">Drag to any step</label>
+        <input id="lf3-range" type="range" min="0" max="4" step="1" value="0">
+        <div class="live-status" id="lf3-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>Asked</th><th>In U</th><th>Answer</th></tr></thead><tbody id="lf3-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p>Every normal question is an area under the bell. To read it from the table, change x into u = (x − m)/σ: that moves the problem onto the standard bell N(0, 1). Values of Φ are rounded like the table (u to 2 decimals, Φ to 4), so the numbers match the course.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf3-"+id);};
+    var M=3,S=3;  // course example: X ~ N(3, 9), so sigma = 3
+    function erf(x){var s=x<0?-1:1;x=Math.abs(x);var t=1/(1+0.3275911*x);
+      var y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;}
+    function tab(u){u=Math.round(Math.abs(u)*100)/100;return Math.round(0.5*(1+erf(u/Math.SQRT2))*10000)/10000;}  // table value of PHI(|u|)
+    var f4=function(x){return x.toFixed(4);},u2=function(x){return (Math.round(x*100)/100).toString();};
+    var a=tab((6-M)/S),b=tab((4-M)/S),c=tab((0-M)/S),d=tab((9-M)/S);
+    var STEPS=[
+      {sh:[],text:"X ~ N(3, 9): mean m = 3, variance 9 so σ = 3. The bell is centred at 3 and the total area is 1."},
+      {sh:[[-99,6]],q:"F(6)",u:"U ≤ "+u2((6-M)/S),ans:f4(a),text:"F(6) = P(X ≤ 6) = Φ((6 − 3)/3) = Φ(1) = "+f4(a)+"."},
+      {sh:[[2,4]],q:"P(2 < X ≤ 4)",u:"−"+u2(1/3)+" < U ≤ "+u2(1/3),ans:f4(2*b-1),text:"P(2 < X ≤ 4) = Φ(0.33) − Φ(−0.33) = 2Φ(0.33) − 1 = 2 × "+f4(b)+" − 1 = "+f4(2*b-1)+"."},
+      {sh:[[0,99]],q:"P(X > 0)",u:"U > −1",ans:f4(c),text:"P(X > 0) = 1 − Φ(−1) = Φ(1) = "+f4(c)+" (the bell is symmetric)."},
+      {sh:[[-99,-3],[9,99]],q:"P(|X − 3| > 6)",u:"|U| > 2",ans:f4(2*(1-d)),end:true,text:"P(|X − 3| > 6) = P(|U| > 2) = 2(1 − Φ(2)) = 2 × (1 − "+f4(d)+") = "+f4(2*(1-d))+"."}];
+    var NS="http://www.w3.org/2000/svg";
+    function el(n,a_,txt){var e=document.createElementNS(NS,n);for(var q in a_)e.setAttribute(q,a_[q]);if(txt!=null)e.textContent=txt;return e;}
+    var X0=-9,X1=15,X=function(x){return 14+(x-X0)/(X1-X0)*272;},Y=function(y){return 186-y/0.14*150;};
+    var pdf=function(x){return Math.exp(-(x-M)*(x-M)/(2*S*S))/(S*Math.sqrt(2*Math.PI));};
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function draw(){
+      var s=STEPS[i],svg=$("svg");while(svg.firstChild)svg.removeChild(svg.firstChild);
+      s.sh.forEach(function(r){var lo=Math.max(r[0],X0),hi=Math.min(r[1],X1),pts=X(lo).toFixed(1)+","+Y(0)+" ";
+        for(var j=0;j<=60;j++){var x=lo+(hi-lo)*j/60;pts+=X(x).toFixed(1)+","+Y(pdf(x)).toFixed(1)+" ";}
+        pts+=X(hi).toFixed(1)+","+Y(0);svg.appendChild(el("polygon",{points:pts,"class":"area"}));});
+      var pl="";for(var j=0;j<=160;j++){var x=X0+(X1-X0)*j/160;pl+=X(x).toFixed(1)+","+Y(pdf(x)).toFixed(1)+" ";}
+      svg.appendChild(el("polyline",{points:pl,"class":"cv1"}));
+      svg.appendChild(el("line",{x1:10,y1:Y(0),x2:292,y2:Y(0),"class":"ax"}));
+      [-6,-3,0,3,6,9,12].forEach(function(v){svg.appendChild(el("line",{x1:X(v),y1:Y(0),x2:X(v),y2:Y(0)+4,"class":"ax"}));
+        svg.appendChild(el("text",{x:X(v),y:Y(0)+15,"text-anchor":"middle","class":"sm mu"},v));});
+      svg.appendChild(el("text",{x:X(3),y:Y(0)+28,"text-anchor":"middle","class":"sm mu"},"m = 3"));
+      svg.appendChild(el("text",{x:150,y:16,"text-anchor":"middle","class":"sm b"},s.q?(s.q+" = "+s.ans):"X ~ N(3, 9)"));
+      var rows=$("rows");rows.innerHTML="";
+      for(var j=1;j<=i;j++){var t=STEPS[j],tr=document.createElement("tr");if(j<i)tr.className="past";
+        tr.innerHTML="<td>"+t.q+"</td><td>"+t.u+"</td><td>"+t.ans+"</td>";rows.appendChild(tr);}
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},1200);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+  </div>
+</section>
+<section class="sec" id="s19">
+  <div class="sec-h"><span class="num">19</span><h2>Gamma law <span class="fr">(loi Gamma)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>The gamma law is a family of lifetime-type laws with a <b>shape</b> α and a <b>rate</b> β. With α = 1 it is exactly the exponential law. Adding up n independent exponential waiting times gives a gamma with α = n.</p><p>Its formula uses Euler's <b>Γ function</b>, a smooth version of the factorial: Γ(n) = (n − 1)!.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">Γ(α)</b> <span class="fr">(fonction Gamma d'Euler)</span></span><span class="mean">Γ(α) = ∫₀^∞ e^{−t} t^{α−1} dt.</span></li><li><span class="term"><b class="en">Γ properties</b></span><span class="mean">Γ(α + 1) = α Γ(α); Γ(1) = 1; Γ(n) = (n − 1)!; Γ(1/2) = √π.</span><span class="eg">Γ(5) = 4! = 24</span></li><li><span class="term"><b class="en">X ~ γ(α, β)</b> <span class="fr">(loi Gamma)</span></span><span class="mean">f(x) = β^α e^{−βx} x^{α−1} / Γ(α) for x ≥ 0.</span></li><li><span class="term"><b class="en">Mean, variance</b></span><span class="mean">E(X) = α/β; Var(X) = α/β².</span></li><li><span class="term"><b class="en">Special cases</b></span><span class="mean">γ(1, β) = E(β), the exponential law with parameter β. γ(n/2, 1/2) = χ²ₙ.</span></li><li><span class="term"><b class="en">Sums</b></span><span class="mean">X₁, …, Xₙ independent E(λ) ⇒ X₁ + … + Xₙ ~ γ(n, λ). γ(p, θ) + γ(q, θ) independent ~ γ(p + q, θ).</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 320 180" role="img" aria-label="Three gamma densities: gamma(1, 0.5), gamma(2, 0.5) and gamma(3, 2)."><polyline points="30.6,28.8 32.3,32.3 34.0,35.8 35.8,39.1 37.5,42.3 39.2,45.4 41.0,48.5 42.7,51.4 44.4,54.2 46.2,57.0 47.9,59.7 49.6,62.3 51.4,64.8 53.1,67.2 54.8,69.6 56.6,71.8 58.3,74.1 60.0,76.2 61.8,78.3 63.5,80.3 65.2,82.3 67.0,84.2 68.7,86.0 70.4,87.8 72.2,89.5 73.9,91.2 75.6,92.8 77.4,94.4 79.1,95.9 80.8,97.4 82.6,98.8 84.3,100.2 86.0,101.5 87.8,102.8 89.5,104.1 91.2,105.3 93.0,106.5 94.7,107.7 96.4,108.8 98.2,109.9 99.9,110.9 101.7,111.9 103.4,112.9 105.1,113.9 106.9,114.8 108.6,115.7 110.3,116.6 112.1,117.4 113.8,118.2 115.5,119.0 117.3,119.8 119.0,120.5 120.7,121.2 122.5,121.9 124.2,122.6 125.9,123.3 127.7,123.9 129.4,124.5 131.1,125.1 132.9,125.7 134.6,126.3 136.3,126.8 138.1,127.3 139.8,127.9 141.5,128.3 143.3,128.8 145.0,129.3 146.7,129.7 148.5,130.2 150.2,130.6 151.9,131.0 153.7,131.4 155.4,131.8 157.1,132.2 158.9,132.5 160.6,132.9 162.3,133.2 164.1,133.6 165.8,133.9 167.5,134.2 169.3,134.5 171.0,134.8 172.7,135.1 174.5,135.3 176.2,135.6 177.9,135.9 179.7,136.1 181.4,136.4 183.2,136.6 184.9,136.8 186.6,137.0 188.4,137.3 190.1,137.5 191.8,137.7 193.6,137.9 195.3,138.0 197.0,138.2 198.8,138.4 200.5,138.6 202.2,138.7 204.0,138.9 205.7,139.1 207.4,139.2 209.2,139.4 210.9,139.5 212.6,139.6 214.4,139.8 216.1,139.9 217.8,140.0 219.6,140.2 221.3,140.3 223.0,140.4 224.8,140.5 226.5,140.6 228.2,140.7 230.0,140.8 231.7,140.9 233.4,141.0 235.2,141.1 236.9,141.2 238.6,141.3 240.4,141.4 242.1,141.4 243.8,141.5 245.6,141.6 247.3,141.7 249.0,141.7 250.8,141.8 252.5,141.9 254.2,141.9 256.0,142.0 257.7,142.1 259.4,142.1 261.2,142.2 262.9,142.2 264.6,142.3 266.4,142.3 268.1,142.4 269.9,142.4 271.6,142.5 273.3,142.5 275.1,142.6 276.8,142.6 278.5,142.7 280.3,142.7 282.0,142.7 283.7,142.8 285.5,142.8 287.2,142.9 288.9,142.9 290.7,142.9 292.4,143.0 294.1,143.0 295.9,143.0 297.6,143.1 299.3,143.1 301.1,143.1 302.8,143.1 304.5,143.2 306.3,143.2 308.0,143.2" class="cv3"/><polyline points="30.6,142.8 32.3,139.4 34.0,136.2 35.8,133.1 37.5,130.3 39.2,127.6 41.0,125.2 42.7,122.9 44.4,120.7 46.2,118.7 47.9,116.9 49.6,115.1 51.4,113.6 53.1,112.1 54.8,110.7 56.6,109.5 58.3,108.4 60.0,107.4 61.8,106.5 63.5,105.6 65.2,104.9 67.0,104.2 68.7,103.6 70.4,103.1 72.2,102.7 73.9,102.3 75.6,102.0 77.4,101.7 79.1,101.5 80.8,101.4 82.6,101.3 84.3,101.2 86.0,101.2 87.8,101.2 89.5,101.3 91.2,101.4 93.0,101.5 94.7,101.7 96.4,101.9 98.2,102.1 99.9,102.4 101.7,102.7 103.4,103.0 105.1,103.3 106.9,103.6 108.6,104.0 110.3,104.4 112.1,104.7 113.8,105.1 115.5,105.6 117.3,106.0 119.0,106.4 120.7,106.9 122.5,107.3 124.2,107.8 125.9,108.2 127.7,108.7 129.4,109.2 131.1,109.7 132.9,110.2 134.6,110.6 136.3,111.1 138.1,111.6 139.8,112.1 141.5,112.6 143.3,113.1 145.0,113.6 146.7,114.1 148.5,114.6 150.2,115.0 151.9,115.5 153.7,116.0 155.4,116.5 157.1,117.0 158.9,117.4 160.6,117.9 162.3,118.4 164.1,118.8 165.8,119.3 167.5,119.7 169.3,120.2 171.0,120.6 172.7,121.1 174.5,121.5 176.2,121.9 177.9,122.4 179.7,122.8 181.4,123.2 183.2,123.6 184.9,124.0 186.6,124.4 188.4,124.8 190.1,125.2 191.8,125.6 193.6,125.9 195.3,126.3 197.0,126.7 198.8,127.0 200.5,127.4 202.2,127.7 204.0,128.1 205.7,128.4 207.4,128.7 209.2,129.1 210.9,129.4 212.6,129.7 214.4,130.0 216.1,130.3 217.8,130.6 219.6,130.9 221.3,131.2 223.0,131.5 224.8,131.7 226.5,132.0 228.2,132.3 230.0,132.5 231.7,132.8 233.4,133.0 235.2,133.3 236.9,133.5 238.6,133.8 240.4,134.0 242.1,134.2 243.8,134.4 245.6,134.7 247.3,134.9 249.0,135.1 250.8,135.3 252.5,135.5 254.2,135.7 256.0,135.9 257.7,136.1 259.4,136.3 261.2,136.4 262.9,136.6 264.6,136.8 266.4,137.0 268.1,137.1 269.9,137.3 271.6,137.4 273.3,137.6 275.1,137.8 276.8,137.9 278.5,138.0 280.3,138.2 282.0,138.3 283.7,138.5 285.5,138.6 287.2,138.7 288.9,138.9 290.7,139.0 292.4,139.1 294.1,139.2 295.9,139.3 297.6,139.4 299.3,139.6 301.1,139.7 302.8,139.8 304.5,139.9 306.3,140.0 308.0,140.1" class="cv1"/><polyline points="30.6,143.6 32.3,138.6 34.0,129.4 35.8,117.6 37.5,104.6 39.2,91.2 41.0,78.2 42.7,66.1 44.4,55.2 46.2,45.6 47.9,37.5 49.6,30.9 51.4,25.8 53.1,22.0 54.8,19.6 56.6,18.3 58.3,18.1 60.0,18.8 61.8,20.3 63.5,22.6 65.2,25.5 67.0,28.8 68.7,32.6 70.4,36.6 72.2,40.9 73.9,45.4 75.6,49.9 77.4,54.5 79.1,59.1 80.8,63.7 82.6,68.2 84.3,72.6 86.0,76.9 87.8,81.0 89.5,85.0 91.2,88.9 93.0,92.5 94.7,96.0 96.4,99.4 98.2,102.5 99.9,105.5 101.7,108.3 103.4,110.9 105.1,113.4 106.9,115.8 108.6,117.9 110.3,120.0 112.1,121.9 113.8,123.6 115.5,125.3 117.3,126.8 119.0,128.2 120.7,129.5 122.5,130.7 124.2,131.8 125.9,132.8 127.7,133.8 129.4,134.7 131.1,135.5 132.9,136.2 134.6,136.9 136.3,137.5 138.1,138.1 139.8,138.6 141.5,139.1 143.3,139.5 145.0,139.9 146.7,140.3 148.5,140.6 150.2,140.9 151.9,141.2 153.7,141.5 155.4,141.7 157.1,141.9 158.9,142.1 160.6,142.3 162.3,142.5 164.1,142.6 165.8,142.7 167.5,142.9 169.3,143.0 171.0,143.1 172.7,143.1 174.5,143.2 176.2,143.3 177.9,143.4 179.7,143.4 181.4,143.5 183.2,143.5 184.9,143.6 186.6,143.6 188.4,143.7 190.1,143.7 191.8,143.7 193.6,143.7 195.3,143.8 197.0,143.8 198.8,143.8 200.5,143.8 202.2,143.9 204.0,143.9 205.7,143.9 207.4,143.9 209.2,143.9 210.9,143.9 212.6,143.9 214.4,143.9 216.1,143.9 217.8,143.9 219.6,143.9 221.3,144.0 223.0,144.0 224.8,144.0 226.5,144.0 228.2,144.0 230.0,144.0 231.7,144.0 233.4,144.0 235.2,144.0 236.9,144.0 238.6,144.0 240.4,144.0 242.1,144.0 243.8,144.0 245.6,144.0 247.3,144.0 249.0,144.0 250.8,144.0 252.5,144.0 254.2,144.0 256.0,144.0 257.7,144.0 259.4,144.0 261.2,144.0 262.9,144.0 264.6,144.0 266.4,144.0 268.1,144.0 269.9,144.0 271.6,144.0 273.3,144.0 275.1,144.0 276.8,144.0 278.5,144.0 280.3,144.0 282.0,144.0 283.7,144.0 285.5,144.0 287.2,144.0 288.9,144.0 290.7,144.0 292.4,144.0 294.1,144.0 295.9,144.0 297.6,144.0 299.3,144.0 301.1,144.0 302.8,144.0 304.5,144.0 306.3,144.0 308.0,144.0" class="cv2"/><line x1="30" y1="144.0" x2="312" y2="144.0" class="ax"/><line x1="30.0" y1="12" x2="30.0" y2="144.0" class="ax"/><text x="30.0" y="158.0" text-anchor="middle" class="sm mu">0</text><text x="85.6" y="158.0" text-anchor="middle" class="sm mu">2</text><text x="141.2" y="158.0" text-anchor="middle" class="sm mu">4</text><text x="196.8" y="158.0" text-anchor="middle" class="sm mu">6</text><text x="252.4" y="158.0" text-anchor="middle" class="sm mu">8</text><text x="308.0" y="158.0" text-anchor="middle" class="sm mu">10</text><text x="26.0" y="31.6" text-anchor="end" class="sm mu">0.5</text><line x1="30" y1="27.6" x2="308" y2="27.6" class="grid"/><text x="169.0" y="177.0" text-anchor="middle" class="sm mu">x</text><text x="102.3" y="39.3" text-anchor="start" class="sm lab2">γ(3, 2)</text><text x="157.9" y="97.5" text-anchor="start" class="sm lab1">γ(2, 0.5) = χ²₄</text><text x="185.7" y="60.2" text-anchor="start" class="sm mu">dashed: γ(1, 0.5) = E(0.5)</text></svg><figcaption>Three gamma densities. α = 1 gives the exponential; larger α moves the hump away from 0.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>Γ values.</b> Γ(5) = 4! = <b>24</b>. Γ(3/2) = (1/2) Γ(1/2) = √π/2 ≈ 0.886.</li><li><b>Example (ours).</b> X ~ γ(2, 0.5): E(X) = 2/0.5 = <b>4</b>, Var(X) = 2/0.25 = <b>8</b>. (It is also χ²₄, see section 20.)</li><li>Y ~ γ(3, 2): E(Y) = <b>3/2</b>, Var(Y) = 3/4.</li><li><b>Sum (ours).</b> Three independent waiting times, each E(2): their total is γ(3, 2), mean 3 × 1/2 = 3/2.</li></ul>
+  </div>
+</section>
+<section class="sec" id="s20">
+  <div class="sec-h"><span class="num">20</span><h2>Chi-square, Student and Fisher <span class="fr">(lois du Khi-deux, de Student, de Fisher-Snedecor)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>These three laws are built from standard normals. They are not used to model data directly but to <b>test</b> and <b>estimate</b> in statistics (next chapters), so you mostly read them in tables.</p><p>The number n is the <b>degrees of freedom</b> (degrés de liberté, d.d.l.): roughly, how many independent squared normals went into the variable.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">χ²ₙ</b> <span class="fr">(loi du Khi-deux)</span></span><span class="mean">U₁, …, Uₙ independent N(0, 1) ⇒ U₁² + … + Uₙ² ~ χ²ₙ. Not symmetric; only positive values.</span><span class="eg">U² ~ χ²₁</span></li><li><span class="term"><b class="en">χ² mean, variance</b></span><span class="mean">E = n, Var = 2n. And χ²ₙ = γ(n/2, 1/2).</span></li><li><span class="term"><b class="en">χ² sum</b></span><span class="mean">χ²ₙ₁ + χ²ₙ₂ independent ~ χ²ₙ₁₊ₙ₂.</span></li><li><span class="term"><b class="en">Student tₙ</b> <span class="fr">(loi de Student)</span></span><span class="mean">U ~ N(0, 1), Y ~ χ²ₙ independent ⇒ T = U / √(Y/n) ~ tₙ. Symmetric around 0, like the bell but with fatter tails.</span></li><li><span class="term"><b class="en">Student mean, variance</b></span><span class="mean">E = 0 (n &gt; 1); Var = n/(n − 2) (n &gt; 2).</span></li><li><span class="term"><b class="en">Fisher F(n₁, n₂)</b> <span class="fr">(loi de Fisher-Snedecor)</span></span><span class="mean">X₁ ~ χ²ₙ₁, X₂ ~ χ²ₙ₂ independent ⇒ (X₁/n₁)/(X₂/n₂) ~ F(n₁, n₂).</span></li><li><span class="term"><b class="en">Fisher mean, variance</b></span><span class="mean">E = n₂/(n₂ − 2) (n₂ &gt; 2); Var = 2n₂²(n₁ + n₂ − 2) / [n₁(n₂ − 2)²(n₂ − 4)] (n₂ &gt; 4).</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 400 210" role="img" aria-label="How the chi-square, Student and Fisher laws are built from the standard normal."><rect x="15.0" y="16" width="110" height="28" rx="6" class="hit"/><text x="70.0" y="34.0" text-anchor="middle" class="sm">U ~ N(0, 1)</text><rect x="180.0" y="16" width="140" height="28" rx="6" class="soft"/><text x="250.0" y="34.0" text-anchor="middle" class="sm">U² ~ χ²₁</text><line x1="125" y1="30" x2="180" y2="30" class="lnm"/><text x="152.0" y="22.0" text-anchor="middle" class="sm mu">square</text><rect x="160.0" y="78" width="180" height="28" rx="6" class="soft"/><text x="250.0" y="96.0" text-anchor="middle" class="sm">U₁² + … + U_n² ~ χ²_n</text><line x1="250" y1="44" x2="250" y2="78" class="lnm"/><text x="274.0" y="64.0" text-anchor="middle" class="sm mu">add n</text><rect x="10.0" y="146" width="160" height="28" rx="6" class="soft"/><text x="90.0" y="164.0" text-anchor="middle" class="sm">T = U / √(χ²_n / n) ~ t_n</text><rect x="210.0" y="146" width="180" height="28" rx="6" class="soft"/><text x="300.0" y="164.0" text-anchor="middle" class="sm">(χ²_n₁/n₁)/(χ²_n₂/n₂) ~ F</text><line x1="200" y1="106" x2="120" y2="146" class="lnm"/><text x="140.0" y="122.0" text-anchor="middle" class="sm mu">divide</text><line x1="270" y1="106" x2="300" y2="146" class="lnm"/><text x="304.0" y="126.0" text-anchor="middle" class="sm mu">ratio</text><text x="195.0" y="200.0" text-anchor="middle" class="sm">χ²_n = γ(n/2, 1/2): a special gamma law</text></svg><figcaption>Family tree: square a standard normal, add squares, then divide or take a ratio.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<ul class="ln"><li><b>χ² (ours).</b> χ²₄: E = <b>4</b>, Var = <b>8</b>. χ²₁₀: E = 10, Var = 20.</li><li><b>Student (ours).</b> t₅: Var = 5/3 ≈ <b>1.67</b>. t₁₀: Var = 10/8 = 1.25: as n grows the variance goes to 1, the variance of N(0, 1).</li><li><b>Fisher (ours).</b> F(4, 10): E = 10/8 = <b>5/4</b>; Var = 2 × 100 × 12 / (4 × 64 × 6) = 2400/1536 = <b>25/16</b>.</li><li>F(5, 12): E = 12/10 = <b>6/5</b>. The mean depends only on n₂.</li></ul><div class="c1-two"><figure class="fig"><svg class="c1-svg" viewBox="0 0 320 180" role="img" aria-label="Chi-square densities for 2, 4 and 8 degrees of freedom: not symmetric, shifting right as n grows."><polyline points="30.4,17.3 32.1,22.7 33.9,27.9 35.6,32.8 37.3,37.6 39.1,42.1 40.8,46.5 42.5,50.7 44.3,54.7 46.0,58.5 47.7,62.1 49.5,65.6 51.2,69.0 53.0,72.2 54.7,75.3 56.4,78.2 58.2,81.0 59.9,83.7 61.6,86.3 63.4,88.7 65.1,91.1 66.8,93.4 68.6,95.5 70.3,97.6 72.0,99.6 73.8,101.5 75.5,103.3 77.2,105.0 79.0,106.7 80.7,108.3 82.4,109.8 84.2,111.3 85.9,112.7 87.7,114.0 89.4,115.3 91.1,116.5 92.9,117.7 94.6,118.8 96.3,119.9 98.1,120.9 99.8,121.9 101.5,122.9 103.3,123.8 105.0,124.6 106.7,125.5 108.5,126.3 110.2,127.0 111.9,127.7 113.7,128.4 115.4,129.1 117.1,129.7 118.9,130.3 120.6,130.9 122.4,131.5 124.1,132.0 125.8,132.5 127.6,133.0 129.3,133.5 131.0,133.9 132.8,134.4 134.5,134.8 136.2,135.2 138.0,135.6 139.7,135.9 141.4,136.3 143.2,136.6 144.9,136.9 146.6,137.2 148.4,137.5 150.1,137.8 151.8,138.0 153.6,138.3 155.3,138.5 157.1,138.8 158.8,139.0 160.5,139.2 162.3,139.4 164.0,139.6 165.7,139.8 167.5,140.0 169.2,140.2 170.9,140.3 172.7,140.5 174.4,140.6 176.1,140.8 177.9,140.9 179.6,141.0 181.3,141.2 183.1,141.3 184.8,141.4 186.5,141.5 188.3,141.6 190.0,141.7 191.8,141.8 193.5,141.9 195.2,142.0 197.0,142.1 198.7,142.2 200.4,142.2 202.2,142.3 203.9,142.4 205.6,142.5 207.4,142.5 209.1,142.6 210.8,142.7 212.6,142.7 214.3,142.8 216.0,142.8 217.8,142.9 219.5,142.9 221.2,143.0 223.0,143.0 224.7,143.0 226.5,143.1 228.2,143.1 229.9,143.2 231.7,143.2 233.4,143.2 235.1,143.3 236.9,143.3 238.6,143.3 240.3,143.4 242.1,143.4 243.8,143.4 245.5,143.4 247.3,143.5 249.0,143.5 250.7,143.5 252.5,143.5 254.2,143.5 255.9,143.6 257.7,143.6 259.4,143.6 261.2,143.6 262.9,143.6 264.6,143.7 266.4,143.7 268.1,143.7 269.8,143.7 271.6,143.7 273.3,143.7 275.0,143.7 276.8,143.7 278.5,143.8 280.2,143.8 282.0,143.8 283.7,143.8 285.4,143.8 287.2,143.8 288.9,143.8 290.6,143.8 292.4,143.8 294.1,143.8 295.9,143.8 297.6,143.8 299.3,143.9 301.1,143.9 302.8,143.9 304.5,143.9 306.3,143.9 308.0,143.9" class="cv3"/><polyline points="30.4,142.7 32.1,137.5 33.9,132.7 35.6,128.3 37.3,124.3 39.1,120.7 40.8,117.5 42.5,114.5 44.3,111.9 46.0,109.5 47.7,107.4 49.5,105.6 51.2,103.9 53.0,102.5 54.7,101.3 56.4,100.2 58.2,99.3 59.9,98.6 61.6,98.0 63.4,97.6 65.1,97.3 66.8,97.0 68.6,96.9 70.3,96.9 72.0,97.0 73.8,97.1 75.5,97.4 77.2,97.7 79.0,98.0 80.7,98.4 82.4,98.9 84.2,99.4 85.9,99.9 87.7,100.5 89.4,101.1 91.1,101.7 92.9,102.4 94.6,103.1 96.3,103.8 98.1,104.5 99.8,105.2 101.5,105.9 103.3,106.7 105.0,107.4 106.7,108.2 108.5,108.9 110.2,109.7 111.9,110.5 113.7,111.2 115.4,112.0 117.1,112.7 118.9,113.4 120.6,114.2 122.4,114.9 124.1,115.6 125.8,116.3 127.6,117.0 129.3,117.7 131.0,118.4 132.8,119.1 134.5,119.8 136.2,120.4 138.0,121.0 139.7,121.7 141.4,122.3 143.2,122.9 144.9,123.5 146.6,124.1 148.4,124.6 150.1,125.2 151.8,125.7 153.6,126.3 155.3,126.8 157.1,127.3 158.8,127.8 160.5,128.3 162.3,128.7 164.0,129.2 165.7,129.7 167.5,130.1 169.2,130.5 170.9,130.9 172.7,131.3 174.4,131.7 176.1,132.1 177.9,132.5 179.6,132.9 181.3,133.2 183.1,133.5 184.8,133.9 186.5,134.2 188.3,134.5 190.0,134.8 191.8,135.1 193.5,135.4 195.2,135.7 197.0,136.0 198.7,136.2 200.4,136.5 202.2,136.7 203.9,137.0 205.6,137.2 207.4,137.4 209.1,137.6 210.8,137.9 212.6,138.1 214.3,138.3 216.0,138.5 217.8,138.6 219.5,138.8 221.2,139.0 223.0,139.2 224.7,139.3 226.5,139.5 228.2,139.7 229.9,139.8 231.7,139.9 233.4,140.1 235.1,140.2 236.9,140.4 238.6,140.5 240.3,140.6 242.1,140.7 243.8,140.8 245.5,140.9 247.3,141.1 249.0,141.2 250.7,141.3 252.5,141.4 254.2,141.4 255.9,141.5 257.7,141.6 259.4,141.7 261.2,141.8 262.9,141.9 264.6,141.9 266.4,142.0 268.1,142.1 269.8,142.2 271.6,142.2 273.3,142.3 275.0,142.3 276.8,142.4 278.5,142.5 280.2,142.5 282.0,142.6 283.7,142.6 285.4,142.7 287.2,142.7 288.9,142.8 290.6,142.8 292.4,142.9 294.1,142.9 295.9,142.9 297.6,143.0 299.3,143.0 301.1,143.1 302.8,143.1 304.5,143.1 306.3,143.2 308.0,143.2" class="cv1"/><polyline points="30.4,144.0 32.1,144.0 33.9,144.0 35.6,143.9 37.3,143.9 39.1,143.8 40.8,143.7 42.5,143.5 44.3,143.3 46.0,143.1 47.7,142.8 49.5,142.5 51.2,142.1 53.0,141.7 54.7,141.2 56.4,140.8 58.2,140.3 59.9,139.7 61.6,139.1 63.4,138.5 65.1,137.9 66.8,137.3 68.6,136.6 70.3,135.9 72.0,135.2 73.8,134.5 75.5,133.8 77.2,133.1 79.0,132.3 80.7,131.6 82.4,130.9 84.2,130.2 85.9,129.4 87.7,128.7 89.4,128.0 91.1,127.3 92.9,126.6 94.6,126.0 96.3,125.3 98.1,124.7 99.8,124.0 101.5,123.4 103.3,122.8 105.0,122.3 106.7,121.7 108.5,121.2 110.2,120.7 111.9,120.2 113.7,119.7 115.4,119.3 117.1,118.9 118.9,118.5 120.6,118.1 122.4,117.8 124.1,117.5 125.8,117.2 127.6,116.9 129.3,116.6 131.0,116.4 132.8,116.2 134.5,116.0 136.2,115.9 138.0,115.7 139.7,115.6 141.4,115.5 143.2,115.4 144.9,115.4 146.6,115.3 148.4,115.3 150.1,115.3 151.8,115.3 153.6,115.4 155.3,115.4 157.1,115.5 158.8,115.6 160.5,115.7 162.3,115.8 164.0,115.9 165.7,116.1 167.5,116.2 169.2,116.4 170.9,116.6 172.7,116.8 174.4,117.0 176.1,117.2 177.9,117.4 179.6,117.6 181.3,117.9 183.1,118.1 184.8,118.4 186.5,118.6 188.3,118.9 190.0,119.2 191.8,119.5 193.5,119.7 195.2,120.0 197.0,120.3 198.7,120.6 200.4,120.9 202.2,121.2 203.9,121.5 205.6,121.8 207.4,122.2 209.1,122.5 210.8,122.8 212.6,123.1 214.3,123.4 216.0,123.7 217.8,124.1 219.5,124.4 221.2,124.7 223.0,125.0 224.7,125.3 226.5,125.6 228.2,126.0 229.9,126.3 231.7,126.6 233.4,126.9 235.1,127.2 236.9,127.5 238.6,127.8 240.3,128.1 242.1,128.4 243.8,128.7 245.5,129.0 247.3,129.3 249.0,129.6 250.7,129.9 252.5,130.2 254.2,130.4 255.9,130.7 257.7,131.0 259.4,131.3 261.2,131.5 262.9,131.8 264.6,132.0 266.4,132.3 268.1,132.6 269.8,132.8 271.6,133.0 273.3,133.3 275.0,133.5 276.8,133.8 278.5,134.0 280.2,134.2 282.0,134.4 283.7,134.7 285.4,134.9 287.2,135.1 288.9,135.3 290.6,135.5 292.4,135.7 294.1,135.9 295.9,136.1 297.6,136.3 299.3,136.5 301.1,136.6 302.8,136.8 304.5,137.0 306.3,137.2 308.0,137.3" class="cv2"/><line x1="30" y1="144.0" x2="312" y2="144.0" class="ax"/><line x1="30.0" y1="12" x2="30.0" y2="144.0" class="ax"/><text x="30.0" y="158.0" text-anchor="middle" class="sm mu">0</text><text x="69.7" y="158.0" text-anchor="middle" class="sm mu">2</text><text x="109.4" y="158.0" text-anchor="middle" class="sm mu">4</text><text x="188.9" y="158.0" text-anchor="middle" class="sm mu">8</text><text x="268.3" y="158.0" text-anchor="middle" class="sm mu">12</text><text x="26.0" y="84.0" text-anchor="end" class="sm mu">0.25</text><line x1="30" y1="80.0" x2="308" y2="80.0" class="grid"/><text x="169.0" y="177.0" text-anchor="middle" class="sm mu">x</text><text x="41.9" y="26.2" text-anchor="start" class="sm mu">n = 2</text><text x="95.5" y="82.6" text-anchor="start" class="sm lab1">n = 4</text><text x="208.7" y="105.6" text-anchor="start" class="sm lab2">n = 8</text></svg><figcaption>χ² densities: lopsided to the right, moving right as n grows.</figcaption></figure><figure class="fig"><svg class="c1-svg" viewBox="0 0 320 180" role="img" aria-label="Student density with 2 degrees of freedom against the standard normal: lower peak, fatter tails."><polyline points="14.0,144.0 15.8,144.0 17.7,144.0 19.6,144.0 21.4,144.0 23.2,144.0 25.1,144.0 26.9,144.0 28.8,144.0 30.7,144.0 32.5,144.0 34.4,144.0 36.2,144.0 38.0,144.0 39.9,144.0 41.8,144.0 43.6,144.0 45.5,143.9 47.3,143.9 49.1,143.9 51.0,143.9 52.9,143.9 54.7,143.8 56.5,143.8 58.4,143.7 60.2,143.7 62.1,143.6 64.0,143.5 65.8,143.4 67.7,143.3 69.5,143.1 71.3,142.9 73.2,142.7 75.0,142.4 76.9,142.1 78.8,141.7 80.6,141.3 82.5,140.8 84.3,140.2 86.1,139.5 88.0,138.8 89.8,137.9 91.7,136.9 93.5,135.8 95.4,134.6 97.2,133.1 99.1,131.6 101.0,129.8 102.8,127.9 104.7,125.8 106.5,123.5 108.3,121.0 110.2,118.3 112.0,115.4 113.9,112.3 115.8,109.0 117.6,105.4 119.5,101.7 121.3,97.9 123.2,93.8 125.0,89.6 126.8,85.3 128.7,80.9 130.6,76.5 132.4,72.0 134.2,67.5 136.1,63.0 137.9,58.6 139.8,54.4 141.7,50.2 143.5,46.3 145.3,42.6 147.2,39.2 149.0,36.1 150.9,33.3 152.8,30.9 154.6,28.9 156.5,27.3 158.3,26.2 160.2,25.5 162.0,25.2 163.8,25.5 165.7,26.2 167.6,27.3 169.4,28.9 171.2,30.9 173.1,33.3 174.9,36.1 176.8,39.2 178.7,42.6 180.5,46.3 182.3,50.2 184.2,54.4 186.1,58.6 187.9,63.0 189.8,67.5 191.6,72.0 193.4,76.5 195.3,80.9 197.2,85.3 199.0,89.6 200.8,93.8 202.7,97.9 204.6,101.7 206.4,105.4 208.2,109.0 210.1,112.3 211.9,115.4 213.8,118.3 215.7,121.0 217.5,123.5 219.3,125.8 221.2,127.9 223.1,129.8 224.9,131.6 226.8,133.1 228.6,134.6 230.4,135.8 232.3,136.9 234.2,137.9 236.0,138.8 237.8,139.5 239.7,140.2 241.6,140.8 243.4,141.3 245.2,141.7 247.1,142.1 248.9,142.4 250.8,142.7 252.7,142.9 254.5,143.1 256.4,143.3 258.2,143.4 260.1,143.5 261.9,143.6 263.8,143.7 265.6,143.7 267.4,143.8 269.3,143.8 271.2,143.9 273.0,143.9 274.8,143.9 276.7,143.9 278.6,143.9 280.4,144.0 282.2,144.0 284.1,144.0 285.9,144.0 287.8,144.0 289.7,144.0 291.5,144.0 293.3,144.0 295.2,144.0 297.1,144.0 298.9,144.0 300.8,144.0 302.6,144.0 304.4,144.0 306.3,144.0 308.2,144.0 310.0,144.0" class="cv3"/><polyline points="14.0,141.9 15.8,141.8 17.7,141.7 19.6,141.6 21.4,141.6 23.2,141.5 25.1,141.4 26.9,141.3 28.8,141.2 30.7,141.1 32.5,140.9 34.4,140.8 36.2,140.7 38.0,140.6 39.9,140.4 41.8,140.3 43.6,140.1 45.5,139.9 47.3,139.8 49.1,139.6 51.0,139.4 52.9,139.2 54.7,138.9 56.5,138.7 58.4,138.5 60.2,138.2 62.1,137.9 64.0,137.6 65.8,137.3 67.7,137.0 69.5,136.6 71.3,136.2 73.2,135.8 75.0,135.4 76.9,134.9 78.8,134.5 80.6,133.9 82.5,133.4 84.3,132.8 86.1,132.1 88.0,131.4 89.8,130.7 91.7,129.9 93.5,129.1 95.4,128.1 97.2,127.2 99.1,126.1 101.0,125.0 102.8,123.7 104.7,122.4 106.5,121.0 108.3,119.5 110.2,117.9 112.0,116.1 113.9,114.2 115.8,112.2 117.6,110.0 119.5,107.7 121.3,105.2 123.2,102.6 125.0,99.7 126.8,96.7 128.7,93.6 130.6,90.2 132.4,86.7 134.2,83.1 136.1,79.3 137.9,75.4 139.8,71.4 141.7,67.4 143.5,63.5 145.3,59.6 147.2,55.8 149.0,52.2 150.9,49.0 152.8,46.0 154.6,43.5 156.5,41.5 158.3,40.0 160.2,39.1 162.0,38.8 163.8,39.1 165.7,40.0 167.6,41.5 169.4,43.5 171.2,46.0 173.1,49.0 174.9,52.2 176.8,55.8 178.7,59.6 180.5,63.5 182.3,67.4 184.2,71.4 186.1,75.4 187.9,79.3 189.8,83.1 191.6,86.7 193.4,90.2 195.3,93.6 197.2,96.7 199.0,99.7 200.8,102.6 202.7,105.2 204.6,107.7 206.4,110.0 208.2,112.2 210.1,114.2 211.9,116.1 213.8,117.9 215.7,119.5 217.5,121.0 219.3,122.4 221.2,123.7 223.1,125.0 224.9,126.1 226.8,127.2 228.6,128.1 230.4,129.1 232.3,129.9 234.2,130.7 236.0,131.4 237.8,132.1 239.7,132.8 241.6,133.4 243.4,133.9 245.2,134.5 247.1,134.9 248.9,135.4 250.8,135.8 252.7,136.2 254.5,136.6 256.4,137.0 258.2,137.3 260.1,137.6 261.9,137.9 263.8,138.2 265.6,138.5 267.4,138.7 269.3,138.9 271.2,139.2 273.0,139.4 274.8,139.6 276.7,139.8 278.6,139.9 280.4,140.1 282.2,140.3 284.1,140.4 285.9,140.6 287.8,140.7 289.7,140.8 291.5,140.9 293.3,141.1 295.2,141.2 297.1,141.3 298.9,141.4 300.8,141.5 302.6,141.6 304.4,141.6 306.3,141.7 308.2,141.8 310.0,141.9" class="cv1"/><line x1="14" y1="144.0" x2="314" y2="144.0" class="ax"/><line x1="14.0" y1="12" x2="14.0" y2="144.0" class="ax"/><text x="43.6" y="158.0" text-anchor="middle" class="sm mu">-4</text><text x="102.8" y="158.0" text-anchor="middle" class="sm mu">-2</text><text x="162.0" y="158.0" text-anchor="middle" class="sm mu">0</text><text x="221.2" y="158.0" text-anchor="middle" class="sm mu">2</text><text x="280.4" y="158.0" text-anchor="middle" class="sm mu">4</text><text x="194.6" y="30.9" text-anchor="start" class="sm mu">N(0, 1)</text><text x="230.1" y="120.2" text-anchor="start" class="sm lab1">t₂: fatter tails</text></svg><figcaption>Student t₂ (blue) against N(0, 1) (dashed).</figcaption></figure></div>
+  </div>
+</section>
+<section class="sec" id="s21">
+  <div class="sec-h"><span class="num">21</span><h2>Sums of independent variables, and the whole catalogue <span class="fr">(stabilité, résumé des lois)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Many laws are <b>stable under addition</b>: add two independent variables of the same family and you stay in the family, with the parameters added. This is a big time saver.</p><p>The conditions matter: the variables must be independent, and for binomial and gamma the second parameter (p or θ) must be the same.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">Stable family</b> <span class="fr">(stabilité par addition)</span></span><span class="mean">X₁ + X₂ has a law of the same family as X₁ and X₂.</span></li><li><span class="term"><b class="en">Mean of a sum</b></span><span class="mean">E(X₁ + X₂) = E(X₁) + E(X₂), always (independent or not).</span></li><li><span class="term"><b class="en">Variance of a sum</b></span><span class="mean">Var(X₁ + X₂) = Var(X₁) + Var(X₂) when X₁ and X₂ are independent.</span></li></ul>
+  </div>
+  
+  <figure class="fig"><svg class="c1-svg" viewBox="0 0 360 190" role="img" aria-label="Two independent normals N(1, 4) and N(2, 5) and their sum N(3, 9): wider and centred at 3."><polyline points="30.0,153.7 32.0,153.7 34.0,153.6 36.0,153.5 37.9,153.4 39.9,153.3 41.9,153.1 43.9,152.9 45.9,152.7 47.9,152.5 49.9,152.2 51.9,151.8 53.8,151.4 55.8,151.0 57.8,150.4 59.8,149.8 61.8,149.2 63.8,148.4 65.8,147.5 67.8,146.5 69.8,145.4 71.7,144.1 73.7,142.7 75.7,141.2 77.7,139.5 79.7,137.6 81.7,135.5 83.7,133.3 85.7,130.9 87.6,128.3 89.6,125.4 91.6,122.4 93.6,119.2 95.6,115.8 97.6,112.2 99.6,108.5 101.5,104.5 103.5,100.5 105.5,96.3 107.5,92.0 109.5,87.5 111.5,83.1 113.5,78.6 115.5,74.1 117.4,69.6 119.4,65.2 121.4,60.9 123.4,56.7 125.4,52.7 127.4,48.9 129.4,45.3 131.4,42.1 133.4,39.1 135.3,36.4 137.3,34.2 139.3,32.3 141.3,30.8 143.3,29.7 145.3,29.1 147.3,28.9 149.2,29.1 151.2,29.8 153.2,30.9 155.2,32.4 157.2,34.4 159.2,36.7 161.2,39.4 163.2,42.4 165.2,45.7 167.1,49.3 169.1,53.1 171.1,57.1 173.1,61.3 175.1,65.7 177.1,70.1 179.1,74.6 181.1,79.1 183.0,83.6 185.0,88.0 187.0,92.4 189.0,96.7 191.0,100.9 193.0,105.0 195.0,108.9 197.0,112.6 198.9,116.2 200.9,119.6 202.9,122.7 204.9,125.7 206.9,128.5 208.9,131.1 210.9,133.5 212.9,135.8 214.8,137.8 216.8,139.7 218.8,141.3 220.8,142.9 222.8,144.3 224.8,145.5 226.8,146.6 228.8,147.6 230.7,148.5 232.7,149.2 234.7,149.9 236.7,150.5 238.7,151.0 240.7,151.5 242.7,151.9 244.6,152.2 246.6,152.5 248.6,152.7 250.6,152.9 252.6,153.1 254.6,153.3 256.6,153.4 258.6,153.5 260.5,153.6 262.5,153.7 264.5,153.7 266.5,153.8 268.5,153.8 270.5,153.9 272.5,153.9 274.5,153.9 276.5,153.9 278.4,153.9 280.4,154.0 282.4,154.0 284.4,154.0 286.4,154.0 288.4,154.0 290.4,154.0 292.4,154.0 294.3,154.0 296.3,154.0 298.3,154.0 300.3,154.0 302.3,154.0 304.3,154.0 306.3,154.0 308.2,154.0 310.2,154.0 312.2,154.0 314.2,154.0 316.2,154.0 318.2,154.0 320.2,154.0 322.2,154.0 324.1,154.0 326.1,154.0 328.1,154.0 330.1,154.0 332.1,154.0 334.1,154.0 336.1,154.0 338.1,154.0 340.1,154.0 342.0,154.0 344.0,154.0 346.0,154.0 348.0,154.0" class="cv3"/><polyline points="30.0,153.8 32.0,153.8 34.0,153.7 36.0,153.7 37.9,153.6 39.9,153.5 41.9,153.4 43.9,153.3 45.9,153.2 47.9,153.1 49.9,152.9 51.9,152.7 53.8,152.5 55.8,152.3 57.8,152.0 59.8,151.7 61.8,151.3 63.8,150.9 65.8,150.4 67.8,149.9 69.8,149.3 71.7,148.6 73.7,147.9 75.7,147.0 77.7,146.1 79.7,145.1 81.7,144.0 83.7,142.8 85.7,141.4 87.6,140.0 89.6,138.4 91.6,136.7 93.6,134.8 95.6,132.8 97.6,130.7 99.6,128.5 101.5,126.1 103.5,123.5 105.5,120.8 107.5,118.0 109.5,115.1 111.5,112.0 113.5,108.8 115.5,105.6 117.4,102.2 119.4,98.7 121.4,95.2 123.4,91.7 125.4,88.1 127.4,84.5 129.4,80.9 131.4,77.3 133.4,73.8 135.3,70.4 137.3,67.0 139.3,63.8 141.3,60.7 143.3,57.8 145.3,55.1 147.3,52.6 149.2,50.3 151.2,48.3 153.2,46.5 155.2,45.1 157.2,43.9 159.2,43.0 161.2,42.4 163.2,42.1 165.2,42.1 167.1,42.5 169.1,43.2 171.1,44.1 173.1,45.4 175.1,47.0 177.1,48.8 179.1,50.9 181.1,53.2 183.0,55.8 185.0,58.6 187.0,61.5 189.0,64.6 191.0,67.9 193.0,71.2 195.0,74.7 197.0,78.2 198.9,81.8 200.9,85.4 202.9,89.0 204.9,92.6 206.9,96.1 208.9,99.6 210.9,103.1 212.9,106.4 214.8,109.7 216.8,112.8 218.8,115.9 220.8,118.8 222.8,121.6 224.8,124.2 226.8,126.7 228.8,129.1 230.7,131.3 232.7,133.4 234.7,135.3 236.7,137.1 238.7,138.8 240.7,140.4 242.7,141.8 244.6,143.1 246.6,144.3 248.6,145.4 250.6,146.4 252.6,147.3 254.6,148.1 256.6,148.8 258.6,149.4 260.5,150.0 262.5,150.5 264.5,151.0 266.5,151.4 268.5,151.7 270.5,152.1 272.5,152.3 274.5,152.6 276.5,152.8 278.4,153.0 280.4,153.1 282.4,153.3 284.4,153.4 286.4,153.5 288.4,153.6 290.4,153.6 292.4,153.7 294.3,153.7 296.3,153.8 298.3,153.8 300.3,153.9 302.3,153.9 304.3,153.9 306.3,153.9 308.2,153.9 310.2,153.9 312.2,154.0 314.2,154.0 316.2,154.0 318.2,154.0 320.2,154.0 322.2,154.0 324.1,154.0 326.1,154.0 328.1,154.0 330.1,154.0 332.1,154.0 334.1,154.0 336.1,154.0 338.1,154.0 340.1,154.0 342.0,154.0 344.0,154.0 346.0,154.0 348.0,154.0" class="cv1"/><polyline points="30.0,153.1 32.0,153.0 34.0,152.8 36.0,152.7 37.9,152.5 39.9,152.4 41.9,152.2 43.9,152.0 45.9,151.7 47.9,151.5 49.9,151.2 51.9,150.9 53.8,150.6 55.8,150.2 57.8,149.8 59.8,149.4 61.8,148.9 63.8,148.4 65.8,147.9 67.8,147.3 69.8,146.7 71.7,146.1 73.7,145.4 75.7,144.6 77.7,143.8 79.7,142.9 81.7,142.0 83.7,141.1 85.7,140.1 87.6,139.0 89.6,137.9 91.6,136.7 93.6,135.4 95.6,134.1 97.6,132.8 99.6,131.3 101.5,129.9 103.5,128.3 105.5,126.7 107.5,125.1 109.5,123.4 111.5,121.7 113.5,119.9 115.5,118.1 117.4,116.2 119.4,114.3 121.4,112.4 123.4,110.4 125.4,108.4 127.4,106.5 129.4,104.5 131.4,102.5 133.4,100.5 135.3,98.5 137.3,96.5 139.3,94.5 141.3,92.6 143.3,90.7 145.3,88.9 147.3,87.1 149.2,85.4 151.2,83.7 153.2,82.1 155.2,80.6 157.2,79.2 159.2,77.9 161.2,76.6 163.2,75.5 165.2,74.5 167.1,73.5 169.1,72.7 171.1,72.1 173.1,71.5 175.1,71.1 177.1,70.8 179.1,70.6 181.1,70.6 183.0,70.7 185.0,70.9 187.0,71.3 189.0,71.7 191.0,72.3 193.0,73.1 195.0,73.9 197.0,74.9 198.9,75.9 200.9,77.1 202.9,78.4 204.9,79.8 206.9,81.2 208.9,82.8 210.9,84.4 212.9,86.1 214.8,87.9 216.8,89.7 218.8,91.5 220.8,93.4 222.8,95.4 224.8,97.3 226.8,99.3 228.8,101.3 230.7,103.3 232.7,105.3 234.7,107.3 236.7,109.3 238.7,111.2 240.7,113.2 242.7,115.1 244.6,117.0 246.6,118.8 248.6,120.7 250.6,122.4 252.6,124.1 254.6,125.8 256.6,127.4 258.6,129.0 260.5,130.5 262.5,131.9 264.5,133.3 266.5,134.7 268.5,136.0 270.5,137.2 272.5,138.3 274.5,139.4 276.5,140.5 278.4,141.5 280.4,142.4 282.4,143.3 284.4,144.1 286.4,144.9 288.4,145.7 290.4,146.3 292.4,147.0 294.3,147.6 296.3,148.1 298.3,148.6 300.3,149.1 302.3,149.6 304.3,150.0 306.3,150.4 308.2,150.7 310.2,151.0 312.2,151.3 314.2,151.6 316.2,151.8 318.2,152.0 320.2,152.2 322.2,152.4 324.1,152.6 326.1,152.7 328.1,152.9 330.1,153.0 332.1,153.1 334.1,153.2 336.1,153.3 338.1,153.4 340.1,153.5 342.0,153.5 344.0,153.6 346.0,153.6 348.0,153.7" class="cv2"/><line x1="30" y1="154.0" x2="352" y2="154.0" class="ax"/><line x1="30.0" y1="12" x2="30.0" y2="154.0" class="ax"/><text x="80.2" y="168.0" text-anchor="middle" class="sm mu">−3</text><text x="130.4" y="168.0" text-anchor="middle" class="sm mu">0</text><text x="180.6" y="168.0" text-anchor="middle" class="sm mu">3</text><text x="230.8" y="168.0" text-anchor="middle" class="sm mu">6</text><text x="281.1" y="168.0" text-anchor="middle" class="sm mu">9</text><text x="331.3" y="168.0" text-anchor="middle" class="sm mu">12</text><text x="26.0" y="95.3" text-anchor="end" class="sm mu">0.1</text><line x1="30" y1="91.3" x2="348" y2="91.3" class="grid"/><text x="26.0" y="32.5" text-anchor="end" class="sm mu">0.2</text><line x1="30" y1="28.5" x2="348" y2="28.5" class="grid"/><text x="189.0" y="187.0" text-anchor="middle" class="sm mu">x</text><text x="237.5" y="22.3" text-anchor="start" class="sm mu">dashed: X ~ N(1, 4)</text><text x="237.5" y="34.8" text-anchor="start" class="sm lab1">blue: Y ~ N(2, 5)</text><text x="237.5" y="47.4" text-anchor="start" class="sm lab2">green: X + Y ~ N(3, 9)</text></svg><figcaption>Adding two independent normals: the means add (1 + 2 = 3) and the variances add (4 + 5 = 9), so the sum is wider.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="scroll"><table class="t"><thead><tr><th>If X₁, X₂ are independent and…</th><th>then X₁ + X₂ ~</th><th>Watch out</th></tr></thead><tbody><tr><td>B(n₁, p) and B(n₂, p)</td><td>B(n₁ + n₂, p)</td><td>same p</td></tr><tr><td>P(λ₁) and P(λ₂)</td><td>P(λ₁ + λ₂)</td><td></td></tr><tr><td>N(m₁, σ₁²) and N(m₂, σ₂²)</td><td>N(m₁ + m₂, σ₁² + σ₂²)</td><td>variances add, not σ</td></tr><tr><td>γ(p, θ) and γ(q, θ)</td><td>γ(p + q, θ)</td><td>same θ</td></tr><tr><td>χ²ₙ₁ and χ²ₙ₂</td><td>χ²ₙ₁₊ₙ₂</td><td></td></tr><tr><td>n copies of B(p)</td><td>B(n, p)</td><td></td></tr><tr><td>n copies of E(λ)</td><td>γ(n, λ)</td><td></td></tr></tbody></table></div><ul class="ln"><li><b>Binomial (ours).</b> 5 die throws then 7 more, X₁ ~ B(5, 1/6), X₂ ~ B(7, 1/6): total number of 1s ~ <b>B(12, 1/6)</b>, mean 2.</li><li><b>Poisson (ours).</b> 2 breakdowns a month on machine 1 and 3 on machine 2, independent: total ~ <b>P(5)</b>.</li><li><b>Normal (summary).</b> N(1, 4) + N(2, 5) = <b>N(3, 9)</b>: σ = 3, not 2 + √5.</li></ul><h3 class="c1-h3">The whole catalogue</h3><div class="scroll"><table class="t"><thead><tr><th>Law</th><th>Values</th><th>P(X = k) or f(x)</th><th>E(X)</th><th>Var(X)</th></tr></thead><tbody><tr><td>U{1, …, n}</td><td>1, …, n</td><td>1/n</td><td>(n + 1)/2</td><td>(n² − 1)/12</td></tr><tr><td>B(p)</td><td>0, 1</td><td>p^k (1 − p)^{1−k}</td><td>p</td><td>p(1 − p)</td></tr><tr><td>B(n, p)</td><td>0, …, n</td><td>C(n, k) p^k (1 − p)^{n−k}</td><td>np</td><td>np(1 − p)</td></tr><tr><td>G(p)</td><td>1, 2, …</td><td>(1 − p)^{k−1} p</td><td>1/p</td><td>(1 − p)/p²</td></tr><tr><td>H(N, n, N_A)</td><td>see §14</td><td>C(N_A, k) C(N − N_A, n − k)/C(N, n)</td><td>n N_A/N</td><td>n (N−n)/(N−1) (N_A/N)(1 − N_A/N)</td></tr><tr><td>P(λ)</td><td>0, 1, 2, …</td><td>e^{−λ} λ^k / k!</td><td>λ</td><td>λ</td></tr><tr><td>U[a, b]</td><td>[a, b]</td><td>1/(b − a)</td><td>(a + b)/2</td><td>(b − a)²/12</td></tr><tr><td>E(θ)</td><td>[0, ∞[</td><td>θ e^{−θx}</td><td>1/θ</td><td>1/θ²</td></tr><tr><td>N(m, σ²)</td><td>ℝ</td><td>e^{−(x−m)²/(2σ²)}/(σ√(2π))</td><td>m</td><td>σ²</td></tr><tr><td>γ(α, β)</td><td>[0, ∞[</td><td>β^α e^{−βx} x^{α−1}/Γ(α)</td><td>α/β</td><td>α/β²</td></tr><tr><td>χ²ₙ</td><td>[0, ∞[</td><td>γ(n/2, 1/2)</td><td>n</td><td>2n</td></tr><tr><td>tₙ</td><td>ℝ</td><td>(table)</td><td>0</td><td>n/(n − 2)</td></tr><tr><td>F(n₁, n₂)</td><td>[0, ∞[</td><td>(table)</td><td>n₂/(n₂ − 2)</td><td>see §20</td></tr></tbody></table></div>
+  </div>
+</section>
+<section class="sec" id="notes">
+  <div class="note errata"><span class="tag">Notes on the original course</span>
+    <ul>
+      <li>Chapter 1, p 2 (dice game): the labels are swapped. It writes X⁻¹(−10) = {ω : X(ω) = 10} = {5} and X⁻¹(10) = {ω : X(ω) = −10} = {2, 4, 6}. The sets {5} and {2, 4, 6} are right; inside the braces it should read X(ω) = −10 and X(ω) = 10.</li>
+      <li>Usual laws, Bernoulli: F(x) and the variance use q before it is defined. q means 1 − p.</li>
+      <li>Usual laws, normal example: 0.2586 comes from rounding 1/3 to 0.33 for the table. With the exact 1/3 the answer is 0.2611. Both are accepted; keep the table habit in exams.</li>
+      <li>Usual laws, remark 5: γ(1, β) is the exponential law with parameter β, not “λ = 1”.</li>
+      <li>Usual laws, Fisher variance: the denominator is n₁(n₂ − 2)²(n₂ − 4); the course's layout breaks this formula.</li>
+      <li>Usual laws, Γ properties: the lines are jumbled. Correct list: Γ(n) = (n − 1)! for whole n; Γ(n + 1) = nΓ(n); Γ(1) = 1; Γ(1/2) = √π.</li>
+      <li>Boussaha slides: F(x) is defined as P(X &lt; x), while the course uses P(X ≤ x). Use the course's version unless told otherwise.</li>
+      <li>Boussaha slides: the normal law is written N(m; σ) with σ, the course writes N(m, σ²) with the variance. Always check which one is meant: N(3, 9) in the course means σ = 3.</li>
+      <li>Boussaha slides: the 3σ rule says 99.8%; the correct value is 99.7%.</li>
+      <li>Boussaha slides, Poisson example: “e⁻¹⁵ 15²⁰/20! = 0.4 = 4.2%” should read 0.0418 ≈ 4.2%.</li>
+      <li>Boussaha slides, binomial: X(Ω) = {0, n} should be {0, 1, …, n}. Hypergeometric: the upper bound min{N, N_A} should be min{n, N_A}. Geometric: “∀x = a, b” is a copy-paste from the uniform slide; it means every x ≥ 1.</li>
+      <li>The examples marked “ours” are added where the course gives no numbers, to show each formula once on real values.</li>
+    </ul>
+  </div>
+</section><footer class="foot">CPSI, Chapter 1: random variables and usual laws. Based on the course Chapitre 1 (Rappels de probabilité) and Chapitre 1 partie 2 (Lois usuelles), the Statistique mathématique chapter 0 slides (random variables, usual laws) and the handwritten summary. All examples recomputed by program (src/verify.py).</footer>
+</div>
+<script>
+/* study-hub:progress — practice pages: counts ticked .done boxes */
+(function(){
+  var boxes=document.querySelectorAll('.done input'), txt=document.getElementById('prog-txt'), bar=document.getElementById('prog-bar');
+  if(!boxes.length||!txt) return;
+  function upd(){var n=0;boxes.forEach(function(b){if(b.checked)n++;});txt.textContent=n+' / '+boxes.length+' done';bar.style.width=(100*n/boxes.length)+'%';}
+  boxes.forEach(function(b){b.addEventListener('change',upd);});
+  upd();
+})();
+</script>
+</body>
+</html>
