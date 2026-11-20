@@ -19,6 +19,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
 
 import add
+import tasks
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.environ.get("ANSWERS_DB", os.path.join(ROOT, "data", "answers.db"))
@@ -58,6 +59,7 @@ def init_db():
                 updated_at TEXT NOT NULL,
                 PRIMARY KEY(module, page, key))"""
         )
+        tasks.init(conn)
 
 
 class ApiError(Exception):
@@ -106,13 +108,21 @@ class Handler(BaseHTTPRequestHandler):
         try:
             url = urlsplit(self.path)
             query = {k: v[0] for k, v in parse_qs(url.query).items()}
-            route = ROUTES.get((method, url.path.rstrip("/")))
+            path = url.path.rstrip("/")
+            route = ROUTES.get((method, path))
+            m = TASK_RE.match(path)
+            if route is None and m and m.group(1) not in ("feed", "sync"):
+                query["id"] = m.group(1)
+                route = ROUTES.get((method, "/api/tasks/<id>"))
+                path = "/api/tasks/<id>"
             if route is None:
-                known = any(path == url.path.rstrip("/") for _, path in ROUTES)
+                known = any(p == path for _, p in ROUTES)
                 raise ApiError(405 if known else 404, "method not allowed" if known else "not found")
             self.send_json(200, route(self, query))
         except ApiError as e:
             self.send_json(e.status, {"error": e.message})
+        except tasks.SyncError as e:
+            self.send_json(e.status, e.payload)
         except Exception as e:  # noqa: BLE001
             self.log_error("internal error: %r", e)
             self.send_json(500, {"error": "internal error"})
@@ -129,12 +139,15 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         self.dispatch("POST")
 
-    def read_json(self):
+    def do_PATCH(self):
+        self.dispatch("PATCH")
+
+    def read_json(self, limit=MAX_BODY):
         try:
             length = int(self.headers.get("Content-Length") or 0)
         except ValueError:
             raise ApiError(400, "bad content-length")
-        if length > MAX_BODY:
+        if length > limit:
             raise ApiError(413, "body too large")
         try:
             data = json.loads(self.rfile.read(length) or b"null")
@@ -361,6 +374,50 @@ class Handler(BaseHTTPRequestHandler):
         raise ApiError(404, "unknown upload")
 
 
+    # --- tasks (tasks.py; contract in nook/docs/TASK_SOURCE_API.md) --------------------------
+
+    def base_url(self):
+        """Where task links point: TASKS_PUBLIC_URL, else the address this request came in on."""
+        if tasks.PUBLIC_URL:
+            return tasks.PUBLIC_URL
+        proto = self.headers.get("X-Forwarded-Proto") or "http"
+        host = self.headers.get("X-Forwarded-Host") or self.headers.get("Host") or f"{HOST}:{PORT}"
+        if not re.match(r"^[\w.\-]+(:\d+)?$", host):
+            raise ApiError(400, "bad host")
+        return f"{'https' if proto == 'https' else 'http'}://{host}"
+
+    def tasks_push(self, q):
+        body = self.read_json(tasks.PUSH_LIMIT)
+        changes = tasks.check_push(body)
+        with connect() as conn:
+            conn.execute("BEGIN IMMEDIATE")  # read-merge-write as one step, one writer at a time
+            return tasks.apply_changes(conn, changes, int(time.time() * 1000))
+
+    def tasks_pull(self, q):
+        if str(q.get("protocol")) != str(tasks.PROTOCOL_VERSION):
+            raise tasks.SyncError(426, {"protocol": tasks.PROTOCOL_VERSION})
+        try:
+            since = int(q.get("since", "0"))
+        except ValueError:
+            raise ApiError(400, "invalid since")
+        if since < 0:
+            raise ApiError(400, "invalid since")
+        with connect() as conn:
+            return tasks.pull_changes(conn, since, int(time.time() * 1000))
+
+    def tasks_feed(self, q):
+        with connect() as conn:
+            return tasks.feed(conn, q.get("from"), q.get("to"), self.base_url(), int(time.time() * 1000))
+
+    def tasks_patch(self, q):
+        body = self.read_json()
+        with connect() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            return tasks.patch_task(conn, q["id"], body, self.base_url(), int(time.time() * 1000))
+
+
+TASK_RE = re.compile(r"^/api/tasks/([\w\-]{1,100})$")
+
 ROUTES = {
     ("GET", "/api/health"): Handler.health,
     ("GET", "/api/answers"): Handler.get_answers,
@@ -372,6 +429,10 @@ ROUTES = {
     ("PUT", "/api/upload"): Handler.upload,
     ("GET", "/api/upload"): Handler.upload_status,
     ("POST", "/api/manage"): Handler.manage,
+    ("POST", "/api/tasks/sync"): Handler.tasks_push,
+    ("GET", "/api/tasks/sync"): Handler.tasks_pull,
+    ("GET", "/api/tasks/feed"): Handler.tasks_feed,
+    ("PATCH", "/api/tasks/<id>"): Handler.tasks_patch,
 }
 
 
