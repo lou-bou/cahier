@@ -1,7 +1,7 @@
 # Setting up Study Hub on a server
 
 Runbook for a fresh Debian machine (written for the ThinkPad, Debian 13). It ends with the site at
-`https://study.boussaid.me`, locked to my email by Cloudflare Access. Run every command as my normal
+`https://cahier.boussaid.me`, locked to my email by Cloudflare Access. Run every command as my normal
 user (`lou`); `sudo` only where shown. Section 10 lists the traps I already fell into.
 
 ## What runs where
@@ -103,19 +103,19 @@ Port 8088 because qBittorrent holds 8080 on the ThinkPad. If Caddy won't start, 
 file, not in the dashboard. Add, above the final catch-all:
 
 ```yaml
-  - hostname: study.boussaid.me
+  - hostname: cahier.boussaid.me
     service: http://localhost:8088
 ```
 ```bash
 sudo cloudflared --config /etc/cloudflared/config.yml tunnel ingress validate && sudo systemctl restart cloudflared
 ```
 ```bash
-cloudflared tunnel route dns <tunnel-id> study.boussaid.me
+cloudflared tunnel route dns <tunnel-id> cahier.boussaid.me
 ```
 
 On a new server without that tunnel, it's simpler to create a dashboard-managed one: Zero Trust →
 Networks → Tunnels → Create → Cloudflared, run the install command it shows, then add the public hostname
-`study.boussaid.me` → HTTP → `localhost:8088` in the dashboard (it creates the DNS record).
+`cahier.boussaid.me` → HTTP → `localhost:8088` in the dashboard (it creates the DNS record).
 
 **Access.** Set this up before anything else can reach the hostname: without it the site, the answers API
 and the upload/delete API are public.
@@ -133,10 +133,10 @@ it needs a way through Access without the email PIN:
 1. Zero Trust → Access → Service auth → Service tokens → Create: name `nook`, duration non-expiring
    (or a year, and a reminder). Copy the **Client ID** and **Client Secret** now: the secret is shown
    once. They go in Nook's `.env` as `CAHIER_ACCESS_CLIENT_ID` / `CAHIER_ACCESS_CLIENT_SECRET`.
-2. Access → Applications → the `study.boussaid.me` app → Policies → Add: name `nook service`, Action
+2. Access → Applications → the `cahier.boussaid.me` app → Policies → Add: name `nook service`, Action
    **Service Auth**, Include → Service Token → `nook`. Keep the email Allow policy as it is.
 3. Test from anywhere (with the real values):
-   `curl -s -H "CF-Access-Client-Id: <id>" -H "CF-Access-Client-Secret: <secret>" "https://study.boussaid.me/api/tasks/feed?from=2026-11-20T00:00:00Z&to=2026-11-21T00:00:00Z"`
+   `curl -s -H "CF-Access-Client-Id: <id>" -H "CF-Access-Client-Secret: <secret>" "https://cahier.boussaid.me/api/tasks/feed?from=2026-11-20T00:00:00Z&to=2026-11-21T00:00:00Z"`
    prints a JSON list; without the headers you get Access's login page instead.
 
 **Moving the board in from Tack (once).** On the Tack server: `cd ~/tack && make backup`, copy the newest
@@ -191,7 +191,7 @@ Reboot once afterwards; it also proves every service comes back on its own.
 ## 10. Things that bit me
 
 - **Blank page through the tunnel, fine with curl.** Caddy's site address must be `http://:8088`, not
-  `http://localhost:8088`: the tunnel sends `Host: study.boussaid.me`, and an unmatched host gets an empty
+  `http://localhost:8088`: the tunnel sends `Host: cahier.boussaid.me`, and an unmatched host gets an empty
   200 from Caddy.
 - **"not found" from a new API route.** `update.sh` pulls code but can't restart services. After a pull
   that changes `server.py` or `add.py`, run `sudo systemctl restart studysite-api` (check the code first
@@ -224,5 +224,5 @@ curl -s localhost:8001/api/health; curl -s -o /dev/null -w " caddy %{http_code}\
 systemctl is-active studysite-api caddy cloudflared studysite-ingest.path; crontab -l | grep -c studysite
 ```
 
-Then from outside: log in at `https://study.boussaid.me`, save an answer on a practice page, reload
+Then from outside: log in at `https://cahier.boussaid.me`, save an answer on a practice page, reload
 (restored), upload a PDF on Manage modules ("Live · saved to GitHub"), delete it again.
