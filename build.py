@@ -47,6 +47,7 @@ ICONS = {
     "chevron-down": '<path d="m6 9 6 6 6-6"/>',
     "download": '<path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/>',
     "panel-left": '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>',
+    "square-check": '<path d="M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12.5"/><path d="m9 11 3 3L22 4"/>',
 }
 
 
@@ -637,13 +638,31 @@ def search_index(modules):
     return out
 
 
+TASK_MODULES = ("fractional-indexing.mjs", "core.mjs", "store.mjs", "board.mjs")
+
+
+def render_tasks(tpl, every, nav):
+    """The Tasks tab: the board that moved here from Tack (assets/tasks/, tasks.py). Its modules import
+    each other by plain path, so an import map points each one at its versioned URL."""
+    imports = {f"/assets/tasks/{m}": asset(f"tasks/{m}") for m in TASK_MODULES}
+    modules = [{"slug": m["slug"], "code": m["code"], "title": m["title"] or m["code"]} for m in every]
+    data = html.escape(json.dumps(modules, ensure_ascii=False), quote=True)
+    main = (f'<script type="importmap">{json.dumps({"imports": imports})}</script>\n'
+            f'<link rel="stylesheet" href="{asset("tasks/tasks.css")}">\n'
+            f'<div id="tasks" data-modules="{data}" data-no-save><p class="none">Loading…</p></div>\n'
+            f'<script type="module" src="{asset("tasks/board.mjs")}"></script>')
+    return fill(tpl, **shell(nav, "tasks"), HEAD="", PAGETITLE=f"Tasks · {html.escape(site_title())}",
+                MAIN=main, BODYATTR=' class="tasks-page"')
+
+
 def render_viewer():
     with open(os.path.join(ROOT, "viewer_template.html"), encoding="utf-8") as f:
         tpl = f.read()
     return fill(tpl, ICON_BACK=icon("arrow-left"), ICON_DL=icon("download"))
 
 
-MAIN_NAV = (("/", "house", "Home", "home"), ("/search/", "search", "Search", "search"))
+MAIN_NAV = (("/", "house", "Home", "home"), ("/search/", "search", "Search", "search"),
+            ("/tasks/", "square-check", "Tasks", "tasks"))
 
 
 def sidebar(nav, page="home", module=None, current=None, theme_id="theme-toggle"):
@@ -1106,7 +1125,7 @@ def main():
     if os.path.isdir(MODULES):
         slugs = [d for d in os.listdir(MODULES) if visible(d) and os.path.isdir(os.path.join(MODULES, d))]
     for s in slugs:
-        if s in ("assets", "upload", "viewer", "search", "search.json",
+        if s in ("assets", "upload", "viewer", "search", "search.json", "tasks",
                  "manifest.webmanifest", "sw.js") or not NAME_RE.match(s):
             sys.exit(f"error: module folder name {s!r} is reserved or invalid")
 
@@ -1127,6 +1146,7 @@ def main():
     page("search", render_search(tpl, modules))
     page("viewer", render_viewer())
     page("upload", render_upload(tpl, every, modules))
+    page("tasks", render_tasks(tpl, every, modules))
     for m in modules:
         page(m["slug"], render_module_page(tpl, m, modules))
     with open(os.path.join(NEW, "search.json"), "w", encoding="utf-8") as f:

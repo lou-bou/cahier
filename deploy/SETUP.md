@@ -127,6 +127,24 @@ and the upload/delete API are public.
 3. Policy: Allow, Include → Emails → my address. Session duration 1 month. Turn on instant authentication.
 4. Test from a phone on mobile data, in a private tab: email code, then the hub.
 
+**Service token for Nook (Tasks).** Nook's Today and Calendar read the Tasks tab from its server, so
+it needs a way through Access without the email PIN:
+
+1. Zero Trust → Access → Service auth → Service tokens → Create: name `nook`, duration non-expiring
+   (or a year, and a reminder). Copy the **Client ID** and **Client Secret** now: the secret is shown
+   once. They go in Nook's `.env` as `CAHIER_ACCESS_CLIENT_ID` / `CAHIER_ACCESS_CLIENT_SECRET`.
+2. Access → Applications → the `study.boussaid.me` app → Policies → Add: name `nook service`, Action
+   **Service Auth**, Include → Service Token → `nook`. Keep the email Allow policy as it is.
+3. Test from anywhere (with the real values):
+   `curl -s -H "CF-Access-Client-Id: <id>" -H "CF-Access-Client-Secret: <secret>" "https://study.boussaid.me/api/tasks/feed?from=2026-11-20T00:00:00Z&to=2026-11-21T00:00:00Z"`
+   prints a JSON list; without the headers you get Access's login page instead.
+
+**Moving the board in from Tack (once).** On the Tack server: `cd ~/tack && make backup`, copy the newest
+`backups/tack-*.db.gz` to this machine, then `sudo systemctl restart studysite-api` (new tables) and
+`python3 deploy/migrate_tack.py /path/to/tack-<stamp>.db.gz --dry-run`, then again without `--dry-run`.
+It only reads Tack's file and can be run again safely. Do it before opening the Tasks tab, or the tab
+offers to create an empty board (an empty board is set aside by the migration anyway).
+
 ## 8. Cron: auto-update and backup
 
 **rclone remote** (once): `rclone config` → `n` → name `gdrive` → storage `drive` → empty client id/secret
@@ -186,6 +204,8 @@ Reboot once afterwards; it also proves every service comes back on its own.
 - **SSH from the laptop over the LAN** needs the laptop's public key in `~/.ssh/authorized_keys` (password
   login is off). Check the server's real address with `ip -4 addr`; `192.168.100.19` is the ThinkPad's
   Ethernet and `.79` its Wi-Fi at home.
+- **Nook says Cahier "didn't answer" / "sign-in required".** The service token expired or lost its
+  Service Auth policy (§7), or `server.py` wasn't restarted after a pull that added the Tasks routes.
 - **`curl` right after `systemctl restart` prints nothing.** The API needs a second to start; `sleep 2`.
 - **Remakes made in the claude.ai project** must use the current `remake_template.html`. When the template's
   base styles change, re-upload it to the project, or the build warns "base styles differ".

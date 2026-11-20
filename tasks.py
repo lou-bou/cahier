@@ -446,7 +446,7 @@ def live_cards(conn):
     return out
 
 
-def feed_item(card, lst, base_url, now_ms):
+def feed_item(card, lst, base_url, now_ms, group_order=None):
     due, start = card.get("due"), card.get("start")
     return {
         "id": card["id"],
@@ -463,6 +463,7 @@ def feed_item(card, lst, base_url, now_ms):
         "start_has_time": bool(start and start["time"]),
         "priority": card["priority"],
         "today_reason": today_reason(card, now_ms),
+        "group_order": group_order,
     }
 
 
@@ -475,7 +476,10 @@ def feed(conn, start_text, end_text, base_url, now_ms):
     if last < first:
         raise SyncError(400, {"error": "to must be after from"})
     items = []
-    for card, lst, board in live_cards(conn):
+    rows = live_cards(conn)
+    order = {lst_id: i for i, lst_id in enumerate(
+        lid for lid, _ in sorted({(l["id"], (l["position"], l["id"])) for _, l, _ in rows}, key=lambda x: x[1]))}
+    for card, lst, board in rows:
         if card["completed"] and not board["showCompleted"]:
             continue
         due, start = card.get("due"), card.get("start")
@@ -484,7 +488,7 @@ def feed(conn, start_text, end_text, base_url, now_ms):
             span_from = start["date"] if start and not start_after_due(start, due) else due["date"]
             in_window = span_from <= last and first <= due["date"]
         if in_window or today_reason(card, now_ms):
-            items.append(feed_item(card, lst, base_url, now_ms))
+            items.append(feed_item(card, lst, base_url, now_ms, order[lst["id"]]))
     items.sort(key=lambda i: (i["due"] is None, i["due"] or "", i["title"]))
     return items
 
