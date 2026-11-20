@@ -46,7 +46,7 @@ deploy/update.sh                      ThinkPad cron: pull + build when there are
 deploy/SETUP.md                       runbook: fresh server or migration, plus known traps (keep it current)
 server.py                             answers API (and the Tasks routes, below)
 tasks.py                              Tasks: data, sync and task feed, ported from Tack
-assets/tasks/                         Tasks tab: board.mjs (UI), store.mjs (device copy + sync), core.mjs (rules), tasks.css, vendored fractional-indexing
+assets/tasks/                         Tasks: board.mjs (the /tasks/ board), module.mjs (a course's tasks), ui.mjs (shared face, icons, toast), store.mjs (device copy + sync), core.mjs (rules), tasks.css, vendored fractional-indexing
 deploy/migrate_tack.py                one-off: copy a board from Tack's database
 tests/test_tasks.py                   `python3 -m unittest discover tests`
 site.json                             optional {"title","subtitle"}
@@ -96,6 +96,8 @@ The task board that moved here from Tack when Tack was retired. One board ("BigD
 - `POST /api/tasks/sync` `{protocol: 1, changes: [{table, id, fields, clocks}]}` -> `{seq, serverTime, rejected}`; `GET /api/tasks/sync?since=&protocol=1` -> `{epoch, seq, serverTime, rows, tombstones}`. 426 on a protocol mismatch.
 - Task source contract for Nook (`nook/docs/TASK_SOURCE_API.md`): `GET /api/tasks/feed?from=<ISO>&to=<ISO>` and `PATCH /api/tasks/<id>` `{done?, scheduled_for?}`. Server-made changes get a server clock and go through the same merge. Links are `TASKS_PUBLIC_URL` (else the request's host) + `/tasks/?card=<id>`; `TASKS_SOURCE_KEY` (default `cahier`).
 - Nook calls it with a Cloudflare Access service token; Access checks it before the request arrives (deploy/SETUP.md §7), so server.py has no auth code.
+- Course pages (`/<module>/`) show the cards of the board list whose `module` is that course, above the chapters, in a `<details>` (open by default; closing it is remembered per course in `localStorage` `cahier-module-tasks:<module>`). Ticking works there with Undo; a title opens the card on the board. Hidden when no list is linked to the course. Same device copy and sync as the board.
+- Pages load these scripts through `task_assets()` in build.py: an import map pointing each `assets/tasks/*.mjs` at its versioned URL, so a module's plain imports never get a stale copy.
 - The rules exist twice (tasks.py, assets/tasks/core.mjs) and match Tack's code; keep them in step.
 
 ## Uploads (deploy/ingest.py)

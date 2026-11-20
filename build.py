@@ -571,9 +571,20 @@ def render_chapter(module, ch, is_open):
             f'{chapter_rows(module, ch)}</details>')
 
 
+def module_tasks(module):
+    """The course's tasks from the Tasks board (assets/tasks/module.mjs fills it), above the chapters.
+    Hidden until the board has a list for this module."""
+    e = html.escape
+    return (task_assets() +
+            f'<section id="module-tasks" class="mod-tasks" data-module="{e(module["slug"])}" data-code="{e(module["code"])}" data-no-save hidden>'
+            f'<details open><summary><span class="mt-title">Tasks</span><span class="mt-count"></span>{icon("chevron-down")}</summary>'
+            '<div class="mt-body"></div></details></section>\n'
+            f'<script type="module" src="{asset("tasks/module.mjs")}"></script>\n')
+
+
 def render_module_page(tpl, module, nav):
     e = html.escape
-    main = '<div class="chapters">' + "".join(render_chapter(module, c, i == 0) for i, c in enumerate(module["chapters"])) + "</div>"
+    main = module_tasks(module) + '<div class="chapters">' + "".join(render_chapter(module, c, i == 0) for i, c in enumerate(module["chapters"])) + "</div>"
     blurb = f'<p>{e(module["blurb"])}</p>' if module["blurb"] else ""
     head = (f'<header class="hero"><div class="hero-text"><div class="code">{e(module["code"])}</div>'
             f'<h1>{e(module["title"] or module["code"])}</h1>{blurb}{progress_bar(module)}</div>'
@@ -638,17 +649,22 @@ def search_index(modules):
     return out
 
 
-TASK_MODULES = ("fractional-indexing.mjs", "core.mjs", "store.mjs", "board.mjs")
+TASK_MODULES = ("fractional-indexing.mjs", "core.mjs", "store.mjs", "ui.mjs", "board.mjs", "module.mjs")
+
+
+def task_assets():
+    """The Tasks scripts import each other by plain path, so an import map points each one at its
+    versioned URL (see asset()). Plus the stylesheet."""
+    imports = {f"/assets/tasks/{m}": asset(f"tasks/{m}") for m in TASK_MODULES}
+    return (f'<script type="importmap">{json.dumps({"imports": imports})}</script>\n'
+            f'<link rel="stylesheet" href="{asset("tasks/tasks.css")}">\n')
 
 
 def render_tasks(tpl, every, nav):
-    """The Tasks tab: the board that moved here from Tack (assets/tasks/, tasks.py). Its modules import
-    each other by plain path, so an import map points each one at its versioned URL."""
-    imports = {f"/assets/tasks/{m}": asset(f"tasks/{m}") for m in TASK_MODULES}
+    """The Tasks tab: the board that moved here from Tack (assets/tasks/, tasks.py)."""
     modules = [{"slug": m["slug"], "code": m["code"], "title": m["title"] or m["code"]} for m in every]
     data = html.escape(json.dumps(modules, ensure_ascii=False), quote=True)
-    main = (f'<script type="importmap">{json.dumps({"imports": imports})}</script>\n'
-            f'<link rel="stylesheet" href="{asset("tasks/tasks.css")}">\n'
+    main = (task_assets() +
             f'<div id="tasks" data-modules="{data}" data-no-save><p class="none">Loading…</p></div>\n'
             f'<script type="module" src="{asset("tasks/board.mjs")}"></script>')
     return fill(tpl, **shell(nav, "tasks"), HEAD="", PAGETITLE=f"Tasks · {html.escape(site_title())}",

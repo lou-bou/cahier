@@ -167,3 +167,30 @@ body.tasks-page .page{padding-bottom:var(--space-6)}
   .tk-toasts{bottom:calc(60px + var(--space-4) + env(safe-area-inset-bottom,0px))}
   .tk-selbar{bottom:calc(60px + var(--space-3) + env(safe-area-inset-bottom,0px))}
 }
+
+/* emoji in board names: the display font has none */
+.tk-head h1{font-family:var(--font-display),"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+/* a chip never wraps inside itself (an overdue date plus the word is wide) */
+.tk-chip{white-space:nowrap;font-size:12px}
+
+/* course pages: the module's tasks above the chapters (assets/tasks/module.mjs) */
+.mod-tasks{margin-bottom:var(--space-3)}
+.mod-tasks .i{width:18px;height:18px;flex-shrink:0}
+.mod-tasks button{font:inherit;color:inherit}
+.mod-tasks details{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden}
+.mod-tasks summary{display:flex;align-items:center;gap:var(--space-3);min-height:52px;padding:var(--space-2) var(--space-4);cursor:pointer;list-style:none}
+.mod-tasks summary::-webkit-details-marker{display:none}
+.mod-tasks summary:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.mt-title{font:500 var(--text-lg)/1.25 var(--font-display)}
+.mt-count{flex:1;color:var(--text-muted);font:400 var(--text-xs) var(--font-mono)}
+.mod-tasks summary>.i{color:var(--text-muted);transition:transform var(--dur-fast) var(--ease-out)}
+.mod-tasks details[open]>summary>.i{transform:rotate(180deg)}
+.mt-body{display:grid;gap:var(--space-2);padding:var(--space-3) var(--space-4) var(--space-4);border-top:1px solid var(--border)}
+.mt-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.mt-list>li.leaving{animation:tk-collapse 250ms var(--ease-out) 200ms forwards;overflow:hidden}
+.mod-tasks .tk-card{background:var(--bg)}
+.mod-tasks a.tk-title{color:var(--text);text-decoration:none}
+.mt-board{justify-self:start;font-size:var(--text-sm)}
+.mod-tasks .none{padding:0}
+@media (hover:hover){.mod-tasks summary:hover{background:var(--surface-2)}}
+@media (prefers-reduced-motion:reduce){.mt-list>li.leaving{animation:none}}
