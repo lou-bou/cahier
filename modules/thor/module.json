@@ -5,6 +5,7 @@
   "order": 3,
   "chapters": {
     "ch1": "Introduction",
-    "ch2": "Ordonnancement sur une seule machine"
+    "ch2": "Ordonnancement sur une seule machine",
+    "ch1-2": "Revision"
   }
 }
